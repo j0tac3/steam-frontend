@@ -1,0 +1,38 @@
+/* app.css */
+body { background-color: #f0f2f5; }
+
+.main-title { font-weight: 800; color: #1b2838; letter-spacing: -1px; }
+
+/* Efecto en tarjetas de juego */
+.game-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+.card-img-top {
+    height: 140px;
+    object-fit: cover;
+}
+
+/* Colores de estado laterales */
+.status-completado { border-left: 6px solid #198754 !important; }
+.status-jugando { border-left: 6px solid #0d6efd !important; }
+.status-pendiente { border-left: 6px solid #ffc107 !important; }
+
+/* Estilo de resultados de búsqueda */
+.search-result-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.search-result-card:hover { background: #e9ecef; }
+
+.fw-black { font-weight: 900; }

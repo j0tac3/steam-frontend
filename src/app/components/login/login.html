@@ -1,0 +1,41 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img src="https://store.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg" alt="Steam Logo" class="steam-logo">
+      <h2>{{ esModoLogin ? 'INICIAR SESIÓN' : 'CREAR CUENTA' }}</h2>
+    </div>
+
+    @if (mensajeError) {
+      <div class="alert-error">{{ mensajeError }}</div>
+    }
+
+    <form (ngSubmit)="procesarAuth()">
+      @if (!esModoLogin) {
+        <div class="form-group">
+          <label>NOMBRE DE USUARIO</label>
+          <input type="text" name="name" [(ngModel)]="datosUsuario.name" required>
+        </div>
+      }
+
+      <div class="form-group">
+        <label>DIRECCIÓN DE EMAIL</label>
+        <input type="email" name="email" [(ngModel)]="datosUsuario.email" required>
+      </div>
+
+      <div class="form-group">
+        <label>CONTRASEÑA</label>
+        <input type="password" name="password" [(ngModel)]="datosUsuario.password" required>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="cargando">
+        {{ cargando ? 'PROCESANDO...' : (esModoLogin ? 'Iniciar sesión' : 'Registrarse') }}
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p (click)="toggleModo()">
+        {{ esModoLogin ? '¿No tienes cuenta? Crea una gratis' : '¿Ya tienes cuenta? Inicia sesión' }}
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #2a475e 0%, #1b2838 100%);
+  font-family: "Motiva Sans", Arial, Helvetica, sans-serif;
+}
+
+.login-card {
+  background: #171a21;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  border-radius: 4px;
+}
+
+.login-header {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.steam-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  color: #1999ff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  background: #32353c;
+  border: 1px solid #000;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #66c0f4;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #47bfff 0%, #1a44c2 100%);
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+.btn-login:hover {
+  background: linear-gradient(to right, #54c4ff 0%, #204ed8 100%);
+}
+
+.btn-login:disabled {
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.alert-error {
+  background: rgba(193, 40, 40, 0.1);
+  border: 1px solid #c12828;
+  color: #ff9d9d;
+  padding: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+  border-top: 1px solid #32353c;
+  padding-top: 20px;
+}
+
+.login-footer p {
+  color: #afafaf;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login-footer p:hover {
+  color: #fff;
+}
