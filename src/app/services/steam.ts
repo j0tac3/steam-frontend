@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importamos HttpHeaders
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class SteamService {
@@ -61,4 +62,40 @@ export class SteamService {
       headers: this.getHeaders()
     });
   }
+
+
+// 1b. Buscar juegos en IGDB
+  buscarEnIGDB(termino: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.myAppUrl}/igdb/buscar?nombre=${termino}`);
+  }
+
+  buscarJuegosIGDB(nombre: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.myAppUrl}/igdb/buscar?nombre=${nombre}`).pipe(
+    //tap((res: any) => console.log('📦 Respuesta completa de IGDB:', res))
+    tap((res: any) => console.log('', res))
+    // El 'tap' permite ver el log sin alterar el flujo de datos
+  );
+}
+
+  // Obtener detalles extendidos desde IGDB (vía nuestro backend)
+  getIgdbDetails(id: string | number): Observable<any> {
+    return this.http.get<any>(`${this.myAppUrl}/igdb-details/${id}`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  updateGameDiario(gameId: number | string, data: any): Observable<any> {
+    return this.http.patch(`${this.myAppUrl}/games/${gameId}/diario`, data);
+  }
+
+  /**
+   * UTILIDAD: Limpiador de portadas de IGDB
+   * IGDB devuelve miniaturas por defecto. Este método cambia el tamaño
+   */
+  formatIgdbImageUrl(url: string, size: string = 't_cover_big'): string {
+    if (!url) return 'assets/no-image.png';
+    // Cambiamos t_thumb por el tamaño deseado y aseguramos el https:
+    return 'https:' + url.replace('t_thumb', size);
+  }
+
 }

@@ -11,3 +11,7 @@ export const environment = {
   production: true,
   apiUrl: 'https://api-steam-50al.onrender.com/api'
 };
+/* export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8000/api'
+}; */

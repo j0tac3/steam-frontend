@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -21,12 +21,22 @@ export class LoginComponent {
   cargando = false;
   mensajeError = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // 1. Inyectamos ChangeDetectorRef aquí
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private cdr: ChangeDetectorRef 
+  ) {}
 
   // MÉTODO PRINCIPAL (se dispara desde el botón del form)
   async procesarAuth() {
-    this.cargando = true; // 1. Empezamos a cargar
+    if (this.cargando) return; // Evita doble clic si ya está cargando
+
+    this.cargando = true;
     this.mensajeError = '';
+    
+    // 2. Avisamos a Angular de que hemos cambiado el estado a "Cargando"
+    this.cdr.detectChanges(); 
     
     const endpoint = this.esModoLogin ? '/login' : '/register';
     const payload = this.esModoLogin 
@@ -43,26 +53,35 @@ export class LoginComponent {
       this.router.navigate(['/biblioteca']);
 
     } catch (error: any) {
-      // 2. Si hay error, capturamos el mensaje para que el usuario sepa qué pasó
       console.error('Error de Auth:', error);
-      
-      // Intentamos sacar el mensaje de error del JSON que envía Laravel
-      this.mensajeError = error.error?.message || 'Error en la conexión con el servidor';
-      
-      // Si Laravel nos dio un error de validación (ej: email ya existe), lo mostramos
-      if (error.error?.error) {
-        this.mensajeError = error.error.error; 
+
+      // 1. Si es un error de validación de Laravel (422)
+      if (error.status === 422 && error.error?.errors) {
+        // Aplanamos el array de errores y cogemos el primero
+        const listaErrores = Object.values(error.error.errors).flat();
+        this.mensajeError = listaErrores[0] as string;
+      } 
+      // 2. Si es un error de credenciales incorrectas (401)
+      else if (error.status === 401) {
+        this.mensajeError = 'Email o contraseña incorrectos';
       }
+      // 3. Error genérico o de conexión
+      else {
+        this.mensajeError = error.error?.message || 'Error en la conexión con el servidor';
+      }
+
     } finally {
-      // 3. ¡ESTA ES LA CLAVE! 
-      // Pase lo que pase (éxito o error), quitamos el estado de "PROCESANDO..."
+      // 3. Quitamos el estado de carga y forzamos a Angular a despertar
       this.cargando = false; 
+      this.cdr.detectChanges(); // ¡Esta línea es la que desbloquea tu botón visualmente!
     }
   }
 
   toggleModo() {
     this.esModoLogin = !this.esModoLogin;
     this.mensajeError = '';
-    this.cargando = false; // Por seguridad, si cambia de modo, desbloqueamos el botón
+    this.cargando = false;
+    this.datosUsuario = { name: '', email: '', password: '' }; // Limpiamos el form al cambiar de modo
+    this.cdr.detectChanges();
   }
 }
