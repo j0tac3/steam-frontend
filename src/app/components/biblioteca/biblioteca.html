@@ -6,49 +6,11 @@
     </button>
   </nav>
 
-  <header class="search-section container mb-5">
-    <div class="search-box p-4 bg-white rounded-4 shadow-sm">
-      <h1 class="text-center mb-4 fw-black text-dark">Steam Manager 🎮</h1>
-      
-      <div class="btn-group btn-group-sm mb-3 w-100 shadow-sm">
-        <button class="btn btn-outline-dark w-50 py-2 fw-bold" 
-                [class.active]="motorBusqueda === 'igdb'"
-                (click)="motorBusqueda = 'igdb'">
-          🚀 IGDB (Multiplataforma)
-        </button>
-        <button class="btn btn-outline-primary w-50 py-2 fw-bold" 
-                [class.active]="motorBusqueda === 'steam'"
-                (click)="motorBusqueda = 'steam'">
-          🎮 Steam (PC)
-        </button>
-      </div>
-
-      <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
-        <input #txtBusqueda (keyup.enter)="buscar(txtBusqueda.value)" type="text" 
-               class="form-control border-0 px-4" 
-               [placeholder]="motorBusqueda === 'igdb' ? 'Busca un juego...' : 'Busca en Steam...'">
-        <button class="btn btn-success px-5 fw-bold" (click)="buscar(txtBusqueda.value)">
-          BUSCAR
-        </button>
-      </div>
-
-      @if (searchResults().length > 0) {
-        <div class="row g-4 mt-4">
-          @for (game of searchResults(); track $index) {
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-              <app-search-game-card 
-                [game]="game"
-                (add)="guardarJuego($event)"
-                (verInfo)="verDetalles($event)"> 
-              </app-search-game-card>
-            </div>
-          }
-        </div>
-        <div class="text-center mt-4">
-          <button class="btn btn-link text-muted btn-sm" (click)="searchResults.set([])">Limpiar resultados</button>
-        </div>
-      }
-    </div>
+  <header class="container mt-4">
+    <app-game-search 
+      (addGame)="guardarJuego($event)"
+      (viewDetails)="verDetalles($event)">
+    </app-game-search>
   </header>
 
   <app-stats-panel 
@@ -60,18 +22,17 @@
   </app-stats-panel>
 
   <div class="container mb-5">
-    <div class="toolbar p-3 bg-white rounded-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-      <div class="search-local flex-grow-1">
-        <input type="text" class="form-control form-control-sm rounded-pill px-3" 
-               placeholder="🔍 Filtrar mi colección..." [value]="filtroTexto()"
-               (input)="filtroTexto.set($any($event.target).value)">
-      </div>
-      <div class="btn-group btn-group-sm">
-          <button class="btn btn-outline-secondary" [class.active]="filtroEstado() === 'todos'" (click)="filtroEstado.set('todos')">Todos</button>
-          <button class="btn btn-outline-warning" [class.active]="filtroEstado() === 'pendiente'" (click)="filtroEstado.set('pendiente')">⏳</button>
-          <button class="btn btn-outline-primary" [class.active]="filtroEstado() === 'jugando'" (click)="filtroEstado.set('jugando')">🎮</button>
-          <button class="btn btn-outline-success" [class.active]="filtroEstado() === 'completado'" (click)="filtroEstado.set('completado')">🏆</button>
-          <button class="btn btn-outline-danger" [class.active]="filtroEstado() === 'abandonado'" (click)="filtroEstado.set('abandonado')">❌</button>
+    <div class="container mb-5">
+      <app-game-filters 
+        [filtroTexto]="filtroTexto()" 
+        [filtroEstado]="filtroEstado()"
+        (textoCambiado)="filtroTexto.set($event)"
+        (estadoCambiado)="filtroEstado.set($event)">
+      </app-game-filters>
+      <div class="row g-4">
+        @for (game of bibliotecaFiltrada(); track game.id) {
+          ...
+        }
       </div>
     </div>
 

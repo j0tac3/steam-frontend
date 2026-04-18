@@ -1,0 +1,67 @@
+.toolbar {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.search-local {
+  max-width: 400px; // Evita que el input sea excesivamente largo en pantallas grandes
+  
+  input {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+      background-color: #ffffff;
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+      outline: none;
+    }
+
+    &::placeholder {
+      color: #adb5bd;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.filter-buttons {
+  border-radius: 50px; // Hace que el grupo de botones sea redondeado en los extremos
+  overflow: hidden; // Asegura que los botones hijos respeten el borde redondeado del padre
+
+  .btn {
+    transition: all 0.2s ease;
+    border-width: 1px;
+    
+    // Suaviza los colores de fondo al estar activos
+    &.active {
+      transform: scale(0.98);
+    }
+    
+    // Mejoras de accesibilidad y visuales al pasar el ratón
+    &:hover:not(.active) {
+      background-color: rgba(0, 0, 0, 0.03);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Adaptación para móviles
+@media (max-width: 576px) {
+  .search-local {
+    max-width: 100%;
+  }
+  
+  .filter-buttons {
+    width: 100%;
+    display: flex;
+    
+    .btn {
+      flex: 1; // Hace que los botones ocupen el mismo ancho en móvil
+    }
+  }
+}

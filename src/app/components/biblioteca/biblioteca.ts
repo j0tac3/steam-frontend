@@ -7,6 +7,8 @@ import { GameModalComponent } from '../game-modal/game-modal';
 import { GameCardComponent } from '../game-card/game-card';
 import { StatsPanelComponent } from '../stats-panel/stats-panel';
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
+import { GameSearchComponent } from '../game-search/game-search';
+import { GameFiltersComponent } from '../game-filters/game-filters';
 
 @Component({
   selector: 'app-biblioteca',
@@ -14,7 +16,8 @@ import { SearchGameCardComponent } from '../search-game-card/search-game-card';
             GameModalComponent,
             GameCardComponent,
             StatsPanelComponent,
-            SearchGameCardComponent],
+            GameSearchComponent,
+            GameFiltersComponent],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
 })

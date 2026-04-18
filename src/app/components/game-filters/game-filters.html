@@ -1,0 +1,51 @@
+<div class="toolbar-container mb-4">
+  <div class="toolbar p-3 bg-white rounded-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3">
+    
+    <div class="search-local flex-grow-1">
+      <div class="input-wrapper position-relative">
+        <input type="text" 
+               class="form-control form-control-sm rounded-pill px-4 py-2" 
+               placeholder="🔍 Filtrar mi colección por título..." 
+               [value]="filtroTexto()"
+               (input)="textoCambiado.emit($any($event.target).value)">
+      </div>
+    </div>
+
+    <div class="btn-group btn-group-sm filter-buttons shadow-sm">
+        <button class="btn btn-outline-secondary fw-bold px-3" 
+                [class.active]="filtroEstado() === 'todos'" 
+                (click)="estadoCambiado.emit('todos')">
+          Todos
+        </button>
+        
+        <button class="btn btn-outline-warning px-3" 
+                [class.active]="filtroEstado() === 'pendiente'" 
+                (click)="estadoCambiado.emit('pendiente')" 
+                title="Pendientes">
+          ⏳
+        </button>
+        
+        <button class="btn btn-outline-primary px-3" 
+                [class.active]="filtroEstado() === 'jugando'" 
+                (click)="estadoCambiado.emit('jugando')" 
+                title="Jugando">
+          🎮
+        </button>
+        
+        <button class="btn btn-outline-success px-3" 
+                [class.active]="filtroEstado() === 'completado'" 
+                (click)="estadoCambiado.emit('completado')" 
+                title="Completados">
+          🏆
+        </button>
+        
+        <button class="btn btn-outline-danger px-3" 
+                [class.active]="filtroEstado() === 'abandonado'" 
+                (click)="estadoCambiado.emit('abandonado')" 
+                title="Abandonados">
+          ❌
+        </button>
+    </div>
+    
+  </div>
+</div>

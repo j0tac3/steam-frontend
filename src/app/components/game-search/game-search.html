@@ -1,0 +1,46 @@
+<div class="search-box p-4 bg-white rounded-4 shadow-sm mb-5">
+  <h1 class="text-center mb-4 fw-black text-dark">Steam Manager 🎮</h1>
+  
+  <div class="btn-group btn-group-sm mb-3 w-100 shadow-sm">
+    <button class="btn btn-outline-dark w-50 py-2 fw-bold" 
+            [class.active]="motorBusqueda() === 'igdb'"
+            (click)="motorBusqueda.set('igdb')">
+      🚀 IGDB (Multiplataforma)
+    </button>
+    <button class="btn btn-outline-primary w-50 py-2 fw-bold" 
+            [class.active]="motorBusqueda() === 'steam'"
+            (click)="motorBusqueda.set('steam')">
+      🎮 Steam (PC)
+    </button>
+  </div>
+
+  <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+    <input #txtBusqueda (keyup.enter)="buscar(txtBusqueda.value)" type="text" 
+           class="form-control border-0 px-4" 
+           [placeholder]="motorBusqueda() === 'igdb' ? 'Busca un juego...' : 'Busca en Steam...'">
+    <button class="btn btn-success px-5 fw-bold" (click)="buscar(txtBusqueda.value)" [disabled]="cargando()">
+      @if (cargando()) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        BUSCAR
+      }
+    </button>
+  </div>
+
+  @if (searchResults().length > 0) {
+    <div class="row g-4 mt-4">
+      @for (game of searchResults(); track $index) {
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <app-search-game-card 
+            [game]="game" 
+            (add)="addGame.emit($event)"
+            (verInfo)="viewDetails.emit($event)">
+          </app-search-game-card>
+        </div>
+      }
+    </div>
+    <div class="text-center mt-4">
+      <button class="btn btn-link text-muted btn-sm" (click)="limpiar()">Limpiar resultados</button>
+    </div>
+  }
+</div>

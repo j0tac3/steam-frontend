@@ -13,7 +13,7 @@ export class GameModalComponent {
   @Input() cargandoDetalle: boolean = false;
   @Input() esBiblioteca: boolean = false;
 
-  @Output() guardar = new EventEmitter<any>();
+  @Output() guardarDiario = new EventEmitter<any>();
 
   // ✅ SOLUCIÓN LIMPIA: Captura el cierre sea cual sea el método (botón, X, Esc, clic fuera)
   @HostListener('hide.bs.modal')
@@ -22,7 +22,7 @@ export class GameModalComponent {
   }
 
   onGuardar() {
-    this.guardar.emit(this.juegoDetalle);
+    this.guardarDiario.emit(this.juegoDetalle);
   }
 
   cerrarLimpio() {

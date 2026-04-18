@@ -1,0 +1,19 @@
+import { Component, input, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-game-filters',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './game-filters.html',
+  styleUrl: './game-filters.scss'
+})
+export class GameFiltersComponent {
+  // Entradas: Recibimos el estado actual desde la biblioteca
+  filtroTexto = input.required<string>();
+  filtroEstado = input.required<string>();
+
+  // Salidas: Avisamos a la biblioteca cuando el usuario cambie algo
+  textoCambiado = output<string>();
+  estadoCambiado = output<string>();
+}
