@@ -1,12 +1,20 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { CommonModule, UpperCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
+import { GameModalComponent } from '../game-modal/game-modal';
+import { GameCardComponent } from '../game-card/game-card';
+import { StatsPanelComponent } from '../stats-panel/stats-panel';
+import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 
 @Component({
   selector: 'app-biblioteca',
-  imports: [CommonModule, UpperCasePipe],
+  imports: [CommonModule,
+            GameModalComponent,
+            GameCardComponent,
+            StatsPanelComponent,
+            SearchGameCardComponent],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
 })
@@ -106,12 +114,22 @@ export class BibliotecaComponent implements OnInit { // <-- Añadido implements 
     }
   }
 
-  actualizarEstado(id: number, evento: any) {
+/*   actualizarEstado(id: number, evento: any) {
     const nuevoEstado = evento.target.value;
     
     this.steamService.updateStatus(id, nuevoEstado).subscribe({
       next: () => {
         //console.log('Estado actualizado a:', nuevoEstado);
+        this.cargarBiblioteca();
+      },
+      error: (err) => console.error('Error al actualizar:', err)
+    });
+  } */
+
+  // Modifica la función actualizarEstado que ya tienes para que quede así:
+  actualizarEstado(id: number, nuevoEstado: string) {
+    this.steamService.updateStatus(id, nuevoEstado).subscribe({
+      next: () => {
         this.cargarBiblioteca();
       },
       error: (err) => console.error('Error al actualizar:', err)
@@ -202,28 +220,39 @@ export class BibliotecaComponent implements OnInit { // <-- Añadido implements 
   }
 
   guardarDiario(game: any) {
-  const payload = {
-    notes: game.notes,
-    personal_rating: game.personal_rating,
-    start_date: game.start_date
-  };
+    const payload = {
+      notes: game.notes,
+      personal_rating: game.personal_rating,
+      start_date: game.start_date
+    };
 
-  this.steamService.updateGameDiario(game.id, payload).subscribe({
-    next: (response) => {
-      // PRIMERO: Actualizamos el objeto del modal con lo que devuelve Laravel
-      if (response.game) {
-        // Fusionamos lo que ya tenemos con lo que llega para no perder la descripción de Steam
-        this.juegoDetalle.set({ ...this.juegoDetalle(), ...response.game });
-      }
+    this.steamService.updateGameDiario(game.id, payload).subscribe({
+      next: (response) => {
+        // PRIMERO: Actualizamos el objeto del modal con lo que devuelve Laravel
+        if (response.game) {
+          // Fusionamos lo que ya tenemos con lo que llega para no perder la descripción de Steam
+          this.juegoDetalle.set({ ...this.juegoDetalle(), ...response.game });
+        }
 
-      // SEGUNDO: Refrescamos la lista de atrás de forma silenciosa
-      this.cargarBiblioteca(); 
-      
-      //('✅ Guardado y sincronizado');
-    },
-    error: (err) => console.error(err)
-  });
-}
+        // SEGUNDO: Refrescamos la lista de atrás de forma silenciosa
+        this.cargarBiblioteca(); 
+        
+        //('✅ Guardado y sincronizado');
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  // Convierte una nota de 0-10 en un texto de estrellas (Ej: 8 -> "★★★★☆")
+  generarEstrellas(rating: number | null | undefined): string {
+    if (!rating || rating === 0) return 'Sin puntuar';
+    
+    const notaSobre5 = Math.round(rating / 2); 
+    const estrellasLlenas = '★'.repeat(notaSobre5);
+    const estrellasVacias = '☆'.repeat(5 - notaSobre5);
+    
+    return estrellasLlenas + estrellasVacias;
+  }
 
   cerrarSesion() {
     this.authService.logout();

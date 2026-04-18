@@ -1,0 +1,22 @@
+<div class="card h-100 search-result-card border-0 shadow-sm bg-white">
+  <div class="img-container" 
+       style="cursor: pointer;"
+       (click)="onVerInfo()" 
+       data-bs-toggle="modal" 
+       data-bs-target="#modalDetalles"
+       [class.bg-blur-effect]="!game.es_igdb"
+       [style.--bg-image]="'url(' + game.logo + ')'">
+    
+    <div class="blur-layer"></div>
+    <img [src]="game.logo" class="main-img" alt="logo">
+  </div>
+
+  <div class="card-footer p-2 border-0 bg-white">
+    <p class="small fw-bold text-truncate mb-2 text-center" [title]="game.name">
+      {{ game.name }}
+    </p>
+    <button (click)="onAdd()" class="btn btn-primary btn-sm w-100 fw-bold">
+      + Añadir
+    </button>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+.fw-black { font-weight: 900; }
+
+// Grid especial para 5 columnas
+@media (min-width: 992px) {
+  .col-lg-2-4 {
+    flex: 0 0 auto;
+    width: 20%;
+  }
+}
+
+.stats-card {
+  text-align: center;
+  transition: transform 0.2s ease;
+  
+  h3 { 
+    font-size: 1.8rem; 
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}

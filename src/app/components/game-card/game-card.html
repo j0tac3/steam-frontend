@@ -1,0 +1,31 @@
+<div class="card h-100 game-card border-0 shadow-sm" [attr.data-status]="game.status">
+  <div class="img-container" 
+       [class.bg-blur-effect]="game.source === 'steam'"
+       [style.--bg-image]="'url(' + (game.image_url || game.logo) + ')'"
+       (click)="onVerInfo()" data-bs-toggle="modal" data-bs-target="#modalDetalles">
+    <div class="blur-layer"></div>
+    <img [src]="game.image_url || game.logo" class="main-img" alt="Portada">
+  </div>
+  <div class="card-body p-3 d-flex flex-column">
+    <h6 class="fw-bold text-truncate mb-1" [title]="game.title">{{ game.title }}</h6>
+    
+    <div class="text-warning mb-3" style="font-size: 0.9rem;">
+      {{ generarEstrellas(game.personal_rating) }}
+    </div>
+
+    <div class="mt-auto">
+      <select class="form-select form-select-sm mb-2 border-light fw-bold" 
+              [value]="game.status" (change)="onCambiarEstado($event)">
+        <option value="pendiente">⏳ Pendiente</option>
+        <option value="jugando">🎮 Jugando</option>
+        <option value="completado">🏆 Completado</option>
+        <option value="abandonado">❌ Abandonado</option>
+      </select>
+      <div class="d-flex gap-2">
+        <button class="btn btn-info btn-sm flex-grow-1 text-white fw-bold" 
+                (click)="onVerInfo()" data-bs-toggle="modal" data-bs-target="#modalDetalles">INFO</button>
+        <button class="btn btn-outline-danger btn-sm" (click)="onBorrar()">🗑️</button>
+      </div>
+    </div>
+  </div>
+</div>
