@@ -15,8 +15,17 @@
     <p class="small fw-bold text-truncate mb-2 text-center" [title]="game.name">
       {{ game.name }}
     </p>
-    <button (click)="onAdd()" class="btn btn-primary btn-sm w-100 fw-bold">
-      + Añadir
+    <button class="btn w-100 fw-bold" 
+        [disabled]="game.yaLoTengo"
+        [class.btn-success]="!game.yaLoTengo"
+        [class.btn-outline-secondary]="game.yaLoTengo"
+        (click)="add.emit(game)">
+  
+      @if (game.yaLoTengo) {
+        <span>✅ En tu biblioteca</span>
+      } @else {
+        <span>+ Añadir</span>
+      }
     </button>
   </div>
 </div>

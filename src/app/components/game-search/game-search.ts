@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, Output, input, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam'; // Ajustado a tu ruta
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
@@ -16,6 +16,7 @@ export class GameSearchComponent {
   motorBusqueda = signal<'igdb' | 'steam'>('igdb');
   searchResults = signal<any[]>([]);
   cargando = signal<boolean>(false);
+  misJuegos = input<any[]>([]);
 
   @Output() addGame = new EventEmitter<any>();
   @Output() viewDetails = new EventEmitter<any>();
@@ -33,35 +34,30 @@ export class GameSearchComponent {
 
     search$.subscribe({
       next: (res: any) => {
-        // Obtenemos el array de juegos (manejando si viene en .data o directo)
         const juegosRaw = Array.isArray(res) ? res : (res.data || []);
 
         const resultadosMapeados = juegosRaw.map((j: any) => {
-          if (this.motorBusqueda() === 'igdb') {
-            // Mapeo exacto que tenías para IGDB
-            const finalUrl = j.cover?.url 
-              ? this.steamService.formatIgdbImageUrl(j.cover.url, 't_cover_big') 
-              : 'assets/no-image.png';
+          const idActual = this.motorBusqueda() === 'igdb' ? j.id : j.appid;
+          
+          // 🔥 LÓGICA DE DUPLICADOS:
+          // Comprobamos si el ID existe en nuestra biblioteca actual
+          const yaLoTengo = this.misJuegos().some(m => 
+            String(m.steam_appid) === String(idActual)
+          );
 
-            return {
-              name: j.name,
-              appid: j.id,       // IGDB ID como appid
-              logo: finalUrl,    // Para tu vista
-              image_url: finalUrl, // 🔥 FUNDAMENTAL: Para que Laravel no dé error 500
-              es_igdb: true,
-              source: 'igdb'
-            };
-          } else {
-            // Mapeo exacto que tenías para Steam
-            return {
-              name: j.name,
-              appid: j.appid,
-              logo: j.logo,
-              image_url: j.logo, // 🔥 FUNDAMENTAL: Para Laravel
-              es_igdb: false,
-              source: 'steam'
-            };
-          }
+          const finalUrl = this.motorBusqueda() === 'igdb' 
+            ? (j.cover?.url ? this.steamService.formatIgdbImageUrl(j.cover.url, 't_cover_big') : 'assets/no-image.png')
+            : (j.logo || j.header_image);
+
+          return {
+            name: j.name,
+            appid: idActual,
+            logo: finalUrl,
+            image_url: finalUrl,
+            es_igdb: this.motorBusqueda() === 'igdb',
+            source: this.motorBusqueda(),
+            yaLoTengo: yaLoTengo // <-- Nueva propiedad booleana
+          };
         });
 
         this.searchResults.set(resultadosMapeados);

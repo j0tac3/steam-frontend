@@ -8,6 +8,7 @@
 
   <header class="container mt-4">
     <app-game-search 
+      [misJuegos]="myLibrary()"
       (addGame)="guardarJuego($event)"
       (viewDetails)="verDetalles($event)">
     </app-game-search>
