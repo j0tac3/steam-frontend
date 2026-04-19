@@ -14,13 +14,17 @@
     </app-game-search>
   </header>
 
-  <app-stats-panel 
-    [total]="totalJuegos()"
-    [pendientes]="pendientes()"
-    [jugando]="jugando()"
-    [completados]="completados()"
-    [abandonados]="abandonado()">
-  </app-stats-panel>
+  <div class="container mb-5">
+    <app-stats-panel 
+      [total]="totalJuegos()"
+      [pendientes]="pendientes()"
+      [jugando]="jugando()"
+      [completados]="completados()"
+      [abandonados]="abandonado()"
+      [filtroActual]="filtroEstado()"
+      (filtroSeleccionado)="cambiarFiltroEstado($event)">
+    </app-stats-panel>
+  </div>
 
   <div class="container mb-5">
     <div class="container mb-5">
@@ -28,6 +32,7 @@
         [filtroTexto]="filtroTexto()" 
         [filtroEstado]="filtroEstado()"
         (textoCambiado)="filtroTexto.set($event)"
+        [totalMostrados]="bibliotecaFiltrada().length"
         (estadoCambiado)="filtroEstado.set($event)">
       </app-game-filters>
       <div class="row g-4">

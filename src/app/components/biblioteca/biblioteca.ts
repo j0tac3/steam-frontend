@@ -257,6 +257,11 @@ export class BibliotecaComponent implements OnInit { // <-- Añadido implements 
     return estrellasLlenas + estrellasVacias;
   }
 
+  // En biblioteca.component.ts
+  cambiarFiltroEstado(nuevoEstado: string) {
+    this.filtroEstado.set(nuevoEstado);
+  }
+
   cerrarSesion() {
     this.authService.logout();
   }

@@ -1,34 +1,67 @@
-<div class="container mb-5">
-  <div class="row g-3">
-    <div class="col-6 col-md-4 col-lg-2-4">
-      <div class="stats-card bg-white p-3 rounded-4 shadow-sm border-bottom border-4 border-dark">
-        <small class="text-muted text-uppercase fw-bold">Total</small>
-        <h3 class="m-0 fw-black text-dark">{{ total }}</h3>
-      </div>
+<div class="stats-dashboard bg-white rounded-4 shadow-sm p-4 mb-4 mx-auto">
+  
+  <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded-3 hover-header" 
+       (click)="filtroSeleccionado.emit('todos')"
+       [class.active-filter]="filtroActual() === 'todos'"
+       style="cursor: pointer;">
+    <div>
+      <h5 class="fw-bold mb-0 text-dark">Mi Colección</h5>
+      <small class="text-muted">Total: <strong>{{ total() }}</strong> juegos (clic para ver todos)</small>
     </div>
-    <div class="col-6 col-md-4 col-lg-2-4">
-      <div class="stats-card bg-white p-3 rounded-4 shadow-sm border-bottom border-4 border-warning">
-        <small class="text-warning text-uppercase fw-bold">⏳ Pendientes</small>
-        <h3 class="m-0 fw-black text-warning">{{ pendientes }}</h3>
-      </div>
-    </div>
-    <div class="col-6 col-md-4 col-lg-2-4">
-      <div class="stats-card bg-white p-3 rounded-4 shadow-sm border-bottom border-4 border-primary">
-        <small class="text-primary text-uppercase fw-bold">🎮 Jugando</small>
-        <h3 class="m-0 fw-black text-primary">{{ jugando }}</h3>
-      </div>
-    </div>
-    <div class="col-6 col-md-4 col-lg-2-4">
-      <div class="stats-card bg-white p-3 rounded-4 shadow-sm border-bottom border-4 border-success">
-        <small class="text-success text-uppercase fw-bold">🏆 Completados</small>
-        <h3 class="m-0 fw-black text-success">{{ completados }}</h3>
-      </div>
-    </div>
-    <div class="col-6 col-md-4 col-lg-2-4">
-      <div class="stats-card bg-white p-3 rounded-4 shadow-sm border-bottom border-4 border-danger">
-        <small class="text-danger text-uppercase fw-bold">❌ Abandonados</small>
-        <h3 class="m-0 fw-black text-danger">{{ abandonados }}</h3>
-      </div>
-    </div>
+    <div class="fs-3 text-primary opacity-50">📚</div>
   </div>
+
+  <div class="progress rounded-pill mb-4 shadow-sm" style="height: 12px;">
+    <div class="progress-bar bg-success" [style.width]="calcularPorcentaje(completados())"></div>
+    <div class="progress-bar bg-primary" [style.width]="calcularPorcentaje(jugando())"></div>
+    <div class="progress-bar bg-warning" [style.width]="calcularPorcentaje(pendientes())"></div>
+    <div class="progress-bar bg-danger" [style.width]="calcularPorcentaje(abandonados())"></div>
+  </div>
+
+  <div class="stats-legend d-flex flex-wrap gap-2">
+    <div  class="legend-item flex-grow-1 p-2 rounded-3 border"
+          [class.active-filter]="filtroActual() === 'completado'"
+          (click)="filtroSeleccionado.emit('completado')">
+      <div class="d-flex flex-column">
+        <span class="label text-muted x-small fw-bold text-uppercase mb-1">
+          <span class="dot bg-success me-1"></span>Completados
+        </span>
+        <span class="h4 mb-0 fw-bold">{{ completados() }}</span>
+      </div>
+    </div>
+
+    <div  class="legend-item flex-grow-1 p-2 rounded-3 border" 
+          [class.active-filter]="filtroActual() === 'jugando'"
+          (click)="filtroSeleccionado.emit('jugando')">
+      <div class="d-flex flex-column">
+        <span class="label text-muted x-small fw-bold text-uppercase mb-1">
+          <span class="dot bg-primary me-1"></span>Jugando
+        </span>
+        <span class="h4 mb-0 fw-bold">{{ jugando() }}</span>
+      </div>
+    </div>
+
+    <div  class="legend-item flex-grow-1 p-2 rounded-3 border" 
+          [class.active-filter]="filtroActual() === 'pendiente'"
+          (click)="filtroSeleccionado.emit('pendiente')">
+      <div class="d-flex flex-column">
+        <span class="label text-muted x-small fw-bold text-uppercase mb-1">
+          <span class="dot bg-primary me-1"></span>Pendientes
+        </span>
+        <span class="h4 mb-0 fw-bold">{{ jugando() }}</span>
+      </div>
+    </div>
+
+    <div  class="legend-item flex-grow-1 p-2 rounded-3 border" 
+          [class.active-filter]="filtroActual() === 'abandonado'"
+          (click)="filtroSeleccionado.emit('abandonado')">
+      <div class="d-flex flex-column">
+        <span class="label text-muted x-small fw-bold text-uppercase mb-1">
+          <span class="dot bg-primary me-1"></span>Abandoonados
+        </span>
+        <span class="h4 mb-0 fw-bold">{{ jugando() }}</span>
+      </div>
+    </div>
+
+    </div>
 </div>

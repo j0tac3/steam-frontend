@@ -1,67 +1,42 @@
-.toolbar {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-  }
+.search-section {
+  width: 100%;
 }
 
-.search-local {
-  max-width: 400px; // Evita que el input sea excesivamente largo en pantallas grandes
+.search-wrapper {
+  width: 100%;
+  max-width: 600px; // Limitamos el ancho para que no se estire demasiado
   
-  input {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    transition: all 0.2s ease-in-out;
-
-    &:focus {
-      background-color: #ffffff;
-      border-color: #86b7fe;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-      outline: none;
-    }
-
-    &::placeholder {
-      color: #adb5bd;
-      font-size: 0.9rem;
-    }
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    opacity: 0.5;
   }
 }
 
-.filter-buttons {
-  border-radius: 50px; // Hace que el grupo de botones sea redondeado en los extremos
-  overflow: hidden; // Asegura que los botones hijos respeten el borde redondeado del padre
+.custom-search-input {
+  padding: 14px 100px 14px 45px; // Espacio para el icono y el contador
+  border-radius: 100px;
+  border: 1px solid rgba(0,0,0,0.08);
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
 
-  .btn {
-    transition: all 0.2s ease;
-    border-width: 1px;
-    
-    // Suaviza los colores de fondo al estar activos
-    &.active {
-      transform: scale(0.98);
-    }
-    
-    // Mejoras de accesibilidad y visuales al pasar el ratón
-    &:hover:not(.active) {
-      background-color: rgba(0, 0, 0, 0.03);
-      transform: translateY(-1px);
-    }
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.1) !important;
+    transform: translateY(-1px);
   }
 }
 
-// Adaptación para móviles
-@media (max-width: 576px) {
-  .search-local {
-    max-width: 100%;
-  }
-  
-  .filter-buttons {
-    width: 100%;
-    display: flex;
-    
-    .btn {
-      flex: 1; // Hace que los botones ocupen el mismo ancho en móvil
-    }
-  }
+.results-counter {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  padding-left: 12px;
+  border-left: 1px solid #eee;
 }
