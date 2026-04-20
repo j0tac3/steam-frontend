@@ -46,7 +46,7 @@
           (click)="filtroSeleccionado.emit('pendiente')">
       <div class="d-flex flex-column">
         <span class="label text-muted x-small fw-bold text-uppercase mb-1">
-          <span class="dot bg-primary me-1"></span>Pendientes
+          <span class="dot bg-warning me-1"></span>Pendientes
         </span>
         <span class="h4 mb-0 fw-bold">{{ jugando() }}</span>
       </div>
@@ -57,7 +57,7 @@
           (click)="filtroSeleccionado.emit('abandonado')">
       <div class="d-flex flex-column">
         <span class="label text-muted x-small fw-bold text-uppercase mb-1">
-          <span class="dot bg-primary me-1"></span>Abandoonados
+          <span class="dot bg-danger me-1"></span>Abandoonados
         </span>
         <span class="h4 mb-0 fw-bold">{{ jugando() }}</span>
       </div>
