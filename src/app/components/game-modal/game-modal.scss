@@ -153,3 +153,76 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   }
 }
+
+
+/* --- OPTIMIZACIÓN PARA MÓVILES --- */
+@media (max-width: 1080px) {
+  .custom-modal-style {
+    margin: 10px; // Un pequeño margen para que no toque los bordes del móvil
+    border-radius: 16px;
+  }
+
+  .hero-header {
+    height: 200px; // Mucho más baja para ahorrar espacio
+    padding: 0 20px;
+    
+    .btn-close-custom {
+      top: 15px;
+      right: 15px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .hero-content {
+    flex-direction: column; // Apilamos el póster y el texto
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+
+    .hero-poster {
+      width: 100px; // Más pequeño
+      height: 140px;
+      transform: translateY(30px); // Menos desplazamiento hacia abajo
+      border-width: 3px;
+    }
+
+    .hero-text {
+      padding-bottom: 10px;
+      
+      .hero-title {
+        font-size: 1.4rem; // Texto más pequeño para que no rompa líneas
+      }
+
+      .d-flex {
+        justify-content: center; // Centramos badges y botones
+      }
+    }
+  }
+
+  .modern-tabs-container {
+    padding-left: 0; // Eliminamos el hueco que dejaba el póster en desktop
+    text-align: center;
+    
+    .modern-tabs-nav {
+      justify-content: center;
+      
+      button {
+        padding: 15px 20px;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .tab-content-area {
+    padding: 20px !important;
+    &.extra-padding {
+      padding-top: 50px !important; // Ajustamos el padding cuando no hay tabs
+    }
+  }
+
+  .description-text {
+    font-size: 0.95rem; // Letra un poco más pequeña para lectura cómoda
+    line-height: 1.6;
+  }
+}

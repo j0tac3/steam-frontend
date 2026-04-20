@@ -1,5 +1,5 @@
-<div class="modal fade" id="modalDetalles" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalTitle">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content custom-modal-style border-0">
       
       @if (cargandoDetalle()) {
@@ -14,7 +14,9 @@
         <div class="hero-header" [style.backgroundImage]="'url(' + (juegoDetalle().background || juegoDetalle().image_url || juegoDetalle().logo) + ')'">
           <div class="hero-overlay"></div>
           
-          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Cerrar detalles">
+            <span aria-hidden="true">&times;</span>
+          </button>
           
           <div class="hero-content">
             <div class="hero-poster shadow-lg">
@@ -22,8 +24,8 @@
               <img [src]="juegoDetalle().image_url || juegoDetalle().logo || juegoDetalle().cover?.url" class="poster-fg-image" alt="Poster">
             </div>
             
-            <div class="hero-text">
-              <h2 class="hero-title">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
+           <div class="hero-text px-2">
+            <h2 class="hero-title" id="modalTitle">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
               
               <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
                 <span class="badge source-badge">
