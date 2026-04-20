@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalTitle">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content custom-modal-style border-0">
       
       @if (cargandoDetalle()) {
@@ -19,40 +19,18 @@
           </button>
           
           <div class="hero-content">
-            <div class="hero-poster shadow-lg">
-              <img [src]="juegoDetalle().image_url || juegoDetalle().logo || juegoDetalle().cover?.url" class="poster-bg-blur" alt="">
-              <img [src]="juegoDetalle().image_url || juegoDetalle().logo || juegoDetalle().cover?.url" class="poster-fg-image" alt="Poster">
-            </div>
-            
-           <div class="hero-text px-2">
-            <h2 class="hero-title" id="modalTitle">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
+            <div class="hero-text text-center w-100">
+              <h2 class="hero-title" id="modalTitle">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
               
-              <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
-                <span class="badge source-badge">
+              <div class="d-flex align-items-center justify-content-center gap-2 mt-2 flex-wrap">
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25">
                   {{ (juegoDetalle().source || 'IGDB') | uppercase }}
                 </span>
-
-                @if (juegoDetalle().price_overview) {
-                  <span class="badge bg-success shadow-sm">
-                    {{ juegoDetalle().price_overview.final_formatted }}
-                  </span>
-                } @else if (juegoDetalle().is_free) {
-                  <span class="badge bg-success shadow-sm">Gratis</span>
-                }
-
-                @if (juegoDetalle().source === 'steam') {
-                  <a [href]="'https://store.steampowered.com/app/' + (juegoDetalle().steam_appid || juegoDetalle().id)" 
-                     target="_blank" class="btn btn-sm btn-steam-action">
-                    <i class="bi bi-steam"></i> Ver en Steam
-                  </a>
-                }
-              </div>
-
-              <div class="hero-badges mt-2">
+                
                 @if (juegoDetalle().genres) {
-                  @for (genre of juegoDetalle().genres; track $index) {
-                    <span class="badge rounded-pill genre-tag">
-                      {{ genre.name || genre.description || genre }}
+                  @for (genero of juegoDetalle().genres.slice(0, 3); track $index) {
+                    <span class="badge bg-light text-dark border border-light-subtle">
+                      {{ genero.name || genero }}
                     </span>
                   }
                 }
@@ -61,41 +39,44 @@
           </div>
         </div>
 
-        <div class="modal-body p-0 bg-white">
-          
-          @if (esBiblioteca()) {
-            <div class="modern-tabs-container">
-              <div class="modern-tabs-nav">
-                <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">DETALLES</button>
-                <button [class.active]="activeTab() === 'diario'" (click)="activeTab.set('diario')">MI DIARIO</button>
-              </div>
+        @if (esBiblioteca()) {
+          <div class="modern-tabs-container">
+            <div class="modern-tabs-nav">
+              <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
+                DETALLES
+              </button>
+              <button [class.active]="activeTab() === 'diario'" (click)="activeTab.set('diario')">
+                MI DIARIO
+              </button>
             </div>
-          }
+          </div>
+        } @else {
+          <div class="py-2 bg-white"></div>
+        }
 
-          <div class="tab-content-area p-4" [class.extra-padding]="!esBiblioteca()">
+        <div class="tab-content-area bg-white text-dark">
+          <div class="p-4">
             
-            @if (activeTab() === 'info' || !esBiblioteca()) {
-              <div class="description-section animate__animated animate__fadeIn">
-                <label class="section-label text-muted fw-bold mb-3 small">DESCRIPCIÓN</label>
-                
-                <div class="description-text text-secondary custom-scrollbar">
-                  @if (juegoDetalle().about_the_game || juegoDetalle().detailed_description || juegoDetalle().summary || juegoDetalle().storyline || juegoDetalle().description) {
-                    <div [innerHTML]="getSafeHtml(juegoDetalle().about_the_game || juegoDetalle().detailed_description || juegoDetalle().summary || juegoDetalle().storyline || juegoDetalle().description)"></div>
-                  } @else {
-                    <p class="text-center py-4"><i>No hay una descripción detallada disponible.</i></p>
-                  }
+            @if (activeTab() === 'info') {
+              <div class="description-section">
+                <label class="section-label">SINOPSIS</label>
+                <div class="description-text text-secondary lh-lg" 
+                     [innerHTML]="getSafeHtml(juegoDetalle().summary || juegoDetalle().description || juegoDetalle().detailed_description || juegoDetalle().about_the_game || 'Sin descripción disponible.')">
                 </div>
               </div>
             }
 
-            @else if (activeTab() === 'diario' && esBiblioteca()) {
-              <div class="diario-section animate__animated animate__fadeIn row g-4 pt-2">
+            @if (activeTab() === 'diario') {
+              <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="section-label text-muted fw-bold mb-2 small">MI VALORACIÓN</label>
-                  <div class="interactive-stars fs-2 text-warning">
+                  <label class="section-label text-muted fw-bold mb-2 small">VALORACIÓN PERSONAL</label>
+                  <div class="d-flex gap-1 stars-container">
                     @for (filled of getStarArray(); track $index) {
-                      <span (click)="setRating($index + 1)" style="cursor: pointer; user-select: none;">
-                        {{ filled ? '★' : '☆' }}
+                      <span class="fs-3 cursor-pointer transition-all" 
+                            [class.text-warning]="$index < (juegoDetalle().personal_rating / 2)"
+                            [class.text-light-subtle]="$index >= (juegoDetalle().personal_rating / 2)"
+                            (click)="setRating($index + 1)">
+                        {{ $index < (juegoDetalle().personal_rating / 2) ? '★' : '☆' }}
                       </span>
                     }
                   </div>
