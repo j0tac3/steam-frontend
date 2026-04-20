@@ -1,33 +1,51 @@
 <div class="main-container bg-light min-vh-100">
-  <nav class="navbar navbar-dark bg-dark px-4 py-3 shadow-sm mb-4">
-    <h2 class="text-white m-0 fs-4">Mi Biblioteca 📚</h2>
-    <button class="btn btn-outline-danger btn-sm fw-bold border-2" (click)="cerrarSesion()">
-      CERRAR SESIÓN 🚪
-    </button>
+  <nav class="navbar navbar-dark bg-dark shadow-sm mb-4 py-3">
+    <div class="container"> <div class="d-flex align-items-center">
+        <span class="fs-2 me-2">🎮</span> <h2 class="text-white m-0 fs-4 fw-bold letter-spacing-1">
+          Mi Biblioteca
+        </h2>
+      </div>
+      
+      <button class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 border-2 rounded-3 transition-all" 
+              (click)="cerrarSesion()">
+        CERRAR SESIÓN 🚪
+      </button>
+    </div>
   </nav>
 
-  <header class="container mt-4">
-    <app-game-search 
-      [misJuegos]="myLibrary()"
-      (addGame)="guardarJuego($event)"
-      (viewDetails)="verDetalles($event)">
-    </app-game-search>
+  <header class="container mt-4 mb-5">
+    <div class="row g-4 align-items-stretch">
+      
+      <div class="col-lg-7 d-flex"> 
+        <div class="main-header-box w-100">
+          <app-game-search 
+            [misJuegos]="myLibrary()"
+            (addGame)="guardarJuego($event)"
+            (viewDetails)="verDetalles($event)">
+          </app-game-search>
+        </div>
+      </div>
+
+      <div class="col-lg-5 d-flex"> 
+        <div class="main-header-box w-100">
+          <app-stats-panel 
+            [total]="totalJuegos()"
+            [pendientes]="pendientes()"
+            [jugando]="jugando()"
+            [completados]="completados()"
+            [abandonados]="abandonado()"
+            [filtroActual]="filtroEstado()"
+            (filtroSeleccionado)="cambiarFiltroEstado($event)">
+          </app-stats-panel>
+        </div>
+      </div>
+
+    </div>
   </header>
 
-  <div class="container mb-5">
-    <app-stats-panel 
-      [total]="totalJuegos()"
-      [pendientes]="pendientes()"
-      [jugando]="jugando()"
-      [completados]="completados()"
-      [abandonados]="abandonado()"
-      [filtroActual]="filtroEstado()"
-      (filtroSeleccionado)="cambiarFiltroEstado($event)">
-    </app-stats-panel>
-  </div>
-
-  <div class="container mb-5">
-    <div class="container mb-5">
+  <main class="container mb-5">
+    
+    <div class="mb-4">
       <app-game-filters 
         [filtroTexto]="filtroTexto()" 
         [filtroEstado]="filtroEstado()"
@@ -35,14 +53,9 @@
         [totalMostrados]="bibliotecaFiltrada().length"
         (estadoCambiado)="filtroEstado.set($event)">
       </app-game-filters>
-      <div class="row g-4">
-        @for (game of bibliotecaFiltrada(); track game.id) {
-          ...
-        }
-      </div>
     </div>
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
       @for (game of bibliotecaFiltrada(); track game.id) {
         <div class="col">
           <app-game-card 
@@ -55,12 +68,15 @@
       }
     </div>
 
-    @if (bibliotecaFiltrada().length === 0 && !filtroTexto()) {
+    @if (bibliotecaFiltrada().length === 0) {
       <div class="text-center py-5">
-        <h5 class="text-muted">Aún no tienes juegos en esta categoría 🕹️</h5>
+        <div class="display-1 mb-3">🕹️</div>
+        <h5 class="text-muted fw-bold">
+          {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Aún no tienes juegos en esta categoría' }}
+        </h5>
       </div>
     }
-  </div>
+  </main>
 
   <app-game-modal 
     [juegoDetalle]="juegoDetalle()" 
@@ -68,5 +84,4 @@
     [esBiblioteca]="juegoDetalle()?.status !== undefined" 
     (guardarDiario)="guardarDiario($event)">
   </app-game-modal>
-
 </div>

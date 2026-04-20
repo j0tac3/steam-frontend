@@ -25,7 +25,8 @@ $accent-color: #007aff;
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.9) 80%, #ffffff 100%);
+    /* Degradado corregido para fundir a blanco en la zona de pestañas */
+    background: linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.8) 70%, #ffffff 100%);
     z-index: 1;
   }
 
@@ -54,7 +55,7 @@ $accent-color: #007aff;
   position: relative;
   z-index: 2;
   padding: 60px 25px 20px;
-  text-align: left; /* Alineación más natural para gestión */
+  text-align: left;
   
   .hero-title {
     color: white !important;
@@ -103,10 +104,9 @@ $accent-color: #007aff;
 /* --- CUERPO --- */
 .tab-content-area {
   background: #ffffff;
-  /* Eliminamos el min-height fijo y dejamos que flex lo gestione */
   flex-grow: 1; 
   overflow-y: auto; 
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  -webkit-overflow-scrolling: touch;
   
   .section-label {
     font-size: 0.7rem;
@@ -118,18 +118,34 @@ $accent-color: #007aff;
   }
 }
 
-/* --- RESPONSIVE PC (MANTENIENDO COHERENCIA) --- */
+/* --- RESPONSIVE PC: CENTRADO VERTICAL --- */
 @media (min-width: 992px) {
-  .modal-dialog { max-width: 800px; }
+  .modal-dialog { 
+    max-width: 800px;
+    display: flex;
+    align-items: center; /* Centrado vertical */
+    min-height: calc(100% - 3.5rem);
+    margin: 1.75rem auto;
+  }
+
+  .modal-content {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px !important;
+    overflow: hidden;
+    border: none;
+  }
+
   .custom-modal-style { border-radius: 24px; }
 
   ::ng-deep .description-text img {
-    max-width: 90% !important; /* Un poco menos de ancho en PC */
-    margin: 30px auto;        /* Centra la imagen y da más aire */
+    max-width: 90% !important;
+    margin: 30px auto;
   }
 }
 
-/* --- RESPONSIVE MÓVIL: EFECTO BOTTOM SHEET --- */
+/* --- RESPONSIVE MÓVIL: BOTTOM SHEET (MANTENIDO) --- */
 @media (max-width: 767px) {
   .modal.fade .modal-dialog {
     transform: translateY(100%);
@@ -140,62 +156,26 @@ $accent-color: #007aff;
     margin: 0;
   }
 
-  .modal.show .modal-dialog {
-    transform: translateY(0);
-  }
+  .modal.show .modal-dialog { transform: translateY(0); }
 
   .modal-content {
     border-radius: 20px 20px 0 0 !important;
-    height: 85vh; /* Altura fija para el efecto sheet */
+    height: 85vh;
     max-height: 85vh;
     border: none;
     display: flex;
-    flex-direction: column; /* Apila cabecera, tabs y contenido */
-    background: #ffffff; /* Evita que se vea negro si el contenido es corto */
+    flex-direction: column;
+    background: #ffffff;
   }
 
-  .custom-modal-style {
-    &::before {
-      content: "";
-      display: block;
-      width: 40px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.4);
-      border-radius: 10px;
-      margin: 12px auto;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-    }
-  }
-
-  .hero-header { 
-    flex-shrink: 0; /* Evita que la imagen se aplaste */
-    min-height: 180px; 
-  }
-
-  .modern-tabs-container { 
-    flex-shrink: 0; /* Evita que las pestañas desaparezcan */
-  }
-
-  .tab-content-area {
-    /* Aquí ocurre la magia del scroll */
-    flex-grow: 1; 
-    overflow-y: auto;
-  }
+  .hero-header { flex-shrink: 0; min-height: 180px; }
+  .modern-tabs-container { flex-shrink: 0; }
+  .tab-content-area { flex-grow: 1; overflow-y: auto; }
 }
 
-/* Estilo para el estado de carga (Sincronizando...) */
-.modal-body.text-center.bg-white {
-  border-radius: 20px 20px 0 0;
-}
-
-/* --- FIX DEFINITIVO PARA CONTENIDO DINÁMICO (STEAM/HTML) --- */
+/* --- FIX CONTENIDO DINÁMICO --- */
 ::ng-deep {
   .description-text {
-    // 1. Ajuste de imágenes
     img {
       max-width: 100% !important;
       height: auto !important;
@@ -204,29 +184,11 @@ $accent-color: #007aff;
       border-radius: 8px !important;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
     }
-
-    // 2. Ajuste de vídeos e iframes (por si Steam trae trailers)
-    iframe, video, embed {
-      max-width: 100% !important;
+    iframe, video {
       width: 100% !important;
-      height: auto !important;
       aspect-ratio: 16 / 9;
       border-radius: 8px !important;
       margin: 1.5rem 0 !important;
-    }
-
-    // 3. Limpieza de tablas (Steam a veces las usa para specs)
-    table {
-      width: 100% !important;
-      height: auto !important;
-      display: block;
-      overflow-x: auto; // Si la tabla es muy ancha, permite scroll lateral
-    }
-    
-    // 4. Quitar márgenes extraños de elementos de Steam
-    p, div {
-      max-width: 100% !important;
-      word-wrap: break-word; // Evita que textos largos rompan el modal
     }
   }
 }
