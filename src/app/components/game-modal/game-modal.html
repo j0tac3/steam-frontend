@@ -1,149 +1,128 @@
-<div class="modal fade" 
-     id="modalDetalles" 
-     tabindex="-1" 
-     aria-labelledby="modalDetallesLabel" 
-     aria-hidden="true"
-     data-bs-focus="false"> <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0 shadow-lg overflow-hidden">
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content custom-modal-style border-0">
       
-      @if (cargandoDetalle) {
-        <div class="modal-body text-center py-5">
+      @if (cargandoDetalle()) {
+        <div class="modal-body text-center py-5 bg-white">
           <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2 fw-bold">Obteniendo detalles...</p>
+          <p class="mt-3 fw-bold text-muted">Sincronizando información...</p>
         </div>
       } 
       
-      @else if (juegoDetalle) {
+      @else if (juegoDetalle()) {
         
-        <div class="modal-header bg-dark p-0 border-0 position-relative">
-          @if (esBiblioteca) {
-            <ul class="nav nav-tabs w-100 border-0" id="gameTabs" role="tablist">
-              <li class="nav-item flex-grow-1 text-center">
-                <button class="nav-link active py-3 w-100 fw-bold border-0 text-white rounded-0" 
-                        id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button">
-                  ℹ️ DETALLES
-                </button>
-              </li>
-              <li class="nav-item flex-grow-1 text-center">
-                <button class="nav-link py-3 w-100 fw-bold border-0 text-white rounded-0" 
-                        id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes-pane" type="button">
-                  ✍️ MI DIARIO
-                </button>
-              </li>
-            </ul>
-          } @else {
-            <div class="py-3 px-4 w-100">
-              <h5 class="modal-title text-white fw-bold m-0">{{ juegoDetalle.name || juegoDetalle.title }}</h5>
-            </div>
-          }
+        <div class="hero-header" [style.backgroundImage]="'url(' + (juegoDetalle().background || juegoDetalle().image_url || juegoDetalle().logo) + ')'">
+          <div class="hero-overlay"></div>
           
-          <button type="button" class="btn-close btn-close-white me-3 position-absolute end-0 top-50 translate-middle-y" 
-                  data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
-        </div>
-
-        <div class="modal-body p-0">
-          <div class="tab-content" id="gameTabsContent">
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+          
+          <div class="hero-content">
+            <div class="hero-poster shadow-lg">
+              <img [src]="juegoDetalle().image_url || juegoDetalle().logo || juegoDetalle().cover?.url" class="poster-bg-blur" alt="">
+              <img [src]="juegoDetalle().image_url || juegoDetalle().logo || juegoDetalle().cover?.url" class="poster-fg-image" alt="Poster">
+            </div>
             
-            <div class="tab-pane fade show active" id="info-pane" role="tabpanel">
-              <div class="row g-0">
-                <div class="col-md-5 modal-image-side" [style.--bg-image]="'url(' + (juegoDetalle.header_image || juegoDetalle.image_url || juegoDetalle.logo) + ')'">
-                  <div class="modal-blur-bg"></div>
-                  <img [src]="juegoDetalle.header_image || juegoDetalle.image_url || juegoDetalle.logo" class="img-fluid modal-main-img" alt="Cover">
-                </div>
-                
-                <div class="col-md-7 p-4 d-flex flex-column">
-                  <h4 class="fw-bold mb-1">{{ juegoDetalle.name || juegoDetalle.title }}</h4>
-                  
-                  @if (juegoDetalle.source === 'steam' && juegoDetalle.price) {
-                    <div class="mb-2">
-                      <span class="badge bg-success fs-6 shadow-sm">💰 {{ juegoDetalle.price }}</span>
-                    </div>
+            <div class="hero-text">
+              <h2 class="hero-title">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
+              
+              <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                <span class="badge source-badge">
+                  {{ (juegoDetalle().source || 'IGDB') | uppercase }}
+                </span>
+
+                @if (juegoDetalle().price_overview) {
+                  <span class="badge bg-success shadow-sm">
+                    {{ juegoDetalle().price_overview.final_formatted }}
+                  </span>
+                } @else if (juegoDetalle().is_free) {
+                  <span class="badge bg-success shadow-sm">Gratis</span>
+                }
+
+                @if (juegoDetalle().source === 'steam') {
+                  <a [href]="'https://store.steampowered.com/app/' + (juegoDetalle().steam_appid || juegoDetalle().id)" 
+                     target="_blank" class="btn btn-sm btn-steam-action">
+                    <i class="bi bi-steam"></i> Ver en Steam
+                  </a>
+                }
+              </div>
+
+              <div class="hero-badges mt-2">
+                @if (juegoDetalle().genres) {
+                  @for (genre of juegoDetalle().genres; track $index) {
+                    <span class="badge rounded-pill genre-tag">
+                      {{ genre.name || genre.description || genre }}
+                    </span>
                   }
-
-                  @if (juegoDetalle.genres && juegoDetalle.genres.length > 0) {
-                    <div class="mb-3 d-flex flex-wrap gap-1">
-                      @for (genre of juegoDetalle.genres; track genre) {
-                        <span class="badge rounded-pill bg-light text-dark border fw-normal" style="font-size: 0.75rem;">
-                          {{ genre }}
-                        </span>
-                      }
-                    </div>
-                  }
-
-                  <h6 class="text-uppercase text-muted fw-bold small mb-2">Descripción</h6>
-                  <div class="description-scroll mb-4 text-secondary" 
-                       [innerHTML]="juegoDetalle.short_description || juegoDetalle.description || 'Sin descripción disponible.'">
-                  </div>
-                  
-                  <div class="d-flex flex-wrap gap-2 mt-auto pt-3">
-                    <span class="badge bg-light text-dark border">FUENTE: {{ (juegoDetalle.source || 'IGDB') | uppercase }}</span>
-                    
-                    @if (juegoDetalle.source === 'steam') {
-                      <a [href]="'https://store.steampowered.com/app/' + (juegoDetalle.steam_appid || juegoDetalle.appid)" 
-                         target="_blank" class="btn btn-primary btn-sm fw-bold">
-                        Ir a la tienda 🛒
-                      </a>
-                    }
-
-                    @if (!esBiblioteca) {
-                      <div class="w-100 mt-2">
-                        <div class="alert alert-info py-2 px-3 m-0 border-0 small">
-                          ✨ Añade este juego para gestionar tu diario.
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
+                }
               </div>
             </div>
+          </div>
+        </div>
 
-            @if (esBiblioteca) {
-              <div class="tab-pane fade p-4" id="notes-pane" role="tabpanel">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold small text-muted">PUNTUACIÓN PERSONAL</label>
-                    <select class="form-select border-2" 
-                          (change)="juegoDetalle.personal_rating = $any($event.target).value">
-                      <option value="0" [selected]="juegoDetalle.personal_rating == 0">Sin puntuar</option>
-                      @for (n of [1,2,3,4,5,6,7,8,9,10]; track n) {
-                        <option [value]="n" [selected]="juegoDetalle.personal_rating == n">
-                          {{n}} / 10
-                        </option>
-                      }
-                    </select>
-                  </div>
+        <div class="modal-body p-0 bg-white">
+          
+          @if (esBiblioteca()) {
+            <div class="modern-tabs-container">
+              <div class="modern-tabs-nav">
+                <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">DETALLES</button>
+                <button [class.active]="activeTab() === 'diario'" (click)="activeTab.set('diario')">MI DIARIO</button>
+              </div>
+            </div>
+          }
 
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold small text-muted">FECHA DE INICIO</label>
-                    <input type="date" class="form-control border-2" 
-                           [value]="juegoDetalle.start_date"
-                           (input)="juegoDetalle.start_date = $any($event.target).value">
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label fw-bold small text-muted">MIS NOTAS</label>
-                    <textarea class="form-control border-2 bg-light" rows="6" 
-                              [value]="juegoDetalle.notes || ''"
-                              (input)="juegoDetalle.notes = $any($event.target).value"
-                              placeholder="¿Qué te ha parecido el juego? Escribe aquí tus impresiones..."></textarea>
-                  </div>
-
-                  <div class="col-12 mt-4">
-                    <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" (click)="onGuardar()">
-                      💾 ACTUALIZAR MI DIARIO
-                    </button>
-                  </div>
+          <div class="tab-content-area p-4" [class.extra-padding]="!esBiblioteca()">
+            
+            @if (activeTab() === 'info' || !esBiblioteca()) {
+              <div class="description-section animate__animated animate__fadeIn">
+                <label class="section-label text-muted fw-bold mb-3 small">DESCRIPCIÓN</label>
+                
+                <div class="description-text text-secondary custom-scrollbar">
+                  @if (juegoDetalle().about_the_game || juegoDetalle().detailed_description || juegoDetalle().summary || juegoDetalle().storyline || juegoDetalle().description) {
+                    <div [innerHTML]="getSafeHtml(juegoDetalle().about_the_game || juegoDetalle().detailed_description || juegoDetalle().summary || juegoDetalle().storyline || juegoDetalle().description)"></div>
+                  } @else {
+                    <p class="text-center py-4"><i>No hay una descripción detallada disponible.</i></p>
+                  }
                 </div>
               </div>
             }
 
-          </div>
-        </div>
+            @else if (activeTab() === 'diario' && esBiblioteca()) {
+              <div class="diario-section animate__animated animate__fadeIn row g-4 pt-2">
+                <div class="col-md-6">
+                  <label class="section-label text-muted fw-bold mb-2 small">MI VALORACIÓN</label>
+                  <div class="interactive-stars fs-2 text-warning">
+                    @for (filled of getStarArray(); track $index) {
+                      <span (click)="setRating($index + 1)" style="cursor: pointer; user-select: none;">
+                        {{ filled ? '★' : '☆' }}
+                      </span>
+                    }
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="section-label text-muted fw-bold mb-2 small">FECHA DE INICIO</label>
+                  <input type="date" class="form-control rounded-3 border-light shadow-sm" 
+                         [value]="juegoDetalle().start_date || ''" 
+                         (input)="juegoDetalle().start_date = $any($event.target).value">
+                </div>
 
-        <div class="modal-footer bg-light border-0">
-          <button type="button" class="btn btn-secondary fw-bold shadow-sm" data-bs-dismiss="modal">
-            CERRAR
-          </button>
+                <div class="col-12">
+                  <label class="section-label text-muted fw-bold mb-2 small">NOTAS Y PROGRESO</label>
+                  <textarea class="form-control rounded-3 border-light shadow-sm" rows="5" 
+                            placeholder="Escribe tus impresiones..." 
+                            [value]="juegoDetalle().notes || ''" 
+                            (input)="juegoDetalle().notes = $any($event.target).value"></textarea>
+                </div>
+
+                <div class="col-12 mt-4 pb-2">
+                  <button class="btn btn-primary w-100 fw-bold py-3 rounded-4 shadow" 
+                          (click)="onGuardar()" data-bs-dismiss="modal">
+                    GUARDAR CAMBIOS
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
         </div>
       }
     </div>
