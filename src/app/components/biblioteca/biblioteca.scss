@@ -1,199 +1,47 @@
-/* MANTENER TUS VARIABLES ORIGINALES */
-$color-pendiente: #ffc107;
-$color-jugando: #0d6efd;
-$color-completado: #198754;
-$color-abandonado: #dc3545;
+// 1. VARIABLES (Solo las necesarias para este componente)
+$accent-blue: #3b82f6;
+$glass-bg: rgba(22, 27, 34, 0.7); // Fondo semi-transparente oscuro
+$glass-border: rgba(255, 255, 255, 0.1);
 
-.fw-black { font-weight: 900; }
-
-/* MEJORA DEL CONTENEDOR PRINCIPAL */
+// 2. CONTENEDOR PRINCIPAL
 .main-container {
-  background-color: #f8f9fa !important; // Un gris más suave para que las cards blancas resalten
+  background: transparent !important; // Para que se vea el fondo global del body
+  padding-bottom: 3rem;
 }
 
-/* --- GRID OPTIMIZADO --- */
-@media (min-width: 1400px) {
-  .row-cols-xl-5 {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); // 6 columnas reales
-    gap: 20px;
+// 3. NAVBAR
+.navbar {
+  background-color: rgba(11, 14, 20, 0.8) !important; // Un poco más oscuro que el resto
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid $glass-border;
+  
+  .letter-spacing-1 {
+    letter-spacing: 1px;
   }
 }
 
-/* --- CARDS: MEJORA DE ELEVACIÓN Y DISEÑO --- */
-.search-result-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border-radius: 16px; // Bordes más modernos
-  border: none !important;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
+// 4. BOTÓN CERRAR SESIÓN (Custom classes)
+.transition-all {
+  transition: all 0.2s ease-in-out;
   &:hover {
-    transform: translateY(-8px); // Elevación más pronunciada
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
-    
-    .main-img { 
-      transform: scale(1.08); 
-    }
-  }
-
-  .game-card {
-  border: 1px solid rgba(0,0,0,0.05) !important; // Borde sutil en lugar de sombra pesada
-  background: transparent !important; // Fondo limpio
-  
-  .card-body {
-    padding: 10px; // Menos relleno para que sea más compacto
-  }
-  
-  // Ocultar acciones hasta el hover
-  .card-actions { 
-    opacity: 0; 
-    transition: opacity 0.2s; 
-  }
-  
-  &:hover .card-actions { 
-    opacity: 1; 
+    transform: scale(1.05);
+    background-color: #dc3545 !important;
+    color: white !important;
   }
 }
 
-  /* Indicadores de estado más sutiles pero elegantes */
-  &[data-status="completado"] { border-bottom: 5px solid $color-completado !important; }
-  &[data-status="jugando"] { border-bottom: 5px solid $color-jugando !important; }
-  &[data-status="pendiente"] { border-bottom: 5px solid $color-pendiente !important; }
-  &[data-status="abandonado"] { border-bottom: 5px solid $color-abandonado !important; }
-}
-
-/* --- IMÁGENES (MANTENIENDO TU LÓGICA DE BLUR) --- */
-.img-container {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  background-color: #1a1a1a;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-
-  .main-img {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; // Cambiado a cover para que rellene bien la card en PC
-    transition: transform 0.5s ease;
-  }
-
-  &.bg-blur-effect {
-    .blur-layer {
-      position: absolute;
-      inset: -15%;
-      background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
-      filter: blur(15px) brightness(0.6);
-      z-index: 1;
-      display: block;
-    }
-    .main-img {
-      object-fit: contain; // Si hay blur, la imagen principal no debe cortarse
-      padding: 10px;
-    }
-  }
-}
-
-/* --- PANEL DE ESTADÍSTICAS --- */
-.stats-card {
-  border: none;
-  border-radius: 16px;
-  transition: background 0.2s ease;
-  
-  h3 { 
-    font-size: 2rem; 
-    font-weight: 800;
-  }
-
-  &:hover {
-    background-color: rgba(0,0,0,0.02);
-  }
-}
-
-/* --- SCROLL PERSONALIZADO --- */
-.description-scroll {
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { 
-    background: #ccc; 
-    border-radius: 10px; 
-    &:hover { background: #999; }
-  }
-}
-
-/* --- AJUSTES PARA CABECERA PROFESIONAL --- */
-
-.rounded-4 { border-radius: 1.25rem !important; }
-
-// Para que los componentes internos no traigan sus propios márgenes/sombras
-app-game-search, app-stats-panel {
-  display: block;
-  width: 100%;
-}
-
-// Estilo para los contenedores de la cabecera
-.header-card-container {
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.05);
-  transition: box-shadow 0.3s ease;
-  
-  &:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
-  }
-}
-
-/* --- OPTIMIZACIÓN DE ESPACIO EN PC --- */
-@media (min-width: 992px) {
-  .main-container {
-    padding-bottom: 50px;
-  }
-  
-  // Reducimos el tamaño de los títulos en el buscador para que no empujen hacia abajo
-  ::ng-deep .search-container h1, 
-  ::ng-deep .search-container h2 {
-    font-size: 1.5rem !important;
-    margin-bottom: 1rem !important;
-  }
-}
-
-// Forzar que los componentes hijos ocupen todo el espacio
-app-game-search, app-stats-panel {
-  width: 100%;
-  display: block;
-}
-
-// Estilo unificado para los bloques blancos
-.rounded-4 {
-  border-radius: 1.5rem !important;
-}
-
-// Ajuste para el panel de estadísticas en PC
-@media (min-width: 992px) {
-  ::ng-deep app-stats-panel {
-    .stats-container {
-      margin-top: 10px; // Pequeño ajuste para centrar visualmente con el buscador
-    }
-  }
-}
-
-/* --- LIMPIEZA TOTAL DE LA CABECERA --- */
-
+// 5. CAJAS DE CABECERA (Buscador y Estadísticas)
 .main-header-box {
-  background: #ffffff;
+  background: $glass-bg;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border-radius: 1.5rem;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  border: 1px solid $glass-border;
   padding: 1.5rem;
-  
-  /* Esto elimina los fondos y bordes de los componentes internos */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Limpieza técnica: eliminamos estilos heredados de Bootstrap en hijos 
+     para que no aparezcan cuadros blancos dentro de nuestras cajas transparentes */
   ::ng-deep {
     app-game-search, app-stats-panel {
       .card, .container, .bg-white, .shadow-sm, .border {
@@ -201,43 +49,22 @@ app-game-search, app-stats-panel {
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
-        margin: 0 !important;
+        color: white !important;
       }
     }
   }
 }
 
-::ng-deep app-stats-panel {
-  padding: 0 10px !important;
+// 6. UTILIDADES Y REJILLA
+// Bootstrap ya maneja row-cols-xl-6, así que no necesitamos CSS extra para el grid.
+
+.text-muted {
+  color: #94a3b8 !important; // Un gris azulado que queda mejor en fondos oscuros
 }
 
-/* --- AJUSTES NAVBAR --- */
-.navbar {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); // Una línea divisoria muy sutil
-  
-  h2 {
-    letter-spacing: 0.5px; // Mejora la lectura en pantallas grandes
-    font-family: 'Inter', sans-serif; // O la fuente que uses, para que se vea técnica
+// 7. RESPONSIVE ADJUSTMENTS
+@media (min-width: 992px) {
+  header.container {
+    margin-top: 2.5rem !important;
   }
-}
-
-.transition-all {
-  transition: all 0.2s ease-in-out;
-  &:hover {
-    transform: scale(1.05);
-    background-color: #dc3545;
-    color: white !important;
-  }
-}
-
-/* AJUSTE DE MARGENES PARA QUE TODO CUADRE */
-.main-container {
-  // Aseguramos que el fondo gris no se vea "cortado"
-  padding-bottom: 3rem;
-}
-
-// Opcional: Si quieres que las cajas de arriba (buscador/stats) 
-// no estén tan pegadas al navbar
-header.container {
-  margin-top: 2.5rem !important;
 }

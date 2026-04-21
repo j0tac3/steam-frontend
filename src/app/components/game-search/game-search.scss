@@ -1,10 +1,14 @@
+// Variables Premium con canal Alfa para transparencia
 $bg-dark: #0b0e14;
+$bg-gradient: radial-gradient(circle at top right, #1e293b, #0b0e14); 
 $accent-blue: #3b82f6;
 $text-bright: #f3f4f6;
 $text-muted: #94a3b8;
+$glass-bg: rgba(255, 255, 255, 0.03); // Capa blanca casi invisible para el brillo
+$card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
 
 .premium-layout-wrapper {
-  background-color: $bg-dark;
+  //background: $bg-gradient; // Cambiado a gradiente para que luzca la transparencia
   //min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -16,16 +20,20 @@ $text-muted: #94a3b8;
 
 .content-container {
   width: 100%;
-  max-width: 1200px; // Un poco más ancho para albergar las 5 columnas
+  max-width: 1200px;
   height: auto;
 }
 
 .search-glass-card {
-  background: rgba(22, 27, 34, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  // EFECTO GLASSMISM REAL
+  background: $card-bg;
+  backdrop-filter: blur(15px); // Esto crea el efecto de "cristal esmerilado"
+  -webkit-backdrop-filter: blur(15px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.1); // Borde fino y brillante
   border-radius: 16px;
-  padding: 1.2rem 2rem; // Más compacto
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 1.2rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   position: relative;
 
   .card-header {
@@ -42,7 +50,7 @@ $text-muted: #94a3b8;
   }
 }
 
-// BUSCADOR SLIM
+// BUSCADOR SLIM CON TRANSPARENCIA
 .search-bar-container {
   display: flex;
   gap: 10px;
@@ -50,18 +58,28 @@ $text-muted: #94a3b8;
   .input-group-premium {
     position: relative;
     flex-grow: 1;
-    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); opacity: 0.4; font-size: 0.9rem; }
+    
+    .search-icon { 
+      position: absolute; left: 14px; top: 50%; 
+      transform: translateY(-50%); opacity: 0.4; font-size: 0.9rem; 
+    }
     
     .input-field {
       width: 100%;
-      background: #050505;
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0, 0, 0, 0.4); // Negro transparente
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 8px;
-      padding: 8px 35px 8px 40px; // Altura reducida
+      padding: 8px 35px 8px 40px;
       color: white;
       font-size: 0.9rem;
-      transition: border 0.2s;
-      &:focus { outline: none; border-color: $accent-blue; }
+      transition: all 0.3s ease;
+      
+      &:focus { 
+        outline: none; 
+        border-color: $accent-blue;
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+      }
     }
 
     .clear-input-btn {
@@ -80,11 +98,12 @@ $text-muted: #94a3b8;
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
-    &:hover { filter: brightness(1.1); }
+    transition: filter 0.2s;
+    &:hover { filter: brightness(1.2); }
   }
 }
 
-// GRID DE 5 COLUMNAS
+// GRID AJUSTADO
 .results-area {
   margin-top: 1.5rem;
 }
@@ -95,13 +114,16 @@ $text-muted: #94a3b8;
   margin-bottom: 1rem;
   font-size: 0.8rem;
   color: $text-muted;
-  .link-btn { background: none; border: none; color: $accent-blue; cursor: pointer; text-decoration: underline; }
+  .link-btn { 
+    background: none; border: none; color: $accent-blue; 
+    cursor: pointer; text-decoration: underline; 
+  }
 }
 
 .games-grid {
   display: grid;
-  // 180px permite que entren 5 o 6 en pantallas grandes
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  // Ajustado a 160px para que entren cómodamente 5-6 por fila
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 1.5rem;
   padding-bottom: 3rem;
 }
@@ -114,23 +136,29 @@ $text-muted: #94a3b8;
     margin-top: 10px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: $text-bright; // Color blanco legible
+    color: $text-bright;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); // Sombra para leer mejor sobre el fondo
   }
 }
 
-// ENGINE SELECTOR (Píldora slim)
+// ENGINE SELECTOR SLIM GLASS
 .engine-selector {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.4);
   padding: 4px 12px;
   border-radius: 20px;
-  .engine-label { font-size: 0.7rem; font-weight: 700; color: #444; &.active { color: $accent-blue; } }
+  border: 1px solid rgba(255,255,255,0.05);
+
+  .engine-label { 
+    font-size: 0.7rem; font-weight: 700; color: #666; 
+    &.active { color: $accent-blue; } 
+  }
 }
 
 .premium-switch {
@@ -138,13 +166,25 @@ $text-muted: #94a3b8;
   input { opacity: 0; width: 0; height: 0; }
   .premium-slider {
     position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #222; transition: .3s; border-radius: 20px;
-    &:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: #fff; transition: .3s; border-radius: 50%; }
+    background-color: #1a1a1a; transition: .3s; border-radius: 20px;
+    &:before { 
+      position: absolute; content: ""; height: 10px; width: 10px; 
+      left: 3px; bottom: 3px; background-color: #fff; 
+      transition: .3s; border-radius: 50%; 
+    }
   }
   input:checked + .premium-slider { background-color: $accent-blue; }
   input:checked + .premium-slider:before { transform: translateX(18px); }
 }
 
-.loader-container { display: flex; justify-content: center; padding: 2rem; .spinner-premium { width: 25px; height: 25px; border: 2px solid rgba(255,255,255,0.1); border-top-color: $accent-blue; border-radius: 50%; animation: spin 1s linear infinite; } }
+.loader-container { 
+  display: flex; justify-content: center; padding: 2rem; 
+  .spinner-premium { 
+    width: 25px; height: 25px; border: 2px solid rgba(255,255,255,0.1); 
+    border-top-color: $accent-blue; border-radius: 50%; 
+    animation: spin 1s linear infinite; 
+  } 
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 .minimal-footer { text-align: center; margin-top: 2rem; opacity: 0.3; font-size: 0.8rem; }

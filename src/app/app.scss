@@ -1,5 +1,5 @@
 /* app.css */
-body { background-color: #f0f2f5; }
+//body { background-color: #f0f2f5; }
 
 .main-title { font-weight: 800; color: #1b2838; letter-spacing: -1px; }
 
@@ -27,12 +27,13 @@ body { background-color: #f0f2f5; }
 
 /* Estilo de resultados de búsqueda */
 .search-result-card {
-    background: #f8f9fa;
+    //background: #f8f9fa;
     border-radius: 10px;
     border: 1px solid #eee;
     transition: background 0.2s;
 }
 
-.search-result-card:hover { background: #e9ecef; }
+.search-result-card:hover { //background: #e9ecef; 
+    }
 
 .fw-black { font-weight: 900; }

@@ -1,0 +1,26 @@
+/* Estilos Globales */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  // RUTA DE LA IMAGEN: Asegúrate de que el nombre coincida con tu archivo
+  background-image: url('../public/steam_manager_premium_dashboard.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  // EFECTO PREMIUM: El fondo se queda fijo mientras haces scroll
+  // Esto hace que el efecto "glass" se vea mucho más profesional
+  background-attachment: fixed; 
+  
+  background-color: #06080c; // Fallback por si la imagen no carga
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+// Limpieza para que el foco del modal no deje recuadros
+body:focus {
+  outline: none !important;
+}
