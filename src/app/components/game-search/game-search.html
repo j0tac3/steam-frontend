@@ -1,46 +1,69 @@
-<div class="search-box p-4 bg-white rounded-4 shadow-sm mb-5">
-  <h1 class="text-center mb-4 fw-black text-dark">Steam Manager 🎮</h1>
-  
-  <div class="btn-group btn-group-sm mb-3 w-100 shadow-sm">
-    <button class="btn btn-outline-dark w-50 py-2 fw-bold" 
-            [class.active]="motorBusqueda() === 'igdb'"
-            (click)="motorBusqueda.set('igdb')">
-      🚀 IGDB (Multiplataforma)
-    </button>
-    <button class="btn btn-outline-primary w-50 py-2 fw-bold" 
-            [class.active]="motorBusqueda() === 'steam'"
-            (click)="motorBusqueda.set('steam')">
-      🎮 Steam (PC)
-    </button>
-  </div>
-
-  <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
-    <input #txtBusqueda (keyup.enter)="buscar(txtBusqueda.value)" type="text" 
-           class="form-control border-0 px-4" 
-           [placeholder]="motorBusqueda() === 'igdb' ? 'Busca un juego...' : 'Busca en Steam...'">
-    <button class="btn btn-success px-5 fw-bold" (click)="buscar(txtBusqueda.value)" [disabled]="cargando()">
-      @if (cargando()) {
-        <span class="spinner-border spinner-border-sm"></span>
-      } @else {
-        BUSCAR
-      }
-    </button>
-  </div>
-
-  @if (searchResults().length > 0) {
-    <div class="row g-4 mt-4">
-      @for (game of searchResults(); track $index) {
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-          <app-search-game-card 
-            [game]="game" 
-            (add)="addGame.emit($event)"
-            (verInfo)="viewDetails.emit($event)">
-          </app-search-game-card>
+<div class="premium-layout-wrapper">
+  <div class="content-container">
+    
+    <header class="search-glass-card">
+      <div class="card-header">
+        <h1 class="brand-title">Game Library <span class="accent">Pro</span></h1>
+        
+        <div class="engine-selector">
+          <span class="engine-label" [class.active]="motorBusqueda() === 'igdb'">IGDB</span>
+          <label class="premium-switch">
+            <input type="checkbox" 
+                   [checked]="motorBusqueda() === 'steam'"
+                   (change)="motorBusqueda.set(motorBusqueda() === 'igdb' ? 'steam' : 'igdb')">
+            <span class="premium-slider"></span>
+          </label>
+          <span class="engine-label" [class.active]="motorBusqueda() === 'steam'">Steam</span>
         </div>
-      }
-    </div>
-    <div class="text-center mt-4">
-      <button class="btn btn-link text-muted btn-sm" (click)="limpiar()">Limpiar resultados</button>
-    </div>
-  }
+      </div>
+
+      <div class="search-bar-container">
+        <div class="input-group-premium">
+          <span class="search-icon">🔍</span>
+          <input #searchInput type="text" 
+                 (keyup.enter)="buscar(searchInput.value)"
+                 placeholder="Buscar títulos..." 
+                 class="input-field">
+          @if (searchInput.value) {
+            <button class="clear-input-btn" (click)="searchInput.value = ''; limpiar()">✕</button>
+          }
+        </div>
+        <button class="btn-search" (click)="buscar(searchInput.value)">
+          BUSCAR
+        </button>
+      </div>
+    </header>
+
+    @if (searchResults().length > 0 || cargando()) {
+      <main class="results-area">
+        <div class="results-header">
+          <span class="count">Resultados: {{ searchResults().length }}</span>
+          <button class="link-btn" (click)="searchInput.value = ''; limpiar()">Limpiar todo</button>
+        </div>
+
+        @if (cargando()) {
+          <div class="loader-container">
+            <div class="spinner-premium"></div>
+          </div>
+        } @else {
+          <div class="games-grid">
+            @for (game of searchResults(); track game.appid) {
+              <div class="game-item-wrapper">
+                <app-search-game-card 
+                  [game]="game" 
+                  (add)="addGame.emit($event)"
+                  (verInfo)="viewDetails.emit($event)">
+                </app-search-game-card>
+                <p class="game-title-label">{{ game.name }}</p>
+              </div>
+            }
+          </div>
+        }
+      </main>
+    } @else {
+      <div class="minimal-footer">
+        <p>Introduce un título para buscar en la base de datos</p>
+      </div>
+    }
+  </div>
 </div>

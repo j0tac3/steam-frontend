@@ -1,31 +1,22 @@
-<div class="card h-100 search-result-card border-0 shadow-sm bg-white">
+<div class="card h-100 search-result-card border-0 shadow-sm">
   <div class="img-container" 
-       style="cursor: pointer;"
-       (click)="onVerInfo()" 
+       style="cursor: pointer;" 
+       (click)="onVerInfo()"
        data-bs-toggle="modal" 
-       data-bs-target="#modalDetalles"
-       [class.bg-blur-effect]="!game.es_igdb"
-       [style.--bg-image]="'url(' + game.logo + ')'">
+       data-bs-target="#modalDetalles">
     
-    <div class="blur-layer"></div>
+    <div class="blur-background" [style.background-image]="'url(' + game.logo + ')'"></div>
+    
     <img [src]="game.logo" class="main-img" alt="logo">
+    
+    <div class="img-overlay"></div>
   </div>
 
-  <div class="card-footer p-2 border-0 bg-white">
-    <p class="small fw-bold text-truncate mb-2 text-center" [title]="game.name">
-      {{ game.name }}
-    </p>
-    <button class="btn w-100 fw-bold" 
-        [disabled]="game.yaLoTengo"
-        [class.btn-success]="!game.yaLoTengo"
-        [class.btn-outline-secondary]="game.yaLoTengo"
-        (click)="add.emit(game)">
-  
-      @if (game.yaLoTengo) {
-        <span>✅ En tu biblioteca</span>
-      } @else {
-        <span>+ Añadir</span>
-      }
+  <div class="card-footer p-2 border-0">
+    <button (click)="onAdd()" 
+            class="btn btn-primary btn-sm w-100 fw-bold"
+            [disabled]="game.yaLoTengo">
+      {{ game.yaLoTengo ? '✓ EN BIBLIOTECA' : '+ AÑADIR' }}
     </button>
   </div>
 </div>

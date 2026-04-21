@@ -1,0 +1,150 @@
+$bg-dark: #0b0e14;
+$accent-blue: #3b82f6;
+$text-bright: #f3f4f6;
+$text-muted: #94a3b8;
+
+.premium-layout-wrapper {
+  background-color: $bg-dark;
+  //min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.content-container {
+  width: 100%;
+  max-width: 1200px; // Un poco más ancho para albergar las 5 columnas
+  height: auto;
+}
+
+.search-glass-card {
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.2rem 2rem; // Más compacto
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  position: relative;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      .accent { color: $accent-blue; }
+    }
+  }
+}
+
+// BUSCADOR SLIM
+.search-bar-container {
+  display: flex;
+  gap: 10px;
+
+  .input-group-premium {
+    position: relative;
+    flex-grow: 1;
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); opacity: 0.4; font-size: 0.9rem; }
+    
+    .input-field {
+      width: 100%;
+      background: #050505;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 35px 8px 40px; // Altura reducida
+      color: white;
+      font-size: 0.9rem;
+      transition: border 0.2s;
+      &:focus { outline: none; border-color: $accent-blue; }
+    }
+
+    .clear-input-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #555; cursor: pointer;
+      &:hover { color: #fff; }
+    }
+  }
+
+  .btn-search {
+    background: $accent-blue;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    &:hover { filter: brightness(1.1); }
+  }
+}
+
+// GRID DE 5 COLUMNAS
+.results-area {
+  margin-top: 1.5rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: $text-muted;
+  .link-btn { background: none; border: none; color: $accent-blue; cursor: pointer; text-decoration: underline; }
+}
+
+.games-grid {
+  display: grid;
+  // 180px permite que entren 5 o 6 en pantallas grandes
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+.game-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  
+  .game-title-label {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-bright; // Color blanco legible
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ENGINE SELECTOR (Píldora slim)
+.engine-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  .engine-label { font-size: 0.7rem; font-weight: 700; color: #444; &.active { color: $accent-blue; } }
+}
+
+.premium-switch {
+  position: relative; width: 34px; height: 16px;
+  input { opacity: 0; width: 0; height: 0; }
+  .premium-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #222; transition: .3s; border-radius: 20px;
+    &:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: #fff; transition: .3s; border-radius: 50%; }
+  }
+  input:checked + .premium-slider { background-color: $accent-blue; }
+  input:checked + .premium-slider:before { transform: translateX(18px); }
+}
+
+.loader-container { display: flex; justify-content: center; padding: 2rem; .spinner-premium { width: 25px; height: 25px; border: 2px solid rgba(255,255,255,0.1); border-top-color: $accent-blue; border-radius: 50%; animation: spin 1s linear infinite; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.minimal-footer { text-align: center; margin-top: 2rem; opacity: 0.3; font-size: 0.8rem; }

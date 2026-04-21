@@ -1,45 +1,62 @@
 .search-result-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #161b22;
   border-radius: 12px;
   overflow: hidden;
+  transition: transform 0.2s ease;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    .main-img { transform: scale(1.05); }
+    .blur-background { transform: scale(1.1); }
   }
 }
 
 .img-container {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  background-color: #000;
-  overflow: hidden;
   position: relative;
+  height: 240px; // Altura fija para mantener la rejilla simétrica
+  width: 100%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #000;
+
+  .blur-background {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(15px) brightness(0.5); // Difuminado y oscurecido
+    transform: scale(1.05);
+    transition: transform 0.5s ease;
+    z-index: 1;
+  }
 
   .main-img {
     position: relative;
     z-index: 2;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+    object-fit: contain; // Centra la imagen sin cortarla
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
   }
 
-  &.bg-blur-effect {
-    .blur-layer {
-      position: absolute;
-      inset: -10%;
-      background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
-      filter: blur(12px) brightness(0.5);
-      z-index: 1;
-      display: block;
-    }
+  .img-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
+    z-index: 3;
   }
-  .blur-layer { display: none; }
+}
+
+.card-footer {
+  background: transparent !important;
+  .btn-primary {
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 8px;
+    &:hover { background-color: #2563eb; }
+    &:disabled { background-color: #1f2937; color: #4b5563; }
+  }
 }
