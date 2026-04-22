@@ -1,32 +1,50 @@
-/* --- VARIABLES DE DISEÑO (MANTENIDAS) --- */
-$bg-modal: #111111; 
+/* --- 1. VARIABLES DE DISEÑO --- */
+$glass-bg: rgba(17, 17, 17, 0.55); 
+$glass-border: rgba(255, 255, 255, 0.15); 
 $text-main: #eeeeee;
-$text-muted: #666666; 
+$text-muted: #aaaaaa;
 $accent-color: #007aff; 
 
-/* --- ESTILOS BASE DEL MODAL --- */
+/* --- 2. ELIMINAR RECUADRO OSCURO DE BOOTSTRAP --- */
+::ng-deep .modal-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* --- 3. ESTILOS BASE DEL MODAL (CRISTAL) --- */
 .custom-modal-style {
-  background: $bg-modal;
+  background: $glass-bg !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: $text-main;
   overflow: hidden;
   position: relative;
-  border: none;
-  transition: all 0.3s ease;
+  border: 1px solid $glass-border !important;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+
+  &.is-dragging {
+    transition: none !important;
+  }
 }
 
-/* --- CABECERA / HERO --- */
+/* --- 4. CABECERA / HERO --- */
 .hero-header {
   position: relative;
   width: 100%;
   min-height: 220px;
   background-size: cover;
   background-position: center;
+  flex-shrink: 0; 
   
   .hero-overlay {
     position: absolute;
     inset: 0;
-    /* Degradado corregido para fundir a blanco en la zona de pestañas */
-    background: linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.8) 70%, #ffffff 100%);
+    background: linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.5) 70%, $glass-bg 100%);
     z-index: 1;
   }
 
@@ -47,7 +65,6 @@ $accent-color: #007aff;
     justify-content: center;
     font-size: 20px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 }
 
@@ -55,31 +72,29 @@ $accent-color: #007aff;
   position: relative;
   z-index: 2;
   padding: 60px 25px 20px;
-  text-align: left;
-  
   .hero-title {
     color: white !important;
     font-size: 2.2rem;
     font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 8px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
 }
 
-/* --- TABS (ESTILO SEGMENTED CONTROL) --- */
+/* --- 5. TABS (SEGMENTED CONTROL) --- */
 .modern-tabs-container {
   display: flex;
   justify-content: center;
   padding: 15px 0;
-  background: #ffffff;
+  background: transparent;
+  flex-shrink: 0;
   
   .modern-tabs-nav {
     display: flex;
-    background: #f0f0f0; 
+    background: rgba(255, 255, 255, 0.05); 
     padding: 4px;
     border-radius: 12px;
     width: 90%;
+    border: 1px solid $glass-border;
     
     button {
       flex: 1;
@@ -89,63 +104,87 @@ $accent-color: #007aff;
       border-radius: 10px;
       font-size: 0.75rem;
       font-weight: 700;
-      color: $text-muted !important;
-      transition: all 0.2s ease;
+      color: rgba(255, 255, 255, 0.5) !important;
       
       &.active {
-        color: $accent-color !important;
-        background: #ffffff; 
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        color: white !important;
+        background: rgba(255, 255, 255, 0.15); 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       }
     }
   }
 }
 
-/* --- CUERPO --- */
+/* --- 6. CUERPO Y SCROLL --- */
 .tab-content-area {
-  background: #ffffff;
+  background: transparent;
   flex-grow: 1; 
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
+  color: #cccccc;
   
   .section-label {
     font-size: 0.7rem;
     color: $accent-color !important; 
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
     margin-bottom: 12px;
   }
 }
 
-/* --- RESPONSIVE PC: CENTRADO VERTICAL --- */
-@media (min-width: 992px) {
-  .modal-dialog { 
-    max-width: 800px;
+/* --- 7. RESPONSIVE IMÁGENES Y CONTENIDO --- */
+::ng-deep .description-text {
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin: 1.5rem auto !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  }
+  iframe, video {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px !important;
+    margin: 1.5rem 0 !important;
+  }
+}
+
+/* --- 8. CONFIGURACIÓN PC (TABLETS Y ESCRITORIO) --- */
+@media (min-width: 768px) {
+  .modal-dialog {
     display: flex;
-    align-items: center; /* Centrado vertical */
+    align-items: center;
+    justify-content: center;
     min-height: calc(100% - 3.5rem);
-    margin: 1.75rem auto;
+    max-width: 800px;
+    // FIX: Anulamos el fondo negro que inyecta el TS en PC
+    background-color: transparent !important; 
   }
 
-  .modal-content {
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    border-radius: 24px !important;
-    overflow: hidden;
-    border: none;
+  /* Animación de apertura Premium */
+  .modal.fade .modal-dialog {
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
   }
 
-  .custom-modal-style { border-radius: 24px; }
+  .custom-modal-style {
+    width: 100%;
+    height: auto; 
+    max-height: 90vh;
+  }
 
+  /* Tu ajuste de imágenes para PC */
   ::ng-deep .description-text img {
     max-width: 90% !important;
     margin: 30px auto;
   }
 }
 
-/* --- RESPONSIVE MÓVIL: BOTTOM SHEET (MANTENIDO) --- */
+/* --- 9. CONFIGURACIÓN MÓVIL (BOTTOM SHEET) --- */
 @media (max-width: 767px) {
   .modal.fade .modal-dialog {
     transform: translateY(100%);
@@ -158,37 +197,58 @@ $accent-color: #007aff;
 
   .modal.show .modal-dialog { transform: translateY(0); }
 
-  .modal-content {
-    border-radius: 20px 20px 0 0 !important;
-    height: 85vh;
-    max-height: 85vh;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    background: #ffffff;
+  .custom-modal-style {
+    border-radius: 24px 24px 0 0 !important;
+    height: 85vh; 
+    width: 100vw;
   }
 
-  .hero-header { flex-shrink: 0; min-height: 180px; }
-  .modern-tabs-container { flex-shrink: 0; }
-  .tab-content-area { flex-grow: 1; overflow-y: auto; }
+  .hero-header { min-height: 180px; }
 }
 
-/* --- FIX CONTENIDO DINÁMICO --- */
-::ng-deep {
-  .description-text {
-    img {
-      max-width: 100% !important;
-      height: auto !important;
-      display: block !important;
-      margin: 1.5rem auto !important;
-      border-radius: 8px !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-    }
-    iframe, video {
-      width: 100% !important;
-      aspect-ratio: 16 / 9;
-      border-radius: 8px !important;
-      margin: 1.5rem 0 !important;
-    }
+/* --- 10. BOTONES Y ETIQUETAS --- */
+.glass-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  font-weight: 600;
+  padding: 0.5em 0.8em;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.source-badge {
+  background: rgba(0, 122, 255, 0.2);
+  border-color: rgba(0, 122, 255, 0.4);
+  color: #80c2ff !important;
+}
+
+.btn-logout {
+  background: transparent;
+  color: #ff4d4d !important;
+  border: 1px solid #ff4d4d !important;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  &:hover {
+    background: rgba(255, 77, 77, 0.1);
+  }
+}
+
+/* --- 11. TIRADOR MÓVIL --- */
+.drag-handle-container {
+  width: 100%;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  .drag-handle {
+    width: 40px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
   }
 }

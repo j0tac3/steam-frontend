@@ -1,4 +1,4 @@
-import { Component, input, output, signal, inject, AfterViewInit, Renderer2 } from '@angular/core'; // Añadido Renderer2
+import { Component, input, output, signal, inject, AfterViewInit, Renderer2, effect, computed } from '@angular/core'; // Añadido Renderer2
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -70,5 +70,55 @@ export class GameModalComponent implements AfterViewInit {
 
   onGuardar() {
     this.guardarDiario.emit(this.juegoDetalle());
+  }
+
+  // --- NUEVA LÓGICA DE GESTOS ---
+  translateY = signal<number>(0);
+  isDragging = signal<boolean>(false);
+  private startY = 0;
+
+  // Fondo dinámico: se aclara de 0.8 a 0 según bajas
+  backdropOpacity = computed(() => {
+    const drag = this.translateY();
+    const opacity = 0.8 * (1 - Math.min(drag / 300, 1));
+    return `rgba(0, 0, 0, ${opacity})`;
+  });
+
+  constructor() {
+    // Reset de pestaña al cambiar de juego
+    effect(() => {
+      if (this.juegoDetalle()) {
+        this.activeTab.set('info');
+        this.translateY.set(0); // Aseguramos que empiece arriba
+      }
+    });
+  }
+
+  // Manejadores de eventos táctiles
+  onTouchStart(event: TouchEvent) {
+    this.startY = event.touches[0].clientY;
+    this.isDragging.set(true);
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (!this.isDragging()) return;
+    const deltaY = event.touches[0].clientY - this.startY;
+    if (deltaY > 0) this.translateY.set(deltaY);
+  }
+
+  onTouchEnd() {
+    this.isDragging.set(false);
+    if (this.translateY() > 150) {
+      this.cerrarModalManual();
+    } else {
+      this.translateY.set(0);
+    }
+  }
+
+  cerrarModalManual() {
+    this.translateY.set(1000);
+    // Disparamos el cierre de Bootstrap mediante su ID
+    const closeBtn = document.querySelector('.btn-close-custom') as HTMLElement;
+    closeBtn?.click();
   }
 }

@@ -1,13 +1,24 @@
-<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalTitle">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content custom-modal-style border-0">
+<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" 
+       [style.background-color]="backdropOpacity()">
+    
+    <div class="modal-content custom-modal-style border-0" 
+     [class.is-dragging]="isDragging()"
+     [style.transform]="'translateY(' + translateY() + 'px)'"
+     (touchstart)="onTouchStart($event)"
+     (touchmove)="onTouchMove($event)"
+     (touchend)="onTouchEnd()">
+      
+      <div class="drag-handle-container d-md-none">
+        <div class="drag-handle"></div>
+      </div>
       
       @if (cargandoDetalle()) {
-        <div class="modal-body text-center py-5 bg-white">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-3 fw-bold text-muted">Sincronizando información...</p>
+        <div class="modal-body text-center py-5 loading-state">
+          <div class="spinner-border text-info" role="status"></div>
+          <p class="mt-3 fw-bold text-light opacity-75">Sincronizando información...</p>
         </div>
-      } 
+      }
       
       @else if (juegoDetalle()) {
         
@@ -23,13 +34,13 @@
               <h2 class="hero-title" id="modalTitle">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
               
               <div class="d-flex align-items-center justify-content-center gap-2 mt-2 flex-wrap">
-                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25">
+                <span class="badge glass-badge source-badge">
                   {{ (juegoDetalle().source || 'IGDB') | uppercase }}
                 </span>
                 
                 @if (juegoDetalle().genres) {
                   @for (genero of juegoDetalle().genres.slice(0, 3); track $index) {
-                    <span class="badge bg-light text-dark border border-light-subtle">
+                    <span class="badge glass-badge">
                       {{ genero.name || genero }}
                     </span>
                   }
@@ -51,10 +62,10 @@
             </div>
           </div>
         } @else {
-          <div class="py-2 bg-white"></div>
+          <div class="py-2"></div>
         }
 
-        <div class="tab-content-area bg-white text-dark">
+        <div class="tab-content-area">
           <div class="p-4">
             
             @if (activeTab() === 'info') {
