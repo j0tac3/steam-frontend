@@ -16,7 +16,7 @@
     <div class="row g-4 align-items-stretch">
       
       <div class="col-lg-7 d-flex"> 
-        <div class="main-header-box w-100">
+        <div class="w-100">
           <app-game-search 
             [misJuegos]="myLibrary()"
             (addGame)="guardarJuego($event)"
@@ -26,7 +26,7 @@
       </div>
 
       <div class="col-lg-5 d-flex"> 
-        <div class="main-header-box w-100">
+        <div class="w-100">
           <app-stats-panel 
             [total]="totalJuegos()"
             [pendientes]="pendientes()"

@@ -22,7 +22,7 @@ $color-abandonado: #dc3545;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-radius: 16px; // Bordes más modernos
   border: none !important;
-  //background-color: white;
+  background-color: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 
   &:hover {

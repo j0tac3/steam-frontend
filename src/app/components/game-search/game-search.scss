@@ -1,15 +1,12 @@
-// Variables Premium con canal Alfa para transparencia
+// Variables Premium Monocromáticas
 $bg-dark: #0b0e14;
-$bg-gradient: radial-gradient(circle at top right, #1e293b, #0b0e14); 
-$accent-blue: #3b82f6;
+$accent-white: #ffffff;      // El azul ahora es blanco puro
 $text-bright: #f3f4f6;
 $text-muted: #94a3b8;
-$glass-bg: rgba(255, 255, 255, 0.03); // Capa blanca casi invisible para el brillo
-$card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
+$glass-bg: rgba(255, 255, 255, 0.03); 
+$card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contraste
 
 .premium-layout-wrapper {
-  //background: $bg-gradient; // Cambiado a gradiente para que luzca la transparencia
-  //min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -25,15 +22,13 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
 }
 
 .search-glass-card {
-  // EFECTO GLASSMISM REAL
   background: $card-bg;
-  backdrop-filter: blur(15px); // Esto crea el efecto de "cristal esmerilado"
-  -webkit-backdrop-filter: blur(15px);
-  
-  border: 1px solid rgba(255, 255, 255, 0.1); // Borde fino y brillante
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
   border-radius: 16px;
   padding: 1.2rem 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
   position: relative;
 
   .card-header {
@@ -45,12 +40,11 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
     .brand-title {
       font-size: 1.2rem;
       font-weight: 800;
-      .accent { color: $accent-blue; }
+      .accent { color: $accent-white; } // "Pro" ahora es blanco
     }
   }
 }
 
-// BUSCADOR SLIM CON TRANSPARENCIA
 .search-bar-container {
   display: flex;
   gap: 10px;
@@ -66,8 +60,8 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
     
     .input-field {
       width: 100%;
-      background: rgba(0, 0, 0, 0.4); // Negro transparente
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.5); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       padding: 8px 35px 8px 40px;
       color: white;
@@ -76,9 +70,9 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
       
       &:focus { 
         outline: none; 
-        border-color: $accent-blue;
-        background: rgba(0, 0, 0, 0.6);
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        border-color: rgba(255, 255, 255, 0.4); // Borde gris claro al enfocar
+        background: rgba(0, 0, 0, 0.7);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
       }
     }
 
@@ -90,23 +84,23 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
   }
 
   .btn-search {
-    background: $accent-blue;
-    color: white;
+    background: white; // Botón principal ahora es blanco
+    color: black;      // Texto negro para contraste
     border: none;
     padding: 0 20px;
     border-radius: 8px;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
-    transition: filter 0.2s;
-    &:hover { filter: brightness(1.2); }
+    transition: all 0.2s;
+    &:hover { 
+      background: #e0e0e0; 
+      transform: translateY(-1px);
+    }
   }
 }
 
-// GRID AJUSTADO
-.results-area {
-  margin-top: 1.5rem;
-}
+.results-area { margin-top: 1.5rem; }
 
 .results-header {
   display: flex;
@@ -115,14 +109,15 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
   font-size: 0.8rem;
   color: $text-muted;
   .link-btn { 
-    background: none; border: none; color: $accent-blue; 
+    background: none; border: none; color: #fff; // Link ahora blanco
+    opacity: 0.6;
     cursor: pointer; text-decoration: underline; 
+    &:hover { opacity: 1; }
   }
 }
 
 .games-grid {
   display: grid;
-  // Ajustado a 160px para que entren cómodamente 5-6 por fila
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 1.5rem;
   padding-bottom: 3rem;
@@ -131,21 +126,17 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
 .game-item-wrapper {
   display: flex;
   flex-direction: column;
-  
   .game-title-label {
     margin-top: 10px;
     font-size: 0.85rem;
     font-weight: 600;
     color: $text-bright;
     text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5); // Sombra para leer mejor sobre el fondo
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   }
 }
 
-// ENGINE SELECTOR SLIM GLASS
+// SWITCH MONOCROMO
 .engine-selector {
   display: flex;
   align-items: center;
@@ -153,11 +144,11 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
   background: rgba(0, 0, 0, 0.4);
   padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
 
   .engine-label { 
-    font-size: 0.7rem; font-weight: 700; color: #666; 
-    &.active { color: $accent-blue; } 
+    font-size: 0.7rem; font-weight: 700; color: #555; 
+    &.active { color: white; } 
   }
 }
 
@@ -166,14 +157,14 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
   input { opacity: 0; width: 0; height: 0; }
   .premium-slider {
     position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #1a1a1a; transition: .3s; border-radius: 20px;
+    background-color: #333; transition: .3s; border-radius: 20px;
     &:before { 
       position: absolute; content: ""; height: 10px; width: 10px; 
       left: 3px; bottom: 3px; background-color: #fff; 
       transition: .3s; border-radius: 50%; 
     }
   }
-  input:checked + .premium-slider { background-color: $accent-blue; }
+  input:checked + .premium-slider { background-color: #666; } // Gris para el estado activo
   input:checked + .premium-slider:before { transform: translateX(18px); }
 }
 
@@ -181,7 +172,7 @@ $card-bg: rgba(22, 27, 34, 0.6);      // Fondo de tarjeta semitransparente
   display: flex; justify-content: center; padding: 2rem; 
   .spinner-premium { 
     width: 25px; height: 25px; border: 2px solid rgba(255,255,255,0.1); 
-    border-top-color: $accent-blue; border-radius: 50%; 
+    border-top-color: white; border-radius: 50%; 
     animation: spin 1s linear infinite; 
   } 
 }
