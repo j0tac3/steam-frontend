@@ -1,67 +1,120 @@
-.stats-dashboard {
-  border: 1px solid rgba(0,0,0,0.05);
-}
+// Variables importadas del estilo Game-Search
+$bg-dark: #0b0e14;
+$accent-white: #ffffff;
+$text-bright: #f3f4f6;
+$text-muted: #94a3b8;
+$card-bg: rgba(18, 20, 25, 0.7);
 
-.progress {
-  background-color: #f1f3f5;
-  overflow: hidden;
-  
-  .progress-bar {
-    transition: width 0.6s ease;
-  }
-}
+.stats-glass-card {
+  background: $card-bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: $text-bright;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  font-family: 'Inter', sans-serif;
 
-.stats-legend {
-  .legend-item {
-    padding: 10px 15px;
-    border-radius: 12px;
-    background-color: transparent;
-    transition: all 0.2s ease;
+  .header-area {
     cursor: pointer;
-    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    
+    &:hover { opacity: 0.8; transform: translateX(5px); }
 
-    &:hover {
-      background-color: #f8f9fa;
-      border-color: #e9ecef;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    h5 {
+      color: $accent-white;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
     }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
+    small {
+      color: $text-muted;
+      strong { color: $text-bright; }
+    }
+    .icon {
+      color: $accent-white;
+      opacity: 0.5;
     }
   }
-}
 
-.hover-header {
-  transition: background 0.2s;
-  &:hover {
-    background-color: #f8f9fa;
+  // Barra de progreso estilo "Neon"
+  .premium-progress {
+    background: rgba(255, 255, 255, 0.05);
+    height: 8px;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    display: flex;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+
+    .bar {
+      height: 100%;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &.success { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+      &.primary { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+      &.warning { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+      &.danger  { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    }
   }
-}
 
-.x-small {
-  font-size: 0.65rem;
-  letter-spacing: 0.5px;
-}
+  // Grid de leyendas estilo "Pill"
+  .legend-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 
-.legend-item {
-  border-color: #f1f3f5 !important;
-  &:hover {
-    border-color: #dee2e6 !important;
-    background-color: #f8f9fa;
-  }
-}
+    .stat-pill {
+      flex: 1;
+      min-width: 110px;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
 
-.active-filter {
-  background-color: #f0f7ff !important; // Un azul muy suave
-  border-color: #0d6efd !important;
-  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
-  
-  .label {
-    color: #0d6efd !important; // El texto cambia al color de la marca
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+      }
+
+      &.active-filter {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: $accent-white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        
+        .label { color: $accent-white; }
+        .value { transform: scale(1.05); }
+      }
+
+      .label {
+        color: $text-muted;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .value {
+        color: $text-bright;
+        font-size: 1.4rem;
+        font-weight: 800;
+        display: block;
+        transition: transform 0.2s ease;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+    }
   }
 }

@@ -262,6 +262,11 @@ export class BibliotecaComponent implements OnInit { // <-- Añadido implements 
     this.filtroEstado.set(nuevoEstado);
   }
 
+  resetFiltros() {
+    this.filtroTexto.set('');   // Limpia el buscador
+    this.filtroEstado.set('todos'); // Restablece las estadísticas a "todos"
+  }
+
   cerrarSesion() {
     this.authService.logout();
   }

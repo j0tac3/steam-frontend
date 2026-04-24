@@ -13,45 +13,41 @@
   </nav>
 
   <header class="container mt-4 mb-5">
-    <div class="row g-4 align-items-stretch">
-      
-      <div class="col-lg-7 d-flex"> 
-        <div class="w-100">
-          <app-game-search 
-            [misJuegos]="myLibrary()"
-            (addGame)="guardarJuego($event)"
-            (viewDetails)="verDetalles($event)">
-          </app-game-search>
-        </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-10"> 
+        <app-game-search 
+          [misJuegos]="myLibrary()"
+          (addGame)="guardarJuego($event)"
+          (viewDetails)="verDetalles($event)">
+        </app-game-search>
       </div>
-
-      <div class="col-lg-5 d-flex"> 
-        <div class="w-100">
-          <app-stats-panel 
-            [total]="totalJuegos()"
-            [pendientes]="pendientes()"
-            [jugando]="jugando()"
-            [completados]="completados()"
-            [abandonados]="abandonado()"
-            [filtroActual]="filtroEstado()"
-            (filtroSeleccionado)="cambiarFiltroEstado($event)">
-          </app-stats-panel>
-        </div>
-      </div>
-
     </div>
   </header>
 
   <main class="container mb-5">
     
-    <div class="mb-4">
-      <app-game-filters 
-        [filtroTexto]="filtroTexto()" 
-        [filtroEstado]="filtroEstado()"
-        (textoCambiado)="filtroTexto.set($event)"
-        [totalMostrados]="bibliotecaFiltrada().length"
-        (estadoCambiado)="filtroEstado.set($event)">
-      </app-game-filters>
+    <div class="row g-4 mb-4">
+      <div class="col-12">
+        <app-stats-panel 
+          [total]="totalJuegos()"
+          [pendientes]="pendientes()"
+          [jugando]="jugando()"
+          [completados]="completados()"
+          [abandonados]="abandonado()"
+          [filtroActual]="filtroEstado()"
+          (filtroSeleccionado)="filtroEstado.set($event)">
+        </app-stats-panel>
+      </div>
+
+      <div class="col-12">
+        <app-game-filters 
+          [filtroTexto]="filtroTexto()" 
+          [filtroEstado]="filtroEstado()"
+          (textoCambiado)="filtroTexto.set($event)"
+          [totalMostrados]="bibliotecaFiltrada().length"
+          (estadoCambiado)="filtroEstado.set($event)">
+        </app-game-filters>
+      </div>
     </div>
 
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
@@ -70,17 +66,9 @@
     @if (bibliotecaFiltrada().length === 0) {
       <div class="text-center py-5">
         <div class="display-1 mb-3">🕹️</div>
-        <h5 class="text-muted fw-bold">
-          {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Aún no tienes juegos en esta categoría' }}
-        </h5>
+        <h5 class="text-muted fw-bold">No se encontraron juegos con estos filtros</h5>
+        <button class="btn btn-outline-light mt-3" (click)="resetFiltros()">Mostrar todos</button>
       </div>
     }
   </main>
-
-  <app-game-modal 
-    [juegoDetalle]="juegoDetalle()" 
-    [cargandoDetalle]="cargandoDetalle()"
-    [esBiblioteca]="juegoDetalle()?.status !== undefined" 
-    (guardarDiario)="guardarDiario($event)">
-  </app-game-modal>
 </div>
