@@ -2,7 +2,7 @@
   <div class="img-container" 
        [class.bg-blur-effect]="game.source === 'steam'"
        [style.--bg-image]="'url(' + (game.image_url || game.logo) + ')'"
-       (click)="onVerInfo()" data-bs-toggle="modal" data-bs-target="#modalDetalles">
+       (click)="onVerInfo()">
     <div class="blur-layer"></div>
     <img [src]="game.image_url || game.logo" class="main-img" alt="Portada">
   </div>
@@ -23,7 +23,7 @@
       </select>
       <div class="d-flex gap-2">
         <button class="btn btn-info btn-sm flex-grow-1 text-white fw-bold" 
-                (click)="onVerInfo()" data-bs-toggle="modal" data-bs-target="#modalDetalles">INFO</button>
+                (click)="onVerInfo()">INFO</button>
         <button class="btn btn-outline-danger btn-sm" (click)="onBorrar()">🗑️</button>
       </div>
     </div>

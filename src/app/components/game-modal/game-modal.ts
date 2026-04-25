@@ -1,4 +1,4 @@
-import { Component, input, output, signal, inject, AfterViewInit, Renderer2, effect, computed } from '@angular/core'; // Añadido Renderer2
+import { Component, input, output, signal, inject, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -10,47 +10,19 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   templateUrl: './game-modal.html',
   styleUrl: './game-modal.scss'
 })
-export class GameModalComponent implements AfterViewInit {
+export class GameModalComponent {
   private sanitizer = inject(DomSanitizer);
-  private renderer = inject(Renderer2); // Inyectamos el renderer
 
+  game = input<any>(null);
   juegoDetalle = input<any>(null);
   cargandoDetalle = input<boolean>(false);
   esBiblioteca = input<boolean>(false);
+  
   guardarDiario = output<any>();
+  close = output<void>(); // NUEVO EVENTO DE CIERRE
   
   activeTab = signal<'info' | 'diario'>('info');
 
-  ngAfterViewInit() {
-    const modalElement = document.getElementById('modalDetalles');
-    
-    if (modalElement) {
-      // Usamos el evento de Bootstrap cuando empieza a ocultarse
-      this.renderer.listen(modalElement, 'hide.bs.modal', () => {
-        // 1. Quitamos el foco del elemento actual
-        if (document.activeElement instanceof HTMLElement) {
-          document.activeElement.blur();
-        }
-
-        // 2. En lugar de selectRootElement, usamos el DOM nativo 
-        // para devolver el foco al body sin borrar su contenido
-        setTimeout(() => {
-          document.body.focus();
-        }, 100);
-      });
-
-      // 3. Limpieza extra para asegurar que el scroll de la página vuelva a funcionar
-      this.renderer.listen(modalElement, 'hidden.bs.modal', () => {
-        this.renderer.removeClass(document.body, 'modal-open');
-        const backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) {
-          this.renderer.removeChild(document.body, backdrop);
-        }
-      });
-    }
-  }
-
-  // ... resto de tus métodos (setRating, getSafeHtml, etc.) se mantienen igual
   getSafeHtml(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
@@ -70,14 +42,19 @@ export class GameModalComponent implements AfterViewInit {
 
   onGuardar() {
     this.guardarDiario.emit(this.juegoDetalle());
+    this.onClose(); // Auto-cierra el modal al guardar (Mejor UX)
   }
 
-  // --- NUEVA LÓGICA DE GESTOS ---
+  // Función limpia para cerrar el modal en Angular
+  onClose() {
+    this.close.emit();
+  }
+
+  // --- LÓGICA DE GESTOS ---
   translateY = signal<number>(0);
   isDragging = signal<boolean>(false);
   private startY = 0;
 
-  // Fondo dinámico: se aclara de 0.8 a 0 según bajas
   backdropOpacity = computed(() => {
     const drag = this.translateY();
     const opacity = 0.8 * (1 - Math.min(drag / 300, 1));
@@ -85,16 +62,14 @@ export class GameModalComponent implements AfterViewInit {
   });
 
   constructor() {
-    // Reset de pestaña al cambiar de juego
     effect(() => {
       if (this.juegoDetalle()) {
         this.activeTab.set('info');
-        this.translateY.set(0); // Aseguramos que empiece arriba
+        this.translateY.set(0); 
       }
     });
   }
 
-  // Manejadores de eventos táctiles
   onTouchStart(event: TouchEvent) {
     this.startY = event.touches[0].clientY;
     this.isDragging.set(true);
@@ -117,8 +92,9 @@ export class GameModalComponent implements AfterViewInit {
 
   cerrarModalManual() {
     this.translateY.set(1000);
-    // Disparamos el cierre de Bootstrap mediante su ID
-    const closeBtn = document.querySelector('.btn-close-custom') as HTMLElement;
-    closeBtn?.click();
+    // Añadimos un pequeño timeout para que dé tiempo a la animación de swipe down
+    setTimeout(() => {
+      this.onClose();
+    }, 200); 
   }
 }

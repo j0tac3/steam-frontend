@@ -226,3 +226,40 @@ $text-main: #ffffff;
     border-radius: 10px;
   }
 }
+
+/* ==========================================================================
+   ANIMACIONES NATIVAS DEL MODAL (ANGULAR WAY)
+   ========================================================================== */
+
+/* Como Angular inyecta el componente con @if, interceptamos el momento
+  en el que la clase .show está presente y lanzamos la animación del contenido.
+*/
+.modal.fade.show {
+  .modal-dialog {
+    // cubic-bezier da un efecto de desaceleración muy elegante (rápido al inicio, suave al final)
+    animation: modalContentFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Keyframes para la entrada de la tarjeta del modal */
+@keyframes modalContentFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mejora visual: Transición fluida para el drag & drop manual 
+  (cuando arrastras el modal hacia abajo en móviles)
+*/
+.custom-modal-style {
+  transition: transform 0.1s ease-out; // Suaviza el seguimiento del dedo
+  
+  &.is-dragging {
+    transition: none; // Desactiva la transición mientras el usuario arrastra para que no haya lag
+  }
+}

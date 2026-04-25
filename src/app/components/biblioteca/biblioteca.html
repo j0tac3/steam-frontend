@@ -13,51 +13,67 @@
   </nav>
 
   <header class="container mt-4 mb-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-10"> 
-        <app-game-search 
-          [misJuegos]="myLibrary()"
-          (addGame)="guardarJuego($event)"
-          (viewDetails)="verDetalles($event)">
-        </app-game-search>
+    <div class="row g-4 align-items-stretch">
+      
+      <div class="col-lg-7 d-flex"> 
+        <div class="w-100">
+          <app-game-search 
+            [misJuegos]="myLibrary()"
+            (addGame)="guardarJuego($event)"
+            (viewDetails)="verDetalles($event)">
+          </app-game-search>
+        </div>
       </div>
+
+      <div class="col-lg-5 d-flex"> 
+        <div class="w-100">
+          <app-stats-panel 
+            [total]="totalJuegos()"
+            [pendientes]="pendientes()"
+            [jugando]="jugando()"
+            [completados]="completados()"
+            [abandonados]="abandonado()"
+            [filtroActual]="filtroEstado()"
+            (filtroSeleccionado)="filtroEstado.set($event)"> </app-stats-panel>
+        </div>
+      </div>
+
     </div>
   </header>
 
   <main class="container mb-5">
-    
-    <div class="row g-4 mb-4">
-      <div class="col-12">
-        <app-stats-panel 
-          [total]="totalJuegos()"
-          [pendientes]="pendientes()"
-          [jugando]="jugando()"
-          [completados]="completados()"
-          [abandonados]="abandonado()"
-          [filtroActual]="filtroEstado()"
-          (filtroSeleccionado)="filtroEstado.set($event)">
-        </app-stats-panel>
-      </div>
 
-      <div class="col-12">
+    <div class="row mb-4 align-items-center">
+      <div class="col-md-8">
         <app-game-filters 
           [filtroTexto]="filtroTexto()" 
           [filtroEstado]="filtroEstado()"
-          (textoCambiado)="filtroTexto.set($event)"
+          (textoCambiado)="filtroTexto.set($event)" 
           [totalMostrados]="bibliotecaFiltrada().length"
           (estadoCambiado)="filtroEstado.set($event)">
         </app-game-filters>
       </div>
+      
+      <div class="col-md-4">
+        <div class="d-flex align-items-center justify-content-end">
+          <label class="text-white-50 me-2 small">Ordenar por:</label>
+          <select class="form-select form-select-sm bg-dark text-white border-secondary w-auto" 
+                  (change)="criterioOrden.set($any($event.target).value)">
+            <option value="nombre">🔠 Nombre (A-Z)</option>
+            <option value="rating">⭐ Calificación</option>
+            <option value="reciente">📅 Más recientes</option>
+          </select>
+        </div>
+      </div>
     </div>
-
+    
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
       @for (game of bibliotecaFiltrada(); track game.id) {
         <div class="col">
           <app-game-card 
             [game]="game"
             (verInfo)="verDetalles($event)"
-            (borrar)="borrarJuego($event)"
-            (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
+            (borrar)="borrarJuego($event)"  (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
           </app-game-card>
         </div>
       }
@@ -66,9 +82,20 @@
     @if (bibliotecaFiltrada().length === 0) {
       <div class="text-center py-5">
         <div class="display-1 mb-3">🕹️</div>
-        <h5 class="text-muted fw-bold">No se encontraron juegos con estos filtros</h5>
-        <button class="btn btn-outline-light mt-3" (click)="resetFiltros()">Mostrar todos</button>
+        <h5 class="text-muted fw-bold">
+          {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Aún no tienes juegos en esta categoría' }}
+        </h5>
       </div>
     }
   </main>
+
+  @if (juegoDetalle()) {
+    <app-game-modal 
+      [juegoDetalle]="juegoDetalle()" 
+      [cargandoDetalle]="cargandoDetalle()"
+      [esBiblioteca]="juegoDetalle()?.status !== undefined" 
+      (guardarDiario)="guardarDiario($event)"
+      (close)="juegoDetalle.set(null)">
+    </app-game-modal>
+  }
 </div>

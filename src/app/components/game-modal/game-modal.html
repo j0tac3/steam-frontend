@@ -1,6 +1,5 @@
-<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" 
-       [style.background-color]="backdropOpacity()">
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;" [style.background-color]="backdropOpacity()">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     
     <div class="modal-content custom-modal-style border-0" 
      [class.is-dragging]="isDragging()"
@@ -25,7 +24,7 @@
         <div class="hero-header" [style.backgroundImage]="'url(' + (juegoDetalle().background || juegoDetalle().image_url || juegoDetalle().logo) + ')'">
           <div class="hero-overlay"></div>
           
-          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Cerrar detalles">
+          <button type="button" class="btn-close-custom" aria-label="Cerrar detalles" (click)="onClose()">
             <span aria-hidden="true">&times;</span>
           </button>
           
@@ -110,7 +109,7 @@
 
                 <div class="col-12 mt-4 pb-2">
                   <button class="btn btn-primary w-100 fw-bold py-3 rounded-4 shadow" 
-                          (click)="onGuardar()" data-bs-dismiss="modal">
+                          (click)="onGuardar()">
                     GUARDAR CAMBIOS
                   </button>
                 </div>
