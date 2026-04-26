@@ -1,32 +1,41 @@
-<div class="main-container min-vh-100">
+<div class="main-container min-vh-100 pb-5">
   <nav class="navbar navbar-dark shadow-sm mb-4 py-3">
     <div class="container">
       <div class="d-flex align-items-center">
         <span class="fs-2 me-2">🎮</span> 
         <h2 class="text-white m-0 fs-4 fw-bold letter-spacing-1">Mi Biblioteca</h2>
       </div>
-      
       <button class="btn-logout" (click)="cerrarSesion()">
         CERRAR SESIÓN 🚪
       </button>
     </div>
   </nav>
 
-  <header class="container mt-4 mb-5">
-    <div class="row g-4 align-items-stretch">
-      
-      <div class="col-lg-7 d-flex"> 
-        <div class="w-100">
-          <app-game-search 
-            [misJuegos]="myLibrary()"
-            (addGame)="guardarJuego($event)"
-            (viewDetails)="verDetalles($event)">
-          </app-game-search>
-        </div>
+  <section class="container mb-5 external-search-area">
+    <div class="glass-panel p-4 rounded-4 position-relative overflow-hidden">
+      <div class="d-flex align-items-center mb-3 text-white-50">
+        <span class="fs-4 me-2">☁️</span>
+        <h5 class="m-0 fw-bold text-uppercase tracking-wide">Añadir a la colección</h5>
       </div>
+      
+      <div class="w-100">
+        <app-game-search 
+          [misJuegos]="myLibrary()"
+          (addGame)="guardarJuego($event)"
+          (viewDetails)="verDetalles($event)">
+        </app-game-search>
+      </div>
+    </div>
+  </section>
 
-      <div class="col-lg-5 d-flex"> 
-        <div class="w-100">
+  <hr class="container border-secondary opacity-25 mb-5">
+
+  <main class="container">
+    <div class="row g-4">
+      
+      <aside class="col-lg-4 col-xl-3 mb-4 mb-lg-0">
+        <div class="sidebar-sticky-tools">
+          
           <app-stats-panel 
             [total]="totalJuegos()"
             [pendientes]="pendientes()"
@@ -34,59 +43,66 @@
             [completados]="completados()"
             [abandonados]="abandonado()"
             [filtroActual]="filtroEstado()"
-            (filtroSeleccionado)="filtroEstado.set($event)"> </app-stats-panel>
+            (filtroSeleccionado)="filtroEstado.set($event)">
+          </app-stats-panel>
+
+          <div class="glass-panel p-4 rounded-4 mt-4">
+            <h6 class="text-white-50 fw-bold mb-3 text-uppercase tracking-wide">Filtros Locales</h6>
+            
+            <app-game-filters 
+              [filtroTexto]="filtroTexto()" 
+              [filtroEstado]="filtroEstado()"
+              (textoCambiado)="filtroTexto.set($event)" 
+              [totalMostrados]="bibliotecaFiltrada().length"
+              (estadoCambiado)="filtroEstado.set($event)">
+            </app-game-filters>
+            
+            <div class="mt-4">
+              <label class="text-white-50 small mb-2 fw-bold text-uppercase">Ordenar por</label>
+              <select class="form-select bg-dark text-white border-secondary shadow-none" 
+                      [value]="criterioOrden()"
+                      (change)="criterioOrden.set($any($event.target).value)">
+                <option value="nombre">🔠 Nombre (A-Z)</option>
+                <option value="rating">⭐ Calificación</option>
+                <option value="reciente">📅 Más recientes</option>
+              </select>
+            </div>
+
+            @if (filtroTexto() || filtroEstado() !== 'todos' || criterioOrden() !== 'nombre') {
+              <button class="btn btn-outline-danger btn-sm w-100 mt-4 fw-bold" (click)="resetFiltros()">
+                LIMPIAR FILTROS
+              </button>
+            }
+          </div>
+
         </div>
+      </aside>
+
+      <div class="col-lg-8 col-xl-9">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
+          @for (game of bibliotecaFiltrada(); track game.id) {
+            <div class="col">
+              <app-game-card 
+                [game]="game"
+                (verInfo)="verDetalles($event)"
+                (borrar)="borrarJuego($event)"
+                (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
+              </app-game-card>
+            </div>
+          }
+        </div>
+
+        @if (bibliotecaFiltrada().length === 0) {
+          <div class="glass-panel text-center py-5 rounded-4 mt-2">
+            <div class="display-1 mb-3 text-white-50 opacity-50">🕹️</div>
+            <h5 class="text-muted fw-bold">
+              {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Tu colección está vacía en esta categoría' }}
+            </h5>
+          </div>
+        }
       </div>
 
     </div>
-  </header>
-
-  <main class="container mb-5">
-
-    <div class="row mb-4 align-items-center">
-      <div class="col-md-8">
-        <app-game-filters 
-          [filtroTexto]="filtroTexto()" 
-          [filtroEstado]="filtroEstado()"
-          (textoCambiado)="filtroTexto.set($event)" 
-          [totalMostrados]="bibliotecaFiltrada().length"
-          (estadoCambiado)="filtroEstado.set($event)">
-        </app-game-filters>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="d-flex align-items-center justify-content-end">
-          <label class="text-white-50 me-2 small">Ordenar por:</label>
-          <select class="form-select form-select-sm bg-dark text-white border-secondary w-auto" 
-                  (change)="criterioOrden.set($any($event.target).value)">
-            <option value="nombre">🔠 Nombre (A-Z)</option>
-            <option value="rating">⭐ Calificación</option>
-            <option value="reciente">📅 Más recientes</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
-      @for (game of bibliotecaFiltrada(); track game.id) {
-        <div class="col">
-          <app-game-card 
-            [game]="game"
-            (verInfo)="verDetalles($event)"
-            (borrar)="borrarJuego($event)"  (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-          </app-game-card>
-        </div>
-      }
-    </div>
-
-    @if (bibliotecaFiltrada().length === 0) {
-      <div class="text-center py-5">
-        <div class="display-1 mb-3">🕹️</div>
-        <h5 class="text-muted fw-bold">
-          {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Aún no tienes juegos en esta categoría' }}
-        </h5>
-      </div>
-    }
   </main>
 
   @if (juegoDetalle()) {

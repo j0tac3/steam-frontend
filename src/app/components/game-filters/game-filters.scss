@@ -4,7 +4,7 @@
 
 .search-wrapper {
   width: 100%;
-  max-width: 600px; // Limitamos el ancho para que no se estire demasiado
+  max-width: 600px; 
   
   .search-icon {
     position: absolute;
@@ -17,7 +17,8 @@
 }
 
 .custom-search-input {
-  padding: 14px 100px 14px 45px; // Espacio para el icono y el contador
+  /* AUMENTADO: de 100px a 135px para hacerle sitio a la "X" y al contador */
+  padding: 14px 135px 14px 45px; 
   border-radius: 100px;
   border: 1px solid rgba(0,0,0,0.08);
   font-size: 1rem;
@@ -31,6 +32,27 @@
   }
 }
 
+/* ESTILOS DEL NUEVO BOTÓN "X" */
+.btn-clear {
+  position: absolute;
+  right: 95px; // Se coloca justo a la izquierda del contador
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: #adb5bd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+  outline: none;
+
+  &:hover {
+    color: #dc3545; // Rojo de advertencia al pasar el ratón
+    transform: translateY(-50%) scale(1.1); // Pequeño efecto de zoom
+  }
+}
+
 .results-counter {
   position: absolute;
   right: 20px;
@@ -39,4 +61,5 @@
   font-size: 0.85rem;
   padding-left: 12px;
   border-left: 1px solid #eee;
+  pointer-events: none; // Evita que quite el foco del input al hacer clic sin querer
 }

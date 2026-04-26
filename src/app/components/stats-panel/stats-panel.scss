@@ -1,120 +1,118 @@
-// Variables importadas del estilo Game-Search
-$bg-dark: #0b0e14;
-$accent-white: #ffffff;
-$text-bright: #f3f4f6;
-$text-muted: #94a3b8;
-$card-bg: rgba(18, 20, 25, 0.7);
-
+/* ==========================================================================
+   PANEL DE ESTADÍSTICAS (GLASSMORPHISM)
+   ========================================================================== */
 .stats-glass-card {
-  background: $card-bg;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 25, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 1.5rem;
-  color: $text-bright;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-  font-family: 'Inter', sans-serif;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
 
-  .header-area {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    
-    &:hover { opacity: 0.8; transform: translateX(5px); }
+.header-area {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+  transition: background 0.2s;
 
-    h5 {
-      color: $accent-white;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 2px;
-    }
-    small {
-      color: $text-muted;
-      strong { color: $text-bright; }
-    }
-    .icon {
-      color: $accent-white;
-      opacity: 0.5;
-    }
-  }
-
-  // Barra de progreso estilo "Neon"
-  .premium-progress {
+  &:hover {
     background: rgba(255, 255, 255, 0.05);
-    height: 8px;
-    border-radius: 10px;
-    margin: 1.5rem 0;
-    display: flex;
-    overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  }
+  
+  &.active-filter {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
 
-    .bar {
-      height: 100%;
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      
-      &.success { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
-      &.primary { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
-      &.warning { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-      &.danger  { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-    }
+/* ==========================================================================
+   BARRA DE PROGRESO PREMIUM
+   ========================================================================== */
+.premium-progress {
+  display: flex;
+  height: 8px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+
+  .bar {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  // Grid de leyendas estilo "Pill"
-  .legend-grid {
+  .success { background: #10b981; } // Verde Completado
+  .primary { background: #3b82f6; } // Azul Jugando
+  .warning { background: #f59e0b; } // Naranja Pendiente
+  .danger  { background: #ef4444; } // Rojo Abandonado
+}
+
+/* ==========================================================================
+   CUADRÍCULA DE LEYENDAS Y FILTROS
+   ========================================================================== */
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); // 2 columnas iguales
+  gap: 12px;
+}
+
+.stat-pill {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden; /* Evita que el contenido se salga */
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+  }
+
+  &.active-filter {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .label {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem; /* Letra un poco más pequeña para que quepa */
+    font-weight: 700;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    
+    /* Protege contra textos largos (añade puntos suspensivos si no cabe) */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+  }
 
-    .stat-pill {
-      flex: 1;
-      min-width: 110px;
-      padding: 0.8rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0; /* CRÍTICO: Evita que el flexbox aplaste el punto hasta hacerlo invisible */
+  }
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-3px);
-      }
-
-      &.active-filter {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: $accent-white;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        
-        .label { color: $accent-white; }
-        .value { transform: scale(1.05); }
-      }
-
-      .label {
-        color: $text-muted;
-        font-size: 0.65rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
-      }
-
-      .value {
-        color: $text-bright;
-        font-size: 1.4rem;
-        font-weight: 800;
-        display: block;
-        transition: transform 0.2s ease;
-      }
-
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-    }
+  .value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
   }
 }

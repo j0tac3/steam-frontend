@@ -40,7 +40,7 @@
                 @if (juegoDetalle().genres) {
                   @for (genero of juegoDetalle().genres.slice(0, 3); track $index) {
                     <span class="badge glass-badge">
-                      {{ genero.name || genero }}
+                      {{ genero.description || genero.name || genero }}
                     </span>
                   }
                 }

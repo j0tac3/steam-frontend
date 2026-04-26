@@ -238,3 +238,66 @@ app-game-search, app-stats-panel {
 header.container {
   margin-top: 2.5rem !important;
 }
+
+/* Contenedor Principal */
+.main-container {
+  background-color: transparent;
+  min-height: 100vh;
+}
+
+/* Panel estilo cristal (Glassmorphism) para los bloques agrupadores */
+.glass-panel {
+  background: rgba(25, 25, 30, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Tipografía de ayuda */
+.tracking-wide {
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   SIDEBAR STICKY (Solo activo en pantallas grandes PC)
+   ========================================================================== */
+@media (min-width: 992px) {
+  .sidebar-sticky-tools {
+    position: sticky;
+    top: 20px; /* Margen desde arriba al hacer scroll */
+    z-index: 10;
+    
+    /* Pequeña animación de entrada para el sidebar */
+    animation: slideInSidebar 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes slideInSidebar {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Estilos extra para el Navbar (Opcional, si no lo tienes ya en styles globales) */
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.8);
+    color: #ff4d4d;
+  }
+}

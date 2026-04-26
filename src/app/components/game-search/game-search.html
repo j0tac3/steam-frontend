@@ -2,18 +2,14 @@
   <div class="content-container">
     
     <header class="search-glass-card">
-      <div class="card-header">
-        <h1 class="brand-title">Buscar <span class="accent">Juegos</span></h1>
-        
-        <div class="engine-selector">
-          <span class="engine-label" [class.active]="motorBusqueda() === 'igdb'">IGDB</span>
-          <label class="premium-switch">
-            <input type="checkbox" 
-                   [checked]="motorBusqueda() === 'steam'"
-                   (change)="motorBusqueda.set(motorBusqueda() === 'igdb' ? 'steam' : 'igdb')">
-            <span class="premium-slider"></span>
-          </label>
-          <span class="engine-label" [class.active]="motorBusqueda() === 'steam'">Steam</span>
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mb-4">
+        <h3 class="fw-bold mb-0 text-center text-sm-start">Buscar Juegos</h3>
+        <div class="d-flex align-items-center bg-dark px-3 py-2 rounded-pill border border-secondary shadow-sm">
+          <span class="small fw-bold text-white me-2">IGDB</span>
+          <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
+            <input class="form-check-input ms-0 me-2 mt-0" type="checkbox" role="switch" ...>
+          </div>
+          <span class="small text-white-50">Steam</span>
         </div>
       </div>
 

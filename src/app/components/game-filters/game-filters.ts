@@ -18,4 +18,9 @@ export class GameFiltersComponent {
   // Salidas: Avisamos a la biblioteca cuando el usuario cambie algo
   textoCambiado = output<string>();
   estadoCambiado = output<string>();
+
+  // NUEVO: Función para resetear la búsqueda
+  limpiarBusqueda() {
+    this.textoCambiado.emit('');
+  }
 }
