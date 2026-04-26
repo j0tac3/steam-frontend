@@ -1,10 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
 
 @Component({
   selector: 'app-game-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [  CommonModule,
+              IconComponent
+            ],
   templateUrl: './game-card.html',
   styleUrl: './game-card.scss'
 })

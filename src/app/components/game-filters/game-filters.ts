@@ -1,10 +1,12 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
 
 @Component({
   selector: 'app-game-filters',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,
+            IconComponent],
   templateUrl: './game-filters.html',
   styleUrl: './game-filters.scss'
 })

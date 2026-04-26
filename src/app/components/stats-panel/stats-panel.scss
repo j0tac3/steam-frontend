@@ -65,13 +65,13 @@
 .stat-pill {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 12px;
+  padding: 10px 8px; /* Reducido el padding horizontal para dar más espacio al texto */
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
   transition: all 0.2s ease;
-  overflow: hidden; /* Evita que el contenido se salga */
+  overflow: hidden;
 
   &:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -86,31 +86,30 @@
 
   .label {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.75rem; /* Letra un poco más pequeña para que quepa */
+    align-items: center; // Mantiene el punto y el texto alineados
+    gap: 6px; // Menos separación entre el punto de color y la palabra
+    font-size: 0.65rem; /* Fuente ligeramente más pequeña */
     font-weight: 700;
     color: #adb5bd;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-bottom: 4px;
     
-    /* Protege contra textos largos (añade puntos suspensivos si no cabe) */
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 100%;
+    /* MAGIA RESPONSIVE: Permite que el texto se adapte sin cortarse de forma fea */
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.1;
   }
 
   .dot {
-    width: 10px;
-    height: 10px;
+    width: 8px; /* Punto ligeramente más pequeño para ganar espacio */
+    height: 8px;
     border-radius: 50%;
-    flex-shrink: 0; /* CRÍTICO: Evita que el flexbox aplaste el punto hasta hacerlo invisible */
+    flex-shrink: 0;
+    margin-top: 1px; /* Ajuste óptico para que el punto quede centrado con el texto nuevo */
   }
 
   .value {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Número adaptado a la nueva proporción de la tarjeta */
     font-weight: 800;
     color: white;
     line-height: 1;

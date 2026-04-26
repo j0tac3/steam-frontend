@@ -1,13 +1,16 @@
 <div class="stats-glass-card mb-4 mx-auto">
   
-  <div class="header-area d-flex justify-content-between align-items-center mb-1" 
-       (click)="filtroSeleccionado.emit('todos')"
-       [class.active-filter]="filtroActual() === 'todos'">
+  <div class="header-area d-flex justify-content-between align-items-start mb-3" 
+      (click)="filtroSeleccionado.emit('todos')"
+      [class.active-filter]="filtroActual() === 'todos'">
     <div>
-      <h5 class="mb-0">Mi Colección</h5>
-      <small>Total: <strong>{{ total() }}</strong> juegos <span class="opacity-50">(clic para ver todos)</span></small>
+      <h3 class="m-0 text-white fw-bold">Mi Colección</h3>
+      <p class="m-0 text-white-50 small">Total: <strong class="text-white">{{ total() }}</strong> juegos <span class="fs-7 opacity-50">(clic para ver todos)</span></p>
     </div>
-    <div class="icon fs-3">📚</div>
+    
+    <span class="fs-3 text-white-50">
+      <app-icon name="icon-layers"></app-icon>
+    </span>
   </div>
 
   <div class="premium-progress">

@@ -20,7 +20,9 @@
 
       <div class="search-bar-container">
         <div class="input-group-premium">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon d-flex align-items-center">
+            <app-icon name="icon-search"></app-icon>
+          </span>
           <input #searchInput type="text" 
                  (keyup.enter)="buscar(searchInput.value)"
                  placeholder="Buscar títulos..." 
@@ -83,7 +85,9 @@
       <div class="minimal-footer">
         @if (busquedaRealizada()) {
           <div class="text-white-50 mt-4">
-            <span class="fs-1 d-block mb-2">🕵️‍♂️</span>
+            <span class="fs-1 d-block mb-2 text-white-50">
+              <app-icon name="icon-search"></app-icon>
+            </span>
             <p class="fw-bold m-0">Vaya, no hemos encontrado nada.</p>
             <p class="small">Prueba usando otro nombre o cambiando de base de datos (IGDB / Steam).</p>
           </div>
