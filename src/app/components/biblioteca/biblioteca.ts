@@ -189,19 +189,39 @@ export class BibliotecaComponent implements OnInit {
     });
   }
 
+  // ==========================================
+  // ACCIONES CRUD (Con notificaciones)
+  // ==========================================
+  
   borrarJuego(id: number) {
     if (confirm('¿Seguro que quieres eliminar este juego?')) {
       this.steamService.deleteGame(id).subscribe({
-        next: () => this.cargarBiblioteca(),
-        error: (err) => console.error('Error al borrar:', err)
+        next: () => {
+          this.cargarBiblioteca();
+          // Añadimos el Toast de éxito
+          this.mostrarNotificacion('Juego eliminado de tu biblioteca', 'success');
+        },
+        error: (err) => {
+          console.error('Error al borrar:', err);
+          // Añadimos el Toast de error
+          this.mostrarNotificacion('Error al intentar eliminar el juego', 'error');
+        }
       });
     }
   }
 
   actualizarEstado(id: number, nuevoEstado: string) {
     this.steamService.updateStatus(id, nuevoEstado).subscribe({
-      next: () => this.cargarBiblioteca(),
-      error: (err) => console.error('Error al actualizar:', err)
+      next: () => {
+        this.cargarBiblioteca();
+        // Formateamos el estado para que la primera letra sea mayúscula en el aviso
+        const estadoFormateado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
+        this.mostrarNotificacion(`Estado cambiado a: ${estadoFormateado}`, 'success');
+      },
+      error: (err) => {
+        console.error('Error al actualizar:', err);
+        this.mostrarNotificacion('Error al cambiar el estado', 'error');
+      }
     });
   }
 
