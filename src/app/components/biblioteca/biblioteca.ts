@@ -9,6 +9,7 @@ import { StatsPanelComponent } from '../stats-panel/stats-panel';
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 import { GameSearchComponent } from '../game-search/game-search';
 import { GameFiltersComponent } from '../game-filters/game-filters';
+import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
 
 @Component({
   selector: 'app-biblioteca',
@@ -19,7 +20,8 @@ import { GameFiltersComponent } from '../game-filters/game-filters';
     GameCardComponent,
     StatsPanelComponent,
     GameSearchComponent,
-    GameFiltersComponent
+    GameFiltersComponent,
+    IconComponent
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
@@ -31,17 +33,16 @@ export class BibliotecaComponent implements OnInit {
   private router = inject(Router);
   private steamService = inject(SteamService);
 
-  // Señales para los filtros y ordenación
   filtroTexto = signal('');
   filtroEstado = signal('todos');
   criterioOrden = signal<'nombre' | 'rating' | 'reciente'>('nombre');
 
-  // Control del modal y notificaciones
   juegoDetalle = signal<any>(null);
   cargandoDetalle = signal(false);
-  notificacion = signal<{mensaje: string, tipo: 'success' | 'error'} | null>(null);
+  
+  // AÑADIDO: Soporte para 'warning'
+  notificacion = signal<{mensaje: string, tipo: 'success' | 'error' | 'warning'} | null>(null);
 
-  // Estado de Paginación Local
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(12);
 
@@ -58,13 +59,12 @@ export class BibliotecaComponent implements OnInit {
     });
   }
 
-  // Función UX para mostrar el Toast
-  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' = 'success') {
+  // AÑADIDO: Soporte para 'warning'
+  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success') {
     this.notificacion.set({ mensaje, tipo });
-    setTimeout(() => this.notificacion.set(null), 3500); // Se borra a los 3.5s
+    setTimeout(() => this.notificacion.set(null), 3500); 
   }
 
-  // Lógica reactiva de filtrado y ordenación
   bibliotecaFiltrada = computed(() => {
     const texto = this.filtroTexto().toLowerCase().trim();
     const estado = this.filtroEstado();
@@ -105,14 +105,12 @@ export class BibliotecaComponent implements OnInit {
     return Array.from({ length: this.totalPaginas() }, (_, i) => i + 1);
   });
 
-  // Totales para Stats
   totalJuegos = computed(() => this.myLibrary().length);
   pendientes = computed(() => this.myLibrary().filter(g => g.status === 'pendiente').length);
   jugando = computed(() => this.myLibrary().filter(g => g.status === 'jugando').length);
   completados = computed(() => this.myLibrary().filter(g => g.status === 'completado').length);
   abandonado = computed(() => this.myLibrary().filter(g => g.status === 'abandonado').length);
 
-  // Wrappers de Filtros
   actualizarFiltroTexto(texto: string) {
     this.filtroTexto.set(texto);
     this.paginaActual.set(1);
@@ -135,7 +133,6 @@ export class BibliotecaComponent implements OnInit {
     this.paginaActual.set(1);
   }
 
-  // Navegación
   private hacerScrollArriba() {
     const contenedor = document.getElementById('ancla-grid-biblioteca');
     if (contenedor) {
@@ -165,9 +162,6 @@ export class BibliotecaComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // ACCIONES CRUD (Con notificaciones)
-  // ==========================================
   guardarJuego(game: any) {
     const payload = {
       title: game.name, 
@@ -179,7 +173,7 @@ export class BibliotecaComponent implements OnInit {
 
     this.steamService.saveGame(payload).subscribe({
       next: () => {
-        this.cargarBiblioteca(); // Esto actualiza el componente hijo de forma mágica y reactiva
+        this.cargarBiblioteca(); 
         this.mostrarNotificacion(`¡${game.name} añadido a tu colección!`, 'success');
       },
       error: (err) => {
@@ -189,21 +183,15 @@ export class BibliotecaComponent implements OnInit {
     });
   }
 
-  // ==========================================
-  // ACCIONES CRUD (Con notificaciones)
-  // ==========================================
-  
   borrarJuego(id: number) {
     if (confirm('¿Seguro que quieres eliminar este juego?')) {
       this.steamService.deleteGame(id).subscribe({
         next: () => {
           this.cargarBiblioteca();
-          // Añadimos el Toast de éxito
           this.mostrarNotificacion('Juego eliminado de tu biblioteca', 'success');
         },
         error: (err) => {
           console.error('Error al borrar:', err);
-          // Añadimos el Toast de error
           this.mostrarNotificacion('Error al intentar eliminar el juego', 'error');
         }
       });
@@ -214,7 +202,6 @@ export class BibliotecaComponent implements OnInit {
     this.steamService.updateStatus(id, nuevoEstado).subscribe({
       next: () => {
         this.cargarBiblioteca();
-        // Formateamos el estado para que la primera letra sea mayúscula en el aviso
         const estadoFormateado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
         this.mostrarNotificacion(`Estado cambiado a: ${estadoFormateado}`, 'success');
       },

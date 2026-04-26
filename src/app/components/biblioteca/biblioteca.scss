@@ -208,13 +208,77 @@ app-game-search, app-stats-panel {
   padding: 0 10px !important;
 }
 
-/* --- AJUSTES NAVBAR --- */
-.navbar {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); // Una línea divisoria muy sutil
+/* ==========================================================================
+   NAVBAR PREMIUM (GLASSMORPHISM & STICKY)
+   ========================================================================== */
+.glass-navbar {
+  /* Fondo muy oscuro pero con un 80% de opacidad para dejar pasar la luz */
+  background: rgba(11, 14, 20, 0.8) !important; 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
   
-  h2 {
-    letter-spacing: 0.5px; // Mejora la lectura en pantallas grandes
-    font-family: 'Inter', sans-serif; // O la fuente que uses, para que se vea técnica
+  /* Transición suave por si la app carga de golpe */
+  transition: all 0.3s ease;
+
+  .brand-container {
+    cursor: default;
+    
+    .brand-icon {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+      transition: transform 0.3s ease;
+    }
+    
+    .brand-text {
+      text-shadow: 0 2px 10px rgba(255,255,255,0.1);
+    }
+    
+    &:hover .brand-icon {
+      transform: scale(1.1) rotate(-5deg);
+    }
+  }
+}
+
+/* ==========================================================================
+   BOTÓN CIRCULAR DE CERRAR SESIÓN
+   ========================================================================== */
+.btn-logout-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+  padding: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background: rgba(220, 53, 69, 0.15); // Fondo rojizo sutil
+    border-color: rgba(220, 53, 69, 0.5); // Borde rojo brillante
+    color: #ff6b6b; // Icono rojo
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.25);
+    
+    // Pequeño efecto de empuje en la flecha del SVG
+    svg {
+      transform: translateX(2px);
+    }
+  }
+  
+  &:active {
+    transform: scale(0.95);
   }
 }
 
@@ -284,23 +348,6 @@ header.container {
   }
 }
 
-/* Estilos extra para el Navbar (Opcional, si no lo tienes ya en styles globales) */
-.btn-logout {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(220, 53, 69, 0.2);
-    border-color: rgba(220, 53, 69, 0.8);
-    color: #ff4d4d;
-  }
-}
 
 /* ==========================================================================
    PAGINACIÓN PREMIUM (GLASSMORPHISM) PARA LA BIBLIOTECA
@@ -359,6 +406,11 @@ header.container {
   
   &.bg-danger {
     background: rgba(239, 68, 68, 0.85) !important; // Rojo transparente
+  }
+
+  &.bg-warning {
+    background: rgba(245, 158, 11, 0.9) !important; // Naranja transparente
+    color: #000 !important; // Letra oscura para mayor legibilidad
   }
 }
 

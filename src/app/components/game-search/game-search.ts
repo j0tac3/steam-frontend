@@ -17,14 +17,14 @@ export class GameSearchComponent {
   searchResults = signal<any[]>([]);
   cargando = signal<boolean>(false);
   misJuegos = input<any[]>([]);
+  
+  // NUEVO: Controlamos si ya se ha hecho al menos una búsqueda
+  busquedaRealizada = signal<boolean>(false);
 
-  // ==========================================
   // ESTADO DE PAGINACIÓN
-  // ==========================================
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(8);
 
-  // 🔥 SOLUCIÓN: Calculamos 'yaLoTengo' de forma reactiva comprobando contra 'misJuegos()'
   resultadosPaginados = computed(() => {
     const inicio = (this.paginaActual() - 1) * this.elementosPorPagina();
     const fin = inicio + this.elementosPorPagina();
@@ -49,10 +49,11 @@ export class GameSearchComponent {
 
   @Output() addGame = new EventEmitter<any>();
   @Output() viewDetails = new EventEmitter<any>();
+  
+  // NUEVO: Emisor para conectar con el sistema de Toasts de la biblioteca
+  @Output() notificar = new EventEmitter<{mensaje: string, tipo: 'success' | 'error' | 'warning'}>();
 
-  // ==========================================
   // MÉTODOS DE BÚSQUEDA Y CONTROL
-  // ==========================================
   cambiarMotor() {
     this.motorBusqueda.set(this.motorBusqueda() === 'igdb' ? 'steam' : 'igdb');
     this.limpiar();
@@ -64,6 +65,7 @@ export class GameSearchComponent {
     this.cargando.set(true);
     this.searchResults.set([]);
     this.paginaActual.set(1); 
+    this.busquedaRealizada.set(false); // Reiniciamos el estado al empezar a buscar
 
     const search$ = this.motorBusqueda() === 'igdb'
       ? this.steamService.buscarEnIGDB(termino)
@@ -91,11 +93,21 @@ export class GameSearchComponent {
         });
 
         this.searchResults.set(resultadosMapeados);
+        this.busquedaRealizada.set(true); // Marcamos que la búsqueda ha finalizado
         this.cargando.set(false);
+
+        // NUEVO: Si no hay resultados, avisamos al Toast del padre
+        if (resultadosMapeados.length === 0) {
+          this.notificar.emit({ 
+            mensaje: `No se encontró ningún juego llamado "${termino}" en ${this.motorBusqueda().toUpperCase()}`, 
+            tipo: 'warning' 
+          });
+        }
       },
       error: (err) => {
         console.error('Error en búsqueda:', err);
         this.cargando.set(false);
+        this.notificar.emit({ mensaje: 'Error de conexión al buscar', tipo: 'error' });
       }
     });
   }
@@ -103,11 +115,10 @@ export class GameSearchComponent {
   limpiar() {
     this.searchResults.set([]);
     this.paginaActual.set(1);
+    this.busquedaRealizada.set(false);
   }
 
-  // ==========================================
   // MÉTODOS DE PAGINACIÓN Y UX
-  // ==========================================
   private hacerScrollArriba() {
     const contenedor = document.querySelector('.premium-layout-wrapper');
     if (contenedor) {

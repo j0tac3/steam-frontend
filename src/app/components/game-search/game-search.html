@@ -63,21 +63,17 @@
           @if (totalPaginas() > 1) {
             <nav class="d-flex justify-content-center mt-4 mb-2">
               <ul class="pagination pagination-premium gap-2 m-0">
-                
                 <li class="page-item" [class.disabled]="paginaActual() === 1">
                   <button class="page-link" (click)="paginaAnterior()">Anterior</button>
                 </li>
-                
                 @for (pagina of paginasArray(); track pagina) {
                   <li class="page-item" [class.active]="pagina === paginaActual()">
                     <button class="page-link" (click)="irAPagina(pagina)">{{ pagina }}</button>
                   </li>
                 }
-
                 <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
                   <button class="page-link" (click)="siguientePagina()">Siguiente</button>
                 </li>
-
               </ul>
             </nav>
           }
@@ -85,7 +81,15 @@
       </main>
     } @else {
       <div class="minimal-footer">
-        <p>Introduce un título para buscar en la base de datos</p>
+        @if (busquedaRealizada()) {
+          <div class="text-white-50 mt-4">
+            <span class="fs-1 d-block mb-2">🕵️‍♂️</span>
+            <p class="fw-bold m-0">Vaya, no hemos encontrado nada.</p>
+            <p class="small">Prueba usando otro nombre o cambiando de base de datos (IGDB / Steam).</p>
+          </div>
+        } @else {
+          <p>Introduce un título para buscar en la base de datos</p>
+        }
       </div>
     }
   </div>
