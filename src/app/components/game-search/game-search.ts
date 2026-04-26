@@ -2,14 +2,17 @@ import { Component, Output, input, EventEmitter, signal, inject, computed } from
 import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam';
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
-import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
+import { IconComponent } from '../icon/icon';
+import { SkeletonCardComponent } from '../skeleton-card/skeleton-card'; // (Ajusta la ruta si es necesario)
 
 @Component({
   selector: 'app-game-search',
   standalone: true,
   imports: [CommonModule, 
             SearchGameCardComponent,
-            IconComponent],
+            IconComponent,
+            SkeletonCardComponent
+          ],
   templateUrl: './game-search.html',
   styleUrl: './game-search.scss'
 })
@@ -26,7 +29,10 @@ export class GameSearchComponent {
 
   // ESTADO DE PAGINACIÓN
   paginaActual = signal<number>(1);
-  elementosPorPagina = signal<number>(8);
+  elementosPorPagina = signal<number>(10);
+
+  // NUEVO: Crea un array vacío del tamaño exacto de tus elementos por página
+  esqueletosArray = computed(() => new Array(this.elementosPorPagina()).fill(0));
 
   resultadosPaginados = computed(() => {
     const inicio = (this.paginaActual() - 1) * this.elementosPorPagina();

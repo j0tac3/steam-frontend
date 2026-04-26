@@ -86,25 +86,39 @@
       </aside>
 
       <div class="col-lg-8 col-xl-9">
-        
         <div id="ancla-grid-biblioteca"></div>
-
         <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
-          @for (game of bibliotecaPaginada(); track game.id) {
-            <div class="col">
-              <app-game-card 
-                [game]="game"
-                (verInfo)="verDetalles($event)"
-                (borrar)="borrarJuego($event)"
-                (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-              </app-game-card>
-            </div>
+          @if (cargandoBiblioteca()) {
+            
+            @for (dummy of [1,2,3,4,5,6,7,8]; track dummy) {
+              <div class="col">
+                <app-skeleton-card></app-skeleton-card>
+              </div>
+            }
+          } @else {
+            @for (game of bibliotecaPaginada(); track game.id) {
+              <div class="col">
+                <app-game-card 
+                  [game]="game"
+                  (verInfo)="verDetalles($event)"
+                  (borrar)="borrarJuego($event)"
+                  (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
+                </app-game-card>
+              </div>
+            } @empty {
+              <div class="col-12 text-center text-white-50 py-5">
+                <app-icon name="icon-gamepad" class="fs-1 d-block mb-3"></app-icon>
+                <h4>Tu biblioteca está vacía</h4>
+              </div>
+            }
           }
         </div>
 
         @if (bibliotecaFiltrada().length === 0) {
           <div class="glass-panel text-center py-5 rounded-4 mt-2">
-            <div class="display-1 mb-3 text-white-50 opacity-50">🕹️</div>
+            <div class="display-1 mb-3 text-white-50 opacity-50">
+              <app-icon name="icon-gamepad"></app-icon>
+            </div>
             <h5 class="text-muted fw-bold">
               {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Tu colección está vacía en esta categoría' }}
             </h5>

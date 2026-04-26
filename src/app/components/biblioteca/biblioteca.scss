@@ -212,14 +212,11 @@ app-game-search, app-stats-panel {
    NAVBAR PREMIUM (GLASSMORPHISM & STICKY)
    ========================================================================== */
 .glass-navbar {
-  /* Fondo muy oscuro pero con un 80% de opacidad para dejar pasar la luz */
-  background: rgba(11, 14, 20, 0.8) !important; 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg-nav) !important; 
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border-bottom: 1px solid var(--glass-border-light);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  
-  /* Transición suave por si la app carga de golpe */
   transition: all 0.3s ease;
 
   .brand-container {
@@ -250,11 +247,11 @@ app-game-search, app-stats-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg-btn);
+  border: 1px solid var(--glass-border-light);
   color: #f3f4f6;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(5px);
+  backdrop-filter: var(--glass-blur-light);
   cursor: pointer;
   padding: 0;
 
@@ -265,13 +262,12 @@ app-game-search, app-stats-panel {
   }
 
   &:hover {
-    background: rgba(220, 53, 69, 0.15); // Fondo rojizo sutil
-    border-color: rgba(220, 53, 69, 0.5); // Borde rojo brillante
-    color: #ff6b6b; // Icono rojo
+    background: var(--glass-bg-btn-hover);
+    border-color: rgba(220, 53, 69, 0.5);
+    color: #ff6b6b;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(220, 53, 69, 0.25);
     
-    // Pequeño efecto de empuje en la flecha del SVG
     svg {
       transform: translateX(2px);
     }
@@ -311,11 +307,11 @@ header.container {
 
 /* Panel estilo cristal (Glassmorphism) para los bloques agrupadores */
 .glass-panel {
-  background: rgba(25, 25, 30, 0.4);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  background: var(--glass-bg-panel);
+  backdrop-filter: var(--glass-blur-medium);
+  -webkit-backdrop-filter: var(--glass-blur-medium);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Tipografía de ayuda */
@@ -394,23 +390,18 @@ header.container {
    TOAST NOTIFICATIONS (GLASSMORPHISM)
    ========================================================================== */
 .glass-toast {
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: var(--glass-blur-medium);
+  -webkit-backdrop-filter: var(--glass-blur-medium);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   border-radius: 12px;
   animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border: 1px solid var(--glass-border);
   
-  &.bg-success {
-    background: rgba(16, 185, 129, 0.85) !important; // Verde transparente
-  }
-  
-  &.bg-danger {
-    background: rgba(239, 68, 68, 0.85) !important; // Rojo transparente
-  }
-
-  &.bg-warning {
-    background: rgba(245, 158, 11, 0.9) !important; // Naranja transparente
-    color: #000 !important; // Letra oscura para mayor legibilidad
+  &.bg-success { background: rgba(25, 135, 84, 0.85) !important; }
+  &.bg-danger { background: rgba(220, 53, 69, 0.85) !important; }
+  &.bg-warning { 
+    background: rgba(255, 193, 7, 0.9) !important; 
+    color: #000 !important; 
   }
 }
 

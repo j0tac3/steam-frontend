@@ -9,7 +9,9 @@ import { StatsPanelComponent } from '../stats-panel/stats-panel';
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 import { GameSearchComponent } from '../game-search/game-search';
 import { GameFiltersComponent } from '../game-filters/game-filters';
-import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
+import { IconComponent } from '../icon/icon';
+import { Game } from '../../models/game';
+import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
 
 @Component({
   selector: 'app-biblioteca',
@@ -21,13 +23,15 @@ import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estruc
     StatsPanelComponent,
     GameSearchComponent,
     GameFiltersComponent,
-    IconComponent
+    IconComponent,
+    SkeletonCardComponent
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
 })
 export class BibliotecaComponent implements OnInit {
-  public myLibrary = signal<any[]>([]);
+  public myLibrary = signal<Game[]>([]);
+  public cargandoBiblioteca = signal<boolean>(true);
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -46,16 +50,26 @@ export class BibliotecaComponent implements OnInit {
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(12);
 
-  ngOnInit() {
+ngOnInit() {
+    // Solo llamamos a la función. El estado inicial de la señal ya es true.
     this.cargarBiblioteca();
   }
 
   cargarBiblioteca() {
+    // Opcional: asegurarnos de que el esqueleto se muestra al recargar
+    this.cargandoBiblioteca.set(true); 
+
     this.steamService.getMyGames().subscribe({
       next: (juegos) => {
         this.myLibrary.set(juegos);
+        // ¡MAGIA ASÍNCRONA! Apagamos el esqueleto AQUÍ ADENTRO
+        this.cargandoBiblioteca.set(false); 
       },
-      error: (err) => console.error('Error al cargar biblioteca:', err)
+      error: (err) => {
+        console.error('Error al cargar biblioteca:', err);
+        // Apagamos el esqueleto también si hay error para no dejar la pantalla bloqueada
+        this.cargandoBiblioteca.set(false); 
+      }
     });
   }
 
@@ -162,7 +176,7 @@ export class BibliotecaComponent implements OnInit {
     }
   }
 
-  guardarJuego(game: any) {
+  guardarJuego(game: Game) {
     const payload = {
       title: game.name, 
       steam_appid: String(game.appid),
@@ -212,13 +226,22 @@ export class BibliotecaComponent implements OnInit {
     });
   }
 
-  verDetalles(game: any) {
+  verDetalles(game: Game) {
+    const gameId = game.steam_appid || game.appid || game.id;
+
+    // GUARDIA DE TIPO: Si no hay ID, TypeScript detiene la ejecución y evitamos el error
+    if (!gameId) {
+      console.error('El juego seleccionado no tiene un ID válido:', game);
+      this.mostrarNotificacion('Error al abrir: El juego no tiene ID', 'error');
+      return; 
+    }
+
     this.cargandoDetalle.set(true);
     this.juegoDetalle.set(game);
 
-    const gameId = game.steam_appid || game.appid || game.id;
     const esIgdb = game.source === 'igdb' || game.es_igdb === true;
 
+    // A partir de aquí, TypeScript ya sabe al 100% que gameId NO es undefined
     if (esIgdb) {
       this.steamService.getIgdbDetails(gameId).subscribe({
         next: (data) => {
@@ -227,7 +250,8 @@ export class BibliotecaComponent implements OnInit {
         }
       });
     } else {
-      this.steamService.getGameDetails(gameId).subscribe({
+      // Envolvemos gameId en String() para garantizar que sea un texto
+      this.steamService.getGameDetails(String(gameId)).subscribe({
         next: (data) => {
           this.juegoDetalle.set({ ...game, ...data, source: 'steam' });
           this.cargandoDetalle.set(false);

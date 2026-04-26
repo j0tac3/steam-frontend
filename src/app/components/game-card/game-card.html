@@ -22,12 +22,14 @@
         <option value="abandonado">❌ Abandonado</option>
       </select>
       <div class="d-flex gap-2">
-        <button class="btn btn-primary btn-sm flex-grow-1 align-items-center gap-2"
+        <button class="btn btn-primary btn-sm flex-grow-1 align-items-center gap-2 d-flex justify-content-center"
                 (click)="onVerInfo()">
           <app-icon name="icon-info"></app-icon>
           <span>Info</span>
         </button>
-        <button class="btn btn-outline-danger">
+        <button class="btn btn-outline-danger d-flex align-items-center justify-content-center" 
+                (click)="borrar.emit(game.id)" 
+                title="Eliminar juego">
           <app-icon name="icon-trash"></app-icon>
         </button>
       </div>

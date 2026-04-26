@@ -1,26 +1,56 @@
-/* Estilos Globales */
+/* ==========================================================================
+   SISTEMA DE DISEÑO GLOBAL (DESIGN TOKENS)
+   ========================================================================== */
+:root {
+  /* 1. Colores de Estado (Semánticos) */
+  --color-success: #198754;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #0d6efd;
+
+  /* 2. Colores Base (Tema Oscuro por defecto) */
+  --bg-fallback: #06080c;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  /* 3. Sistema Glassmorphism (Cristal) */
+  --glass-blur-heavy: blur(20px);
+  --glass-blur-medium: blur(15px);
+  --glass-blur-light: blur(5px);
+  
+  --glass-bg-nav: rgba(11, 14, 20, 0.8);
+  --glass-bg-panel: rgba(25, 25, 30, 0.4);
+  --glass-bg-btn: rgba(255, 255, 255, 0.05);
+  --glass-bg-btn-hover: rgba(220, 53, 69, 0.15);
+  
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   ESTILOS BASE DEL DOCUMENTO
+   ========================================================================== */
 html, body {
   height: 100%;
   margin: 0;
 }
 
 body {
-  // RUTA DE LA IMAGEN: Asegúrate de que el nombre coincida con tu archivo
+  /* RUTA DE LA IMAGEN: Asegúrate de que el nombre coincida con tu archivo */
   background-image: url('../public/steam_manager_premium_dashboard.png'); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   
-  // EFECTO PREMIUM: El fondo se queda fijo mientras haces scroll
-  // Esto hace que el efecto "glass" se vea mucho más profesional
+  /* EFECTO PREMIUM: El fondo se queda fijo mientras haces scroll */
   background-attachment: fixed; 
   
-  background-color: #06080c; // Fallback por si la imagen no carga
-  color: #fff;
+  background-color: var(--bg-fallback);
+  color: var(--text-main);
   font-family: 'Inter', sans-serif;
 }
 
-// Limpieza para que el foco del modal no deje recuadros
 body:focus {
   outline: none !important;
 }

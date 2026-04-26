@@ -151,17 +151,6 @@ $card-bg: rgba(18, 20, 25, 0.7);
   }
 }
 
-// ESTILOS DE CARGA
-.loader-container { 
-  display: flex; justify-content: center; padding: 2rem; 
-  .spinner-premium { 
-    width: 25px; height: 25px; border: 2px solid rgba(255,255,255,0.1); 
-    border-top-color: white; border-radius: 50%; 
-    animation: spin 1s linear infinite; 
-  } 
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
 .minimal-footer { text-align: center; margin-top: 2rem; opacity: 0.3; font-size: 0.8rem; }
 
 // ==========================================================================

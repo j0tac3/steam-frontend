@@ -43,10 +43,13 @@
           <span class="count">Resultados: {{ searchResults().length }}</span>
           <button class="link-btn" (click)="searchInput.value = ''; limpiar()">Limpiar todo</button>
         </div>
-
         @if (cargando()) {
-          <div class="loader-container">
-            <div class="spinner-premium"></div>
+          <div class="games-grid">
+            @for (dummy of esqueletosArray(); track $index) {
+              <div class="game-item-wrapper">
+                <app-skeleton-card></app-skeleton-card>
+              </div>
+            }
           </div>
         } @else {
           <div class="games-grid">
