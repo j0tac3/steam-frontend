@@ -1,10 +1,10 @@
 // Variables Premium Monocromáticas
 $bg-dark: #0b0e14;
-$accent-white: #ffffff;      // El azul ahora es blanco puro
+$accent-white: #ffffff;      
 $text-bright: #f3f4f6;
 $text-muted: #94a3b8;
 $glass-bg: rgba(255, 255, 255, 0.03); 
-$card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contraste
+$card-bg: rgba(18, 20, 25, 0.7);      
 
 .premium-layout-wrapper {
   display: flex;
@@ -40,18 +40,25 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
     .brand-title {
       font-size: 1.2rem;
       font-weight: 800;
-      .accent { color: $accent-white; } // "Pro" ahora es blanco
+      .accent { color: $accent-white; } 
     }
   }
 }
 
 .search-bar-container {
   display: flex;
-  gap: 10px;
+  flex-direction: column; // NUEVO: Por defecto en móvil, se apilan verticalmente
+  gap: 12px;
+
+  /* NUEVO: A partir de tamaño tablet/PC (576px), se ponen en la misma línea */
+  @media (min-width: 576px) {
+    flex-direction: row; 
+  }
 
   .input-group-premium {
     position: relative;
     flex-grow: 1;
+    width: 100%; // Asegura que ocupe todo el ancho disponible
     
     .search-icon { 
       position: absolute; left: 14px; top: 50%; 
@@ -63,14 +70,14 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
       background: rgba(0, 0, 0, 0.5); 
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 8px 35px 8px 40px;
+      padding: 12px 35px 12px 40px; // Aumentado un poco el padding vertical para móviles
       color: white;
       font-size: 0.9rem;
       transition: all 0.3s ease;
       
       &:focus { 
         outline: none; 
-        border-color: rgba(255, 255, 255, 0.4); // Borde gris claro al enfocar
+        border-color: rgba(255, 255, 255, 0.4); 
         background: rgba(0, 0, 0, 0.7);
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
       }
@@ -84,15 +91,23 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
   }
 
   .btn-search {
-    background: white; // Botón principal ahora es blanco
-    color: black;      // Texto negro para contraste
+    background: white; 
+    color: black;      
     border: none;
-    padding: 0 20px;
+    padding: 12px 20px; // Aumentado el alto para que sea más fácil de pulsar en móvil
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.2s;
+    width: 100%; // En móvil, el botón ocupa todo el ancho
+
+    /* En PC, el botón vuelve a ajustarse a su contenido */
+    @media (min-width: 576px) {
+      width: auto; 
+      padding: 0 20px; // Recupera el padding original para alinearse con el input
+    }
+
     &:hover { 
       background: #e0e0e0; 
       transform: translateY(-1px);
@@ -109,7 +124,7 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
   font-size: 0.8rem;
   color: $text-muted;
   .link-btn { 
-    background: none; border: none; color: #fff; // Link ahora blanco
+    background: none; border: none; color: #fff; 
     opacity: 0.6;
     cursor: pointer; text-decoration: underline; 
     &:hover { opacity: 1; }
@@ -120,7 +135,7 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 1.5rem;
-  padding-bottom: 3rem;
+  padding-bottom: 1rem; // Reducido para dar espacio a la paginación
 }
 
 .game-item-wrapper {
@@ -136,38 +151,7 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
   }
 }
 
-// SWITCH MONOCROMO
-.engine-selector {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px 12px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-
-  .engine-label { 
-    font-size: 0.7rem; font-weight: 700; color: #555; 
-    &.active { color: white; } 
-  }
-}
-
-.premium-switch {
-  position: relative; width: 34px; height: 16px;
-  input { opacity: 0; width: 0; height: 0; }
-  .premium-slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #333; transition: .3s; border-radius: 20px;
-    &:before { 
-      position: absolute; content: ""; height: 10px; width: 10px; 
-      left: 3px; bottom: 3px; background-color: #fff; 
-      transition: .3s; border-radius: 50%; 
-    }
-  }
-  input:checked + .premium-slider { background-color: #666; } // Gris para el estado activo
-  input:checked + .premium-slider:before { transform: translateX(18px); }
-}
-
+// ESTILOS DE CARGA
 .loader-container { 
   display: flex; justify-content: center; padding: 2rem; 
   .spinner-premium { 
@@ -179,3 +163,57 @@ $card-bg: rgba(18, 20, 25, 0.7);      // Un poco más oscuro para mejor contrast
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .minimal-footer { text-align: center; margin-top: 2rem; opacity: 0.3; font-size: 0.8rem; }
+
+// ==========================================================================
+// PAGINACIÓN PREMIUM (GLASSMORPHISM)
+// ==========================================================================
+.pagination-premium {
+  .page-item {
+    .page-link {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: $text-muted;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &.active .page-link {
+      background: white;
+      color: black;
+      border-color: white;
+    }
+
+    &.disabled .page-link {
+      background: rgba(0, 0, 0, 0.2);
+      color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Modificación extra para el cursor del Switch nativo de Bootstrap */
+.custom-switch-premium {
+  cursor: pointer;
+  &:focus {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  &:checked {
+    background-color: #fff;
+    border-color: #fff;
+  }
+}

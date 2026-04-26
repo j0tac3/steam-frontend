@@ -301,3 +301,74 @@ header.container {
     color: #ff4d4d;
   }
 }
+
+/* ==========================================================================
+   PAGINACIÓN PREMIUM (GLASSMORPHISM) PARA LA BIBLIOTECA
+   ========================================================================== */
+.pagination-premium {
+  .page-item {
+    .page-link {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8; /* text-muted */
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &.active .page-link {
+      background: white;
+      color: black;
+      border-color: white;
+    }
+
+    &.disabled .page-link {
+      background: rgba(0, 0, 0, 0.2);
+      color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATIONS (GLASSMORPHISM)
+   ========================================================================== */
+.glass-toast {
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  &.bg-success {
+    background: rgba(16, 185, 129, 0.85) !important; // Verde transparente
+  }
+  
+  &.bg-danger {
+    background: rgba(239, 68, 68, 0.85) !important; // Rojo transparente
+  }
+}
+
+@keyframes slideInToast {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

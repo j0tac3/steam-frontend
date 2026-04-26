@@ -4,12 +4,17 @@
     <header class="search-glass-card">
       <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mb-4">
         <h3 class="fw-bold mb-0 text-center text-sm-start">Buscar Juegos</h3>
+        
         <div class="d-flex align-items-center bg-dark px-3 py-2 rounded-pill border border-secondary shadow-sm">
-          <span class="small fw-bold text-white me-2">IGDB</span>
+          <span class="small fw-bold me-2" [class.text-white]="motorBusqueda() === 'igdb'" [class.text-white-50]="motorBusqueda() === 'steam'">IGDB</span>
           <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
-            <input class="form-check-input ms-0 me-2 mt-0" type="checkbox" role="switch" ...>
+            <input class="form-check-input ms-0 me-2 mt-0 custom-switch-premium" 
+                   type="checkbox" role="switch" 
+                   [checked]="motorBusqueda() === 'steam'"
+                   (change)="cambiarMotor()"
+                   id="motorSwitch">
           </div>
-          <span class="small text-white-50">Steam</span>
+          <span class="small fw-bold" [class.text-white]="motorBusqueda() === 'steam'" [class.text-white-50]="motorBusqueda() === 'igdb'">Steam</span>
         </div>
       </div>
 
@@ -43,7 +48,7 @@
           </div>
         } @else {
           <div class="games-grid">
-            @for (game of searchResults(); track game.appid) {
+            @for (game of resultadosPaginados(); track game.appid) {
               <div class="game-item-wrapper">
                 <app-search-game-card 
                   [game]="game" 
@@ -54,6 +59,28 @@
               </div>
             }
           </div>
+
+          @if (totalPaginas() > 1) {
+            <nav class="d-flex justify-content-center mt-4 mb-2">
+              <ul class="pagination pagination-premium gap-2 m-0">
+                
+                <li class="page-item" [class.disabled]="paginaActual() === 1">
+                  <button class="page-link" (click)="paginaAnterior()">Anterior</button>
+                </li>
+                
+                @for (pagina of paginasArray(); track pagina) {
+                  <li class="page-item" [class.active]="pagina === paginaActual()">
+                    <button class="page-link" (click)="irAPagina(pagina)">{{ pagina }}</button>
+                  </li>
+                }
+
+                <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
+                  <button class="page-link" (click)="siguientePagina()">Siguiente</button>
+                </li>
+
+              </ul>
+            </nav>
+          }
         }
       </main>
     } @else {

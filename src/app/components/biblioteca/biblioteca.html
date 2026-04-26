@@ -43,7 +43,7 @@
             [completados]="completados()"
             [abandonados]="abandonado()"
             [filtroActual]="filtroEstado()"
-            (filtroSeleccionado)="filtroEstado.set($event)">
+            (filtroSeleccionado)="actualizarFiltroEstado($event)">
           </app-stats-panel>
 
           <div class="glass-panel p-4 rounded-4 mt-4">
@@ -52,16 +52,16 @@
             <app-game-filters 
               [filtroTexto]="filtroTexto()" 
               [filtroEstado]="filtroEstado()"
-              (textoCambiado)="filtroTexto.set($event)" 
+              (textoCambiado)="actualizarFiltroTexto($event)" 
               [totalMostrados]="bibliotecaFiltrada().length"
-              (estadoCambiado)="filtroEstado.set($event)">
+              (estadoCambiado)="actualizarFiltroEstado($event)">
             </app-game-filters>
             
             <div class="mt-4">
               <label class="text-white-50 small mb-2 fw-bold text-uppercase">Ordenar por</label>
               <select class="form-select bg-dark text-white border-secondary shadow-none" 
                       [value]="criterioOrden()"
-                      (change)="criterioOrden.set($any($event.target).value)">
+                      (change)="actualizarCriterioOrden($any($event.target).value)">
                 <option value="nombre">🔠 Nombre (A-Z)</option>
                 <option value="rating">⭐ Calificación</option>
                 <option value="reciente">📅 Más recientes</option>
@@ -79,8 +79,11 @@
       </aside>
 
       <div class="col-lg-8 col-xl-9">
+        
+        <div id="ancla-grid-biblioteca"></div>
+
         <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
-          @for (game of bibliotecaFiltrada(); track game.id) {
+          @for (game of bibliotecaPaginada(); track game.id) {
             <div class="col">
               <app-game-card 
                 [game]="game"
@@ -100,6 +103,28 @@
             </h5>
           </div>
         }
+
+        @if (totalPaginas() > 1) {
+          <nav class="d-flex justify-content-center mt-5 mb-3">
+            <ul class="pagination pagination-premium gap-2 m-0">
+              
+              <li class="page-item" [class.disabled]="paginaActual() === 1">
+                <button class="page-link" (click)="paginaAnterior()">Anterior</button>
+              </li>
+              
+              @for (pagina of paginasArray(); track pagina) {
+                <li class="page-item" [class.active]="pagina === paginaActual()">
+                  <button class="page-link" (click)="irAPagina(pagina)">{{ pagina }}</button>
+                </li>
+              }
+
+              <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
+                <button class="page-link" (click)="siguientePagina()">Siguiente</button>
+              </li>
+
+            </ul>
+          </nav>
+        }
       </div>
 
     </div>
@@ -113,5 +138,21 @@
       (guardarDiario)="guardarDiario($event)"
       (close)="juegoDetalle.set(null)">
     </app-game-modal>
+  }
+
+  @if (notificacion()) {
+    <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 2000">
+      <div class="toast show align-items-center text-white border-0 glass-toast" 
+           [class.bg-success]="notificacion()?.tipo === 'success'"
+           [class.bg-danger]="notificacion()?.tipo === 'error'"
+           role="alert">
+        <div class="d-flex">
+          <div class="toast-body fw-bold">
+            {{ notificacion()?.tipo === 'success' ? '✅' : '❌' }} {{ notificacion()?.mensaje }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="notificacion.set(null)" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
   }
 </div>
