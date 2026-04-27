@@ -228,3 +228,44 @@
   transition: transform 0.1s ease-out;
   &.is-dragging { transition: none; }
 }
+
+
+/* ==========================================================================
+   EDITOR QUILL - MODO GLASSMORPHISM
+   ========================================================================== */
+.glass-editor-wrapper {
+  ::ng-deep .ql-toolbar.ql-snow {
+    background: var(--glass-bg-nav);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px 12px 0 0;
+  }
+
+  ::ng-deep .ql-container.ql-snow {
+    border: 1px solid var(--glass-border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-main);
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  ::ng-deep .ql-editor.ql-blank::before {
+    color: var(--text-muted); /* Color del texto "placeholder" */
+    font-style: normal;
+  }
+
+  /* Cambiamos el color de los iconos (negrita, cursiva, listas...) a gris clarito */
+  ::ng-deep .ql-snow .ql-stroke {
+    stroke: var(--text-muted);
+  }
+  ::ng-deep .ql-snow .ql-fill, 
+  ::ng-deep .ql-snow .ql-stroke.ql-fill {
+    fill: var(--text-muted);
+  }
+  
+  /* Efecto hover en los botones del editor */
+  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-stroke {
+    stroke: var(--color-info);
+  }
+}

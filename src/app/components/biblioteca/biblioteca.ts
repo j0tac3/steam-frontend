@@ -301,6 +301,7 @@ ngOnInit() {
     } else {
       // Si lo cambias de columna, hacemos la transferencia y actualizamos tu Base de Datos
       const juegoMovido = event.previousContainer.data[event.previousIndex];
+      juegoMovido.status = nuevoEstado as Game['status'];
       
       transferArrayItem(
         event.previousContainer.data,

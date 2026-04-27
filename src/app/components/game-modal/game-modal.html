@@ -97,10 +97,19 @@
 
                 <div class="col-12">
                   <label class="section-label text-muted fw-bold mb-2 small">NOTAS Y PROGRESO</label>
-                  <textarea class="form-control rounded-3 border-light shadow-sm" rows="5" style="background: rgba(255,255,255,0.05); color: white;"
+                  <div class="glass-editor-wrapper mt-2">
+                    <quill-editor 
+                      [(ngModel)]="detalle.notes"
+                      name="notes"
+                      [styles]="{height: '250px'}" 
+                      theme="snow" 
+                      placeholder="Escribe tu reseña, notas o guía detallada aquí...">
+                    </quill-editor>
+                  </div>
+                  <!-- <textarea class="form-control rounded-3 border-light shadow-sm" rows="5" style="background: rgba(255,255,255,0.05); color: white;"
                             placeholder="Escribe tus impresiones..." 
                             [value]="detalle.notes || ''" 
-                            (input)="detalle.notes = $any($event.target).value"></textarea>
+                            (input)="detalle.notes = $any($event.target).value"></textarea> -->
                 </div>
 
                 <div class="col-12 mt-4 pb-2">

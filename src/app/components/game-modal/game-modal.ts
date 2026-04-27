@@ -2,12 +2,16 @@ import { Component, input, output, signal, inject, effect, computed } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Game } from '../../models/game'; // Ajusta tu ruta
+import { Game } from '../../models/game';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-game-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, 
+            FormsModule,
+            QuillModule
+          ],
   templateUrl: './game-modal.html',
   styleUrl: './game-modal.scss'
 })

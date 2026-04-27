@@ -5,11 +5,16 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { IconComponent } from '../icon/icon';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, 
+            FormsModule, 
+            HttpClientModule,
+            IconComponent
+          ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
