@@ -41,7 +41,7 @@ export class BibliotecaComponent implements OnInit {
   filtroEstado = signal('todos');
   criterioOrden = signal<'nombre' | 'rating' | 'reciente'>('nombre');
 
-  juegoDetalle = signal<any>(null);
+  juegoDetalle = signal<Game | null>(null);
   cargandoDetalle = signal(false);
   
   // AÑADIDO: Soporte para 'warning'
@@ -260,7 +260,12 @@ ngOnInit() {
     }
   }
 
-  guardarDiario(game: any) {
+  guardarDiario(game: Game) {
+    if (!game.id) {
+          console.error('Intento de guardar un diario de un juego sin ID');
+          return; 
+    }
+
     const payload = {
       notes: game.notes,
       personal_rating: game.personal_rating,

@@ -19,9 +19,9 @@
         </div>
       }
       
-      @else if (juegoDetalle()) {
+      @else if (juegoDetalle(); as detalle) {
         
-        <div class="hero-header" [style.backgroundImage]="'url(' + (juegoDetalle().background || juegoDetalle().image_url || juegoDetalle().logo) + ')'">
+        <div class="hero-header" [style.backgroundImage]="'url(' + (detalle.background || detalle.image_url || detalle.logo) + ')'">
           <div class="hero-overlay"></div>
           
           <button type="button" class="btn-close-custom" aria-label="Cerrar detalles" (click)="onClose()">
@@ -30,16 +30,16 @@
           
           <div class="hero-content">
             <div class="hero-text text-center w-100">
-              <h2 class="hero-title" id="modalTitle">{{ juegoDetalle().name || juegoDetalle().title }}</h2>
+              <h2 class="hero-title" id="modalTitle">{{ detalle.name || detalle.title }}</h2>
               
               <div class="d-flex align-items-center justify-content-center gap-2 mt-2 flex-wrap">
-                <span class="badge glass-badge source-badge">
-                  {{ (juegoDetalle().source || 'IGDB') | uppercase }}
+                <span class="badge glass-badge source-badge text-bg-info">
+                  {{ (detalle.source || 'BIBLIOTECA') | uppercase }}
                 </span>
                 
-                @if (juegoDetalle().genres) {
-                  @for (genero of juegoDetalle().genres.slice(0, 3); track $index) {
-                    <span class="badge glass-badge">
+                @if (detalle.genres) {
+                  @for (genero of detalle.genres.slice(0, 3); track $index) {
+                    <span class="badge glass-badge text-bg-secondary opacity-75">
                       {{ genero.description || genero.name || genero }}
                     </span>
                   }
@@ -52,12 +52,8 @@
         @if (esBiblioteca()) {
           <div class="modern-tabs-container">
             <div class="modern-tabs-nav">
-              <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
-                DETALLES
-              </button>
-              <button [class.active]="activeTab() === 'diario'" (click)="activeTab.set('diario')">
-                MI DIARIO
-              </button>
+              <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">DETALLES</button>
+              <button [class.active]="activeTab() === 'diario'" (click)="activeTab.set('diario')">MI DIARIO</button>
             </div>
           </div>
         } @else {
@@ -68,25 +64,25 @@
           <div class="p-4">
             
             @if (activeTab() === 'info') {
-              <div class="description-section">
+              <div class="description-section animate__animated animate__fadeIn">
                 <label class="section-label">SINOPSIS</label>
                 <div class="description-text text-secondary lh-lg" 
-                     [innerHTML]="getSafeHtml(juegoDetalle().summary || juegoDetalle().description || juegoDetalle().detailed_description || juegoDetalle().about_the_game || 'Sin descripción disponible.')">
+                     [innerHTML]="getSafeHtml(detalle.summary || detalle.description || detalle.detailed_description || detalle.about_the_game || 'No hay descripción disponible para este juego.')">
                 </div>
               </div>
             }
 
             @if (activeTab() === 'diario') {
-              <div class="row g-4">
+              <div class="row g-4 animate__animated animate__fadeIn">
                 <div class="col-md-6">
                   <label class="section-label text-muted fw-bold mb-2 small">VALORACIÓN PERSONAL</label>
                   <div class="d-flex gap-1 stars-container">
                     @for (filled of getStarArray(); track $index) {
                       <span class="fs-3 cursor-pointer transition-all" 
-                            [class.text-warning]="$index < (juegoDetalle().personal_rating / 2)"
-                            [class.text-light-subtle]="$index >= (juegoDetalle().personal_rating / 2)"
+                            [class.text-warning]="filled"
+                            [class.text-light-subtle]="!filled"
                             (click)="setRating($index + 1)">
-                        {{ $index < (juegoDetalle().personal_rating / 2) ? '★' : '☆' }}
+                        {{ filled ? '★' : '☆' }}
                       </span>
                     }
                   </div>
@@ -94,17 +90,17 @@
                 
                 <div class="col-md-6">
                   <label class="section-label text-muted fw-bold mb-2 small">FECHA DE INICIO</label>
-                  <input type="date" class="form-control rounded-3 border-light shadow-sm" 
-                         [value]="juegoDetalle().start_date || ''" 
-                         (input)="juegoDetalle().start_date = $any($event.target).value">
+                  <input type="date" class="form-control rounded-3 border-light shadow-sm" style="background: rgba(255,255,255,0.05); color: white;"
+                         [value]="detalle.start_date || ''" 
+                         (input)="detalle.start_date = $any($event.target).value">
                 </div>
 
                 <div class="col-12">
                   <label class="section-label text-muted fw-bold mb-2 small">NOTAS Y PROGRESO</label>
-                  <textarea class="form-control rounded-3 border-light shadow-sm" rows="5" 
+                  <textarea class="form-control rounded-3 border-light shadow-sm" rows="5" style="background: rgba(255,255,255,0.05); color: white;"
                             placeholder="Escribe tus impresiones..." 
-                            [value]="juegoDetalle().notes || ''" 
-                            (input)="juegoDetalle().notes = $any($event.target).value"></textarea>
+                            [value]="detalle.notes || ''" 
+                            (input)="detalle.notes = $any($event.target).value"></textarea>
                 </div>
 
                 <div class="col-12 mt-4 pb-2">

@@ -1,19 +1,23 @@
 <div class="search-section d-flex justify-content-center mb-4">
   <div class="search-wrapper position-relative">
     
-    <span class="search-icon text-secondary d-flex align-items-center">
+    <span class="search-icon d-flex align-items-center">
       <app-icon name="icon-search"></app-icon>
     </span>
     
     <input 
       type="text" 
       class="form-control custom-search-input shadow-sm" 
-      placeholder="Filtrar por"
+      placeholder="Filtrar por nombre..."
       [value]="filtroTexto()"
       (input)="textoCambiado.emit($any($event.target).value)">
     
-    <div class="results-counter text-muted">
-      <strong>{{ totalMostrados() }}</strong> {{ totalMostrados() === 1 ? 'juego' : 'juegos' }}
+    @if (filtroTexto()) {
+      <button class="btn-clear" (click)="limpiarBusqueda()" title="Limpiar búsqueda">×</button>
+    }
+    
+    <div class="results-counter">
+      <strong class="text-white">{{ totalMostrados() }}</strong> {{ totalMostrados() === 1 ? 'juego' : 'juegos' }}
     </div>
   </div>
 </div>

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam';
 import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 import { IconComponent } from '../icon/icon';
-import { SkeletonCardComponent } from '../skeleton-card/skeleton-card'; // (Ajusta la ruta si es necesario)
+import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
+import { Game } from '../../models/game';
 
 @Component({
   selector: 'app-game-search',
@@ -20,7 +21,7 @@ export class GameSearchComponent {
   private steamService = inject(SteamService);
 
   motorBusqueda = signal<'igdb' | 'steam'>('igdb');
-  searchResults = signal<any[]>([]);
+  searchResults = signal<Game[]>([]);
   cargando = signal<boolean>(false);
   misJuegos = input<any[]>([]);
   
@@ -30,6 +31,12 @@ export class GameSearchComponent {
   // ESTADO DE PAGINACIÓN
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(10);
+
+  @Output() addGame = new EventEmitter<Game>();
+  @Output() viewDetails = new EventEmitter<Game>();
+  
+  // NUEVO: Emisor para conectar con el sistema de Toasts de la biblioteca
+  @Output() notificar = new EventEmitter<{mensaje: string, tipo: 'success' | 'error' | 'warning'}>();
 
   // NUEVO: Crea un array vacío del tamaño exacto de tus elementos por página
   esqueletosArray = computed(() => new Array(this.elementosPorPagina()).fill(0));
@@ -55,12 +62,6 @@ export class GameSearchComponent {
   paginasArray = computed(() => {
     return Array.from({ length: this.totalPaginas() }, (_, i) => i + 1);
   });
-
-  @Output() addGame = new EventEmitter<any>();
-  @Output() viewDetails = new EventEmitter<any>();
-  
-  // NUEVO: Emisor para conectar con el sistema de Toasts de la biblioteca
-  @Output() notificar = new EventEmitter<{mensaje: string, tipo: 'success' | 'error' | 'warning'}>();
 
   // MÉTODOS DE BÚSQUEDA Y CONTROL
   cambiarMotor() {

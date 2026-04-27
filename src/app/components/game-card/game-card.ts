@@ -1,26 +1,24 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
+import { IconComponent } from '../icon/icon';
+import { Game } from '../../models/game'; // Ajusta la ruta a tu carpeta models
 
 @Component({
   selector: 'app-game-card',
   standalone: true,
-  imports: [  CommonModule,
-              IconComponent
-            ],
+  imports: [CommonModule, IconComponent],
   templateUrl: './game-card.html',
   styleUrl: './game-card.scss'
 })
 export class GameCardComponent {
-  // Recibe el juego individual
-  @Input() game: any;
+  // 1. Sustituimos 'any' por 'Game'
+  @Input() game!: Game;
 
-  // Avisamos al padre de las acciones
-  @Output() verInfo = new EventEmitter<any>();
+  // 2. Tipamos los eventos de salida
+  @Output() verInfo = new EventEmitter<Game>();
   @Output() borrar = new EventEmitter<number>();
   @Output() cambiarEstado = new EventEmitter<{id: number, nuevoEstado: string}>();
 
-  // Función extraída de biblioteca.ts
   generarEstrellas(rating: number | null | undefined): string {
     if (!rating || rating === 0) return 'Sin puntuar';
     
@@ -31,19 +29,24 @@ export class GameCardComponent {
     return estrellasLlenas + estrellasVacias;
   }
 
-  // Funciones intermedias para emitir los eventos
   onVerInfo() {
     this.verInfo.emit(this.game);
   }
 
   onBorrar() {
-    this.borrar.emit(this.game.id);
+    // Guardia de seguridad: nos aseguramos de que haya un ID antes de emitir
+    if (this.game.id) {
+      this.borrar.emit(this.game.id);
+    }
   }
 
-  onCambiarEstado(evento: any) {
-    this.cambiarEstado.emit({
-      id: this.game.id, 
-      nuevoEstado: evento.target.value
-    });
+  onCambiarEstado(evento: Event) {
+    const selectElement = evento.target as HTMLSelectElement;
+    if (this.game.id) {
+      this.cambiarEstado.emit({
+        id: this.game.id, 
+        nuevoEstado: selectElement.value
+      });
+    }
   }
 }

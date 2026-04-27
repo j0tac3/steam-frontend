@@ -1,32 +1,39 @@
 .search-result-card {
-  background: #161b22;
+  /* Aplicamos nuestro cristal global en lugar de un color fijo oscuro */
+  background: var(--glass-bg-panel);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border) !important;
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-5px);
+    box-shadow: var(--glass-shadow) !important;
+    border-color: var(--glass-border-light);
     .blur-background { transform: scale(1.1); }
   }
 }
 
 .img-container {
   position: relative;
-  height: 240px; // Altura fija para mantener la rejilla simétrica
+  height: 240px; 
   width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: rgba(0, 0, 0, 0.4); /* Fondo sutil acorde al resto */
+  border-bottom: 1px solid var(--glass-border);
 
   .blur-background {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: -10%;
     background-size: cover;
     background-position: center;
-    filter: blur(15px) brightness(0.5); // Difuminado y oscurecido
-    transform: scale(1.05);
+    /* Usamos la variable global de blur */
+    filter: var(--glass-blur-medium) brightness(0.5); 
     transition: transform 0.5s ease;
     z-index: 1;
   }
@@ -36,27 +43,31 @@
     z-index: 2;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; // Centra la imagen sin cortarla
+    object-fit: contain; 
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-  }
-
-  .img-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
-    z-index: 3;
   }
 }
 
 .card-footer {
   background: transparent !important;
+  
   .btn-primary {
-    background-color: #3b82f6;
+    background-color: var(--color-info); /* Usamos el azul semántico de styles.scss */
     border: none;
     border-radius: 6px;
     font-size: 0.75rem;
     padding: 8px;
-    &:hover { background-color: #2563eb; }
-    &:disabled { background-color: #1f2937; color: #4b5563; }
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) { 
+      filter: brightness(1.2);
+      transform: translateY(-1px);
+    }
+    
+    &:disabled { 
+      background-color: var(--glass-bg-btn); 
+      color: var(--text-muted); 
+      cursor: not-allowed;
+    }
   }
 }

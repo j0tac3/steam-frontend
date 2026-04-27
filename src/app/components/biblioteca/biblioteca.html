@@ -39,10 +39,8 @@
 
   <main class="container">
     <div class="row g-4">
-      
       <aside class="col-lg-4 col-xl-3 mb-4 mb-lg-0">
-        <div class="sidebar-sticky-tools">
-          
+        <div class="sidebar-sticky-tools d-flex flex-column gap-4">
           <app-stats-panel 
             [total]="totalJuegos()"
             [pendientes]="pendientes()"
@@ -53,9 +51,8 @@
             (filtroSeleccionado)="actualizarFiltroEstado($event)">
           </app-stats-panel>
 
-          <div class="glass-panel p-4 rounded-4 mt-4">
+          <div class="glass-panel p-4 rounded-4 w-100 m-0">
             <h6 class="text-white-50 fw-bold mb-3 text-uppercase tracking-wide">Filtros Locales</h6>
-            
             <app-game-filters 
               [filtroTexto]="filtroTexto()" 
               [filtroEstado]="filtroEstado()"

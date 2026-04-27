@@ -2,6 +2,7 @@ import { Component, input, output, signal, inject, effect, computed } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Game } from '../../models/game'; // Ajusta tu ruta
 
 @Component({
   selector: 'app-game-modal',
@@ -13,13 +14,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class GameModalComponent {
   private sanitizer = inject(DomSanitizer);
 
-  game = input<any>(null);
-  juegoDetalle = input<any>(null);
+  juegoDetalle = input<Game | null>(null);
   cargandoDetalle = input<boolean>(false);
   esBiblioteca = input<boolean>(false);
   
-  guardarDiario = output<any>();
-  close = output<void>(); // NUEVO EVENTO DE CIERRE
+  guardarDiario = output<Game>();
+  close = output<void>(); 
   
   activeTab = signal<'info' | 'diario'>('info');
 
@@ -34,6 +34,7 @@ export class GameModalComponent {
     }
   }
 
+  // Devuelve un array [true, true, false, false, false] basado en la nota
   getStarArray(): boolean[] {
     const rating = this.juegoDetalle()?.personal_rating || 0;
     const count = Math.round(rating / 2);
@@ -41,11 +42,13 @@ export class GameModalComponent {
   }
 
   onGuardar() {
-    this.guardarDiario.emit(this.juegoDetalle());
-    this.onClose(); // Auto-cierra el modal al guardar (Mejor UX)
+    const juego = this.juegoDetalle();
+    if (juego) {
+      this.guardarDiario.emit(juego);
+      this.onClose();
+    }
   }
 
-  // Función limpia para cerrar el modal en Angular
   onClose() {
     this.close.emit();
   }
@@ -92,7 +95,6 @@ export class GameModalComponent {
 
   cerrarModalManual() {
     this.translateY.set(1000);
-    // Añadimos un pequeño timeout para que dé tiempo a la animación de swipe down
     setTimeout(() => {
       this.onClose();
     }, 200); 

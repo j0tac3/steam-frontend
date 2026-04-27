@@ -7,7 +7,7 @@
     <img [src]="game.image_url || game.logo" class="main-img" alt="Portada">
   </div>
   <div class="card-body p-3 d-flex flex-column">
-    <h6 class="fw-bold text-truncate mb-1" [title]="game.title">{{ game.title }}</h6>
+    <h6 class="fw-bold text-truncate mb-1 text-white" [title]="game.title">{{ game.title }}</h6>
     
     <div class="text-warning mb-3" style="font-size: 0.9rem;">
       {{ generarEstrellas(game.personal_rating) }}
@@ -27,8 +27,8 @@
           <app-icon name="icon-info"></app-icon>
           <span>Info</span>
         </button>
-        <button class="btn btn-outline-danger d-flex align-items-center justify-content-center" 
-                (click)="borrar.emit(game.id)" 
+        <button class="btn btn-danger text-white border-0 shadow d-flex align-items-center justify-content-center" 
+                (click)="onBorrar()" 
                 title="Eliminar juego">
           <app-icon name="icon-trash"></app-icon>
         </button>

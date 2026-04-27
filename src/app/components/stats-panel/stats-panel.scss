@@ -2,14 +2,20 @@
    PANEL DE ESTADÍSTICAS (GLASSMORPHISM)
    ========================================================================== */
 .stats-glass-card {
-  background: rgba(20, 20, 25, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg-panel);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 1.5rem;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  color: var(--text-main);
+  box-shadow: var(--glass-shadow);
+  
+  /* ASEGÚRATE DE QUE ESTO ESTÉ ASÍ: */
+  width: 100% !important;   /* Forzamos el ancho completo */
+  max-width: none !important; /* Eliminamos cualquier tope */
+  margin-left: 0 !important;  /* Quitamos márgenes laterales */
+  margin-right: 0 !important;
 }
 
 .header-area {
@@ -21,11 +27,11 @@
   transition: background 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg-btn);
   }
   
   &.active-filter {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-bg-btn-hover);
   }
 }
 
@@ -36,7 +42,7 @@
   display: flex;
   height: 8px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--glass-border);
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 1.5rem;
@@ -47,10 +53,11 @@
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .success { background: #10b981; } // Verde Completado
-  .primary { background: #3b82f6; } // Azul Jugando
-  .warning { background: #f59e0b; } // Naranja Pendiente
-  .danger  { background: #ef4444; } // Rojo Abandonado
+  /* Bebemos de la paleta semántica global */
+  .success { background: var(--color-success); }
+  .primary { background: var(--color-info); }
+  .warning { background: var(--color-warning); }
+  .danger  { background: var(--color-danger); }
 }
 
 /* ==========================================================================
@@ -58,14 +65,14 @@
    ========================================================================== */
 .legend-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); // 2 columnas iguales
+  grid-template-columns: repeat(2, 1fr); 
   gap: 12px;
 }
 
 .stat-pill {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 10px 8px; /* Reducido el padding horizontal para dar más espacio al texto */
+  background: var(--glass-bg-nav);
+  border: 1px solid var(--glass-border);
+  padding: 10px 8px; 
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -74,44 +81,48 @@
   overflow: hidden;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--glass-bg-btn);
     transform: translateY(-2px);
   }
 
   &.active-filter {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--glass-bg-btn-hover);
+    border-color: var(--glass-border-light);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   .label {
     display: flex;
-    align-items: center; // Mantiene el punto y el texto alineados
-    gap: 6px; // Menos separación entre el punto de color y la palabra
-    font-size: 0.65rem; /* Fuente ligeramente más pequeña */
+    align-items: center; 
+    gap: 6px; 
+    font-size: 0.65rem; 
     font-weight: 700;
-    color: #adb5bd;
+    color: var(--text-muted);
     text-transform: uppercase;
     margin-bottom: 4px;
-    
-    /* MAGIA RESPONSIVE: Permite que el texto se adapte sin cortarse de forma fea */
     white-space: normal;
     word-break: break-word;
     line-height: 1.1;
   }
 
   .dot {
-    width: 8px; /* Punto ligeramente más pequeño para ganar espacio */
+    width: 8px; 
     height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 1px; /* Ajuste óptico para que el punto quede centrado con el texto nuevo */
+    margin-top: 1px; 
+    
+    /* Clases de utilidad para los puntos de la leyenda */
+    &.dot-success { background: var(--color-success); }
+    &.dot-primary { background: var(--color-info); }
+    &.dot-warning { background: var(--color-warning); }
+    &.dot-danger  { background: var(--color-danger); }
   }
 
   .value {
-    font-size: 1.3rem; /* Número adaptado a la nueva proporción de la tarjeta */
+    font-size: 1.3rem; 
     font-weight: 800;
-    color: white;
+    color: var(--text-main);
     line-height: 1;
   }
 }
