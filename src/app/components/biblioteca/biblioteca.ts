@@ -12,7 +12,7 @@ import { GameFiltersComponent } from '../game-filters/game-filters';
 import { IconComponent } from '../icon/icon';
 import { Game } from '../../models/game';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-biblioteca',
@@ -286,6 +286,34 @@ ngOnInit() {
       },
       error: (err) => console.error(err)
     });
+  }
+
+  // Filtra los juegos al vuelo para cada columna
+  getJuegosPorEstado(estado: string): Game[] {
+    return this.bibliotecaFiltrada().filter(j => j.status === estado);
+  }
+
+  // La física de soltar la tarjeta
+  onJuegoSoltado(event: CdkDragDrop<Game[]>, nuevoEstado: string) {
+    if (event.previousContainer === event.container) {
+      // Si lo sueltas en la misma columna, solo cambia el orden visual
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      // Si lo cambias de columna, hacemos la transferencia y actualizamos tu Base de Datos
+      const juegoMovido = event.previousContainer.data[event.previousIndex];
+      
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+
+      // Usamos tu función existente para guardar el cambio en la BBDD
+      if (juegoMovido.id) {
+        this.actualizarEstado(juegoMovido.id, nuevoEstado);
+      }
+    }
   }
 
   cerrarSesion() {
