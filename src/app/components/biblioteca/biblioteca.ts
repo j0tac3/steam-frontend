@@ -12,6 +12,7 @@ import { GameFiltersComponent } from '../game-filters/game-filters';
 import { IconComponent } from '../icon/icon';
 import { Game } from '../../models/game';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-biblioteca',
@@ -24,7 +25,8 @@ import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
     GameSearchComponent,
     GameFiltersComponent,
     IconComponent,
-    SkeletonCardComponent
+    SkeletonCardComponent,
+    DragDropModule
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
@@ -49,6 +51,8 @@ export class BibliotecaComponent implements OnInit {
 
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(12);
+
+  vistaActual = signal<'cuadricula' | 'tablero'>('cuadricula');
 
 ngOnInit() {
     // Solo llamamos a la función. El estado inicial de la señal ya es true.

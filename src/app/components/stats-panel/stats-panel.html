@@ -20,6 +20,15 @@
     <div class="bar danger" [style.width]="calcularPorcentaje(abandonados())"></div>
   </div>
 
+  <div class="chart-container d-flex justify-content-center my-4" style="position: relative; height: 160px; width: 100%">
+    <canvas id="donutChart"></canvas>
+    
+    <div class="position-absolute top-50 start-50 translate-middle text-center" style="pointer-events: none;">
+      <h2 class="m-0 fw-bolder text-white">{{ total() }}</h2>
+      <span class="text-white-50 small text-uppercase fw-bold" style="font-size: 0.65rem;">Total</span>
+    </div>
+  </div>
+
   <div class="legend-grid">
     <div class="stat-pill" 
          [class.active-filter]="filtroActual() === 'completado'"
