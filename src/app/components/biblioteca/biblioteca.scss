@@ -415,3 +415,38 @@ header.container {
     opacity: 1;
   }
 }
+
+/* ==========================================================================
+   MODO KANBAN (TRELLO) - AJUSTES COMPACTOS
+   ========================================================================== */
+.kanban-container {
+  /* 1. Hacemos que las columnas sean más finas y se repartan el espacio */
+  .kanban-column {
+    min-width: 220px !important; /* Bajamos de 280px a 220px */
+    flex: 1; /* Si hay espacio de sobra, crecen por igual */
+  }
+
+  /* 2. Compactamos la tarjeta solo cuando está dentro del Kanban */
+  .kanban-item {
+    ::ng-deep .game-card {
+      /* Reducimos márgenes y textos */
+      .card-body {
+        padding: 12px !important;
+      }
+      h6 {
+        font-size: 0.85rem !important;
+        margin-bottom: 2px !important;
+      }
+      .text-warning {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      
+      /* 🌟 MEJORA UX: Ocultamos el selector de estado (Pendiente/Jugando...) 
+         ¡Porque en este modo ya cambiamos el estado arrastrando la tarjeta! */
+      select.form-select {
+        display: none !important;
+      }
+    }
+  }
+}
