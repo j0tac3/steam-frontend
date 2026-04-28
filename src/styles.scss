@@ -56,3 +56,38 @@ body {
 body:focus {
   outline: none !important;
 }
+
+/* ==========================================================================
+   SCROLLBAR PERSONALIZADA (Estilo Glassmorphism)
+   ========================================================================== */
+
+/* Ancho y alto de la barra */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* El "carril" por donde se mueve */
+::-webkit-scrollbar-track {
+  background: transparent; /* Totalmente transparente para no romper el fondo */
+  border-radius: 10px;
+}
+
+/* El "pulgar" o barra que agarras */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15); /* Blanco muy sutil */
+  border-radius: 10px;
+  border: 2px solid transparent; /* Truco para que parezca más delgada */
+  background-clip: padding-box;
+}
+
+/* Cuando pasas el ratón por encima de la barra */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3); 
+  background-clip: padding-box;
+}
+
+/* Ocultar las flechitas de los extremos (opcional pero muy recomendado para diseño moderno) */
+::-webkit-scrollbar-button {
+  display: none;
+}

@@ -231,41 +231,82 @@
 
 
 /* ==========================================================================
-   EDITOR QUILL - MODO GLASSMORPHISM
+   FORMULARIOS CRISTAL (Inputs y Quill)
    ========================================================================== */
+.glass-input {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-main) !important;
+  border-radius: 8px;
+  backdrop-filter: var(--glass-blur-light);
+  
+  &:focus {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-color: var(--color-info) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  }
+  
+  /* Pone el icono del calendario en blanco */
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    opacity: 0.7;
+    cursor: pointer;
+  }
+}
+
 .glass-editor-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+  /* La barra superior (Toolbar) */
   ::ng-deep .ql-toolbar.ql-snow {
-    background: var(--glass-bg-nav);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: var(--glass-blur-light);
     border: 1px solid var(--glass-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px 12px 0 0;
+    padding: 10px;
   }
 
+  /* El área donde escribes */
   ::ng-deep .ql-container.ql-snow {
     border: 1px solid var(--glass-border);
     border-top: none;
     border-radius: 0 0 12px 12px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: var(--glass-blur-light);
     color: var(--text-main);
     font-size: 1rem;
     font-family: inherit;
   }
 
+  /* Placeholder (El texto gris antes de escribir) */
   ::ng-deep .ql-editor.ql-blank::before {
-    color: var(--text-muted); /* Color del texto "placeholder" */
+    color: rgba(255, 255, 255, 0.4);
     font-style: normal;
   }
 
-  /* Cambiamos el color de los iconos (negrita, cursiva, listas...) a gris clarito */
-  ::ng-deep .ql-snow .ql-stroke {
-    stroke: var(--text-muted);
-  }
+  /* Color base de los iconos (negrita, cursiva, etc) */
+  ::ng-deep .ql-snow .ql-stroke { stroke: rgba(255, 255, 255, 0.7); }
   ::ng-deep .ql-snow .ql-fill, 
-  ::ng-deep .ql-snow .ql-stroke.ql-fill {
-    fill: var(--text-muted);
+  ::ng-deep .ql-snow .ql-stroke.ql-fill { fill: rgba(255, 255, 255, 0.7); }
+  
+  /* Efecto azul al pasar el ratón o activar (negrita activada) */
+  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-stroke,
+  ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: var(--color-info);
+  }
+  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-fill,
+  ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: var(--color-info);
   }
   
-  /* Efecto hover en los botones del editor */
-  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-stroke {
-    stroke: var(--color-info);
+  /* Textos de los selectores (Tamaño, Fuente) */
+  ::ng-deep .ql-snow .ql-picker { color: rgba(255, 255, 255, 0.7); }
+  ::ng-deep .ql-snow .ql-picker-options {
+    background: var(--glass-bg-panel);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur-heavy);
   }
 }

@@ -49,7 +49,6 @@ export class GameModalComponent {
     const juego = this.juegoDetalle();
     if (juego) {
       this.guardarDiario.emit(juego);
-      this.onClose();
     }
   }
 
@@ -57,10 +56,13 @@ export class GameModalComponent {
     this.close.emit();
   }
 
-  // --- LÓGICA DE GESTOS ---
+// --- LÓGICA DE GESTOS Y ESTADO ---
   translateY = signal<number>(0);
   isDragging = signal<boolean>(false);
   private startY = 0;
+
+  // AÑADIDO: Guardamos el ID del juego actual para saber si hemos cambiado de juego
+  private currentOpenGameId: number | string | null = null;
 
   backdropOpacity = computed(() => {
     const drag = this.translateY();
@@ -70,9 +72,17 @@ export class GameModalComponent {
 
   constructor() {
     effect(() => {
-      if (this.juegoDetalle()) {
-        this.activeTab.set('info');
-        this.translateY.set(0); 
+      const currentJuego = this.juegoDetalle();
+      if (currentJuego) {
+        // 🚀 LA MAGIA: Solo reseteamos a la pestaña 'info' si el ID es diferente (es un juego nuevo)
+        // Si es el mismo juego (porque hemos guardado y actualizado los datos), NO tocamos las pestañas.
+        if (this.currentOpenGameId !== currentJuego.id) {
+          this.activeTab.set('info');
+          this.translateY.set(0);
+          this.currentOpenGameId = currentJuego.id ?? null;
+        }
+      } else {
+        this.currentOpenGameId = null; // Reseteamos al cerrar
       }
     });
   }
