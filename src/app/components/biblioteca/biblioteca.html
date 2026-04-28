@@ -141,20 +141,26 @@
               <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
                 🎮 JUGANDO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('jugando').length }}</span>
               </h6>
-              <div class="kanban-list min-vh-50"
-                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion" 
-                  cdkDropList [cdkDropListData]="getJuegosPorEstado('jugando')" 
+              <div class="kanban-list"
+                  cdkDropList 
+                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
+                  [cdkDropListData]="getJuegosPorEstado('jugando')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'jugando')">
+                
                 @for (juego of getJuegosPorEstado('jugando'); track juego.id) {
-                  <div class="kanban-item mb-3 cursor-grab" cdkDrag>
+                  <div class="kanban-item mb-3 position-relative" cdkDrag>
+                    
                     <div class="mobile-drag-handle d-md-none" cdkDragHandle>
                       <app-icon name="icon-drag"></app-icon>
                     </div>
-                    <app-game-card  [game]="juego" 
+
+                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
+                      <app-game-card [game]="juego" 
                                     (verInfo)="verDetalles($event)" 
                                     (borrar)="borrarJuego($event)" 
                                     (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                    </app-game-card>
+                      </app-game-card>
+                    </div>
                   </div>
                 }
               </div>
@@ -164,20 +170,26 @@
               <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
                 ⏳ PENDIENTE <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('pendiente').length }}</span>
               </h6>
-              <div class="kanban-list min-vh-50" 
-                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
-                  cdkDropList [cdkDropListData]="getJuegosPorEstado('pendiente')" 
+              <div class="kanban-list"
+                  cdkDropList 
+                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
+                  [cdkDropListData]="getJuegosPorEstado('pendiente')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'pendiente')">
+                
                 @for (juego of getJuegosPorEstado('pendiente'); track juego.id) {
-                  <div class="kanban-item mb-3 cursor-grab" cdkDrag>
+                  <div class="kanban-item mb-3 position-relative" cdkDrag>
+                    
                     <div class="mobile-drag-handle d-md-none" cdkDragHandle>
                       <app-icon name="icon-drag"></app-icon>
                     </div>
-                    <app-game-card  [game]="juego" 
-                                    (verInfo)="verDetalles($event)"
+
+                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
+                      <app-game-card [game]="juego" 
+                                    (verInfo)="verDetalles($event)" 
                                     (borrar)="borrarJuego($event)" 
                                     (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                    </app-game-card>
+                      </app-game-card>
+                    </div>
                   </div>
                 }
               </div>
@@ -187,20 +199,26 @@
               <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
                 🏆 COMPLETADO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('completado').length }}</span>
               </h6>
-              <div class="kanban-list min-vh-50" 
-                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
-                  cdkDropList [cdkDropListData]="getJuegosPorEstado('completado')" 
+              <div class="kanban-list"
+                  cdkDropList 
+                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
+                  [cdkDropListData]="getJuegosPorEstado('completado')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'completado')">
+                
                 @for (juego of getJuegosPorEstado('completado'); track juego.id) {
-                  <div class="kanban-item mb-3 cursor-grab" cdkDrag>
+                  <div class="kanban-item mb-3 position-relative" cdkDrag>
+                    
                     <div class="mobile-drag-handle d-md-none" cdkDragHandle>
                       <app-icon name="icon-drag"></app-icon>
                     </div>
-                    <app-game-card  [game]="juego" 
-                                    (verInfo)="verDetalles($event)"
+
+                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
+                      <app-game-card [game]="juego" 
+                                    (verInfo)="verDetalles($event)" 
                                     (borrar)="borrarJuego($event)" 
                                     (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                    </app-game-card>
+                      </app-game-card>
+                    </div>
                   </div>
                 }
               </div>
@@ -210,20 +228,26 @@
               <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
                 ❌ Abandonado <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('abandonado').length }}</span>
               </h6>
-              <div class="kanban-list min-vh-50" 
-                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
-                  cdkDropList [cdkDropListData]="getJuegosPorEstado('abandonado')" 
+              <div class="kanban-list"
+                  cdkDropList 
+                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
+                  [cdkDropListData]="getJuegosPorEstado('abandonado')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'abandonado')">
+                
                 @for (juego of getJuegosPorEstado('abandonado'); track juego.id) {
-                  <div class="kanban-item mb-3 cursor-grab" cdkDrag>
+                  <div class="kanban-item mb-3 position-relative" cdkDrag>
+                    
                     <div class="mobile-drag-handle d-md-none" cdkDragHandle>
                       <app-icon name="icon-drag"></app-icon>
                     </div>
-                    <app-game-card  [game]="juego" 
-                                    (verInfo)="verDetalles($event)"
+
+                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
+                      <app-game-card [game]="juego" 
+                                    (verInfo)="verDetalles($event)" 
                                     (borrar)="borrarJuego($event)" 
                                     (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                    </app-game-card>
+                      </app-game-card>
+                    </div>
                   </div>
                 }
               </div>

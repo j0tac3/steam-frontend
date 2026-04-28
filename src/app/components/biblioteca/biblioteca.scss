@@ -511,3 +511,59 @@ header.container {
     }
   }
 }
+
+/* ==========================================================================
+   FÍSICAS DEL DRAG & DROP (CDK)
+   ========================================================================== */
+
+/* 1. Evitar que las listas vacías desaparezcan */
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-list {
+  flex: 1; /* Hace que la lista ocupe todo el alto de la columna vacía */
+  min-height: 150px; /* Área mínima garantizada para soltar tarjetas */
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+/* Efecto cuando pasas una tarjeta por encima de una lista vacía */
+.cdk-drop-list-receiving {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 2. El clon visual que arrastras por la pantalla */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 12px;
+  overflow: hidden !important; /* MATA cualquier barra de scroll */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
+  opacity: 0.95;
+  cursor: grabbing !important;
+  
+  &::-webkit-scrollbar { display: none !important; }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  /* Quitar el borde de edición de Angular si se pone tonto */
+  outline: none !important; 
+}
+
+/* 3. El hueco fantasma que deja la tarjeta en la lista origen */
+.cdk-drag-placeholder {
+  opacity: 0.2;
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  background: transparent;
+}
+
+/* 4. Transición suave al reorganizar */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.kanban-list.cdk-drop-list-dragging .kanban-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
