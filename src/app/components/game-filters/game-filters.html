@@ -1,6 +1,6 @@
-<div class="search-section d-flex justify-content-center mb-4">
+<div class="search-section d-flex flex-column gap-3 mb-2">
+  
   <div class="search-wrapper position-relative">
-    
     <span class="search-icon d-flex align-items-center">
       <app-icon name="icon-search"></app-icon>
     </span>
@@ -20,4 +20,19 @@
       <strong class="text-white">{{ totalMostrados() }}</strong> {{ totalMostrados() === 1 ? 'juego' : 'juegos' }}
     </div>
   </div>
+
+  <div class="mt-2">
+    <label class="text-white-50 small mb-2 fw-bold text-uppercase">Plataforma</label>
+    <select class="form-select bg-dark text-white border-secondary shadow-none"
+            [value]="filtroPlataforma()"
+            (change)="plataformaCambiada.emit($any($event.target).value)">
+      <option value="todas">🌌 Todas las plataformas</option>
+      <option value="PC">💻 PC (Steam/Epic)</option>
+      <option value="PS5">🎮 PlayStation</option>
+      <option value="Xbox">🟢 Xbox</option>
+      <option value="Switch">🔴 Nintendo Switch</option>
+      <option value="Mobile">📱 Móvil</option>
+    </select>
+  </div>
+
 </div>

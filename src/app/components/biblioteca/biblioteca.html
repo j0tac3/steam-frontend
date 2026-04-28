@@ -56,9 +56,11 @@
             <app-game-filters 
               [filtroTexto]="filtroTexto()" 
               [filtroEstado]="filtroEstado()"
-              (textoCambiado)="actualizarFiltroTexto($event)" 
+              [filtroPlataforma]="filtroPlataforma()" 
               [totalMostrados]="bibliotecaFiltrada().length"
-              (estadoCambiado)="actualizarFiltroEstado($event)">
+              (textoCambiado)="actualizarFiltroTexto($event)" 
+              (estadoCambiado)="actualizarFiltroEstado($event)"
+              (plataformaCambiada)="actualizarFiltroPlataforma($event)">
             </app-game-filters>
             
             <div class="mt-4">

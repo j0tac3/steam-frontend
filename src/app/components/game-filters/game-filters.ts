@@ -1,27 +1,26 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../icon/icon'; // Ajusta la ruta según tu estructura
+import { IconComponent } from '../icon/icon'; 
 
 @Component({
   selector: 'app-game-filters',
   standalone: true,
-  imports: [CommonModule,
+  imports: [CommonModule, 
             IconComponent],
   templateUrl: './game-filters.html',
   styleUrl: './game-filters.scss'
 })
 export class GameFiltersComponent {
-  // Entradas: Recibimos el estado actual desde la biblioteca
   filtroTexto = input.required<string>();
   filtroEstado = input.required<string>();
+  filtroPlataforma = input.required<string>(); // 🟢 NUEVO
   
   totalMostrados = input<number>(0);
 
-  // Salidas: Avisamos a la biblioteca cuando el usuario cambie algo
   textoCambiado = output<string>();
   estadoCambiado = output<string>();
+  plataformaCambiada = output<string>(); // 🟢 NUEVO
 
-  // NUEVO: Función para resetear la búsqueda
   limpiarBusqueda() {
     this.textoCambiado.emit('');
   }

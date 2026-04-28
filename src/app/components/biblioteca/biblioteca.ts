@@ -41,6 +41,7 @@ export class BibliotecaComponent implements OnInit {
   private router = inject(Router);
   private steamService = inject(SteamService);
 
+  filtroPlataforma = signal('todas');
   filtroTexto = signal('');
   filtroEstado = signal('todos');
   criterioOrden = signal<'nombre' | 'rating' | 'reciente'>('nombre');
@@ -91,13 +92,19 @@ ngOnInit() {
   bibliotecaFiltrada = computed(() => {
     const texto = this.filtroTexto().toLowerCase().trim();
     const estado = this.filtroEstado();
+    const plataforma = this.filtroPlataforma(); // 🟢 NUEVO
     const orden = this.criterioOrden();
-    
+
     let lista = this.myLibrary().filter(juego => {
       const nombreJuego = (juego.title || juego.name || '').toLowerCase();
       const coincideTexto = nombreJuego.includes(texto);
       const coincideEstado = estado === 'todos' || juego.status === estado;
-      return coincideTexto && coincideEstado;
+
+      // 🟢 NUEVA LÓGICA DE PLATAFORMA
+      // Si buscamos 'todas', pasa. Si no, debe coincidir exactamente.
+      const coincidePlataforma = plataforma === 'todas' || juego.platform === plataforma;
+
+      return coincideTexto && coincideEstado && coincidePlataforma;
     });
 
     return lista.sort((a, b) => {
@@ -134,13 +141,18 @@ ngOnInit() {
   completados = computed(() => this.myLibrary().filter(g => g.status === 'completado').length);
   abandonado = computed(() => this.myLibrary().filter(g => g.status === 'abandonado').length);
 
-  actualizarFiltroTexto(texto: string) {
-    this.filtroTexto.set(texto);
+  actualizarFiltroPlataforma(plataforma: string) {
+    this.filtroPlataforma.set(plataforma);
     this.paginaActual.set(1);
   }
 
   actualizarFiltroEstado(estado: string) {
     this.filtroEstado.set(estado);
+    this.paginaActual.set(1);
+  }
+
+  actualizarFiltroTexto(texto: string) {
+    this.filtroTexto.set(texto);
     this.paginaActual.set(1);
   }
 
@@ -152,6 +164,7 @@ ngOnInit() {
   resetFiltros() {
     this.filtroTexto.set('');
     this.filtroEstado.set('todos');
+    this.filtroPlataforma.set('todas'); // 🟢 NUEVO
     this.criterioOrden.set('nombre');
     this.paginaActual.set(1);
   }
