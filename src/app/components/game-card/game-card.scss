@@ -62,10 +62,10 @@
 }
 
 @media (max-width: 768px) {
-  /* Bloqueo táctil para el arrastre */
-  :host { 
+  /* 🟢 CAMBIO 1: Liberamos el scroll de la tarjeta */
+:host { 
     display: block;
-    touch-action: none !important; 
+    touch-action: auto !important; /* 🟢 LIBERADO */
   }
 
   /* 1. Convertimos la tarjeta de columna a fila horizontal */
@@ -75,10 +75,14 @@
     padding: 0.6rem !important;
     gap: 0.75rem;
     align-items: center; 
-    height: auto !important; /* Desactiva el h-100 de Bootstrap en móviles */
+    height: auto !important;
+    position: relative; /* Necesario para ubicar el tirador */
   }
 
-/* 2. EL CONTENEDOR (Uniforme para todos los juegos) */
+  /* 🔴 CAMBIO 2: El Tirador (Drag Handle) */
+
+
+  /* 2. EL CONTENEDOR (Steam vs Normal) - SE MANTIENE IGUAL */
   .img-container {
     width: 75px !important;
     height: 100px !important;
@@ -87,7 +91,6 @@
     flex-shrink: 0; 
     border-bottom: none; 
     
-    /* La imagen dentro del contenedor (Por defecto: cover) */
     .main-img {
       width: 100%;
       height: 100%;
@@ -95,14 +98,11 @@
       border-radius: 8px;
     }
 
-    /* 🚀 LA MAGIA PARA STEAM: Replicamos tu efecto en móvil */
     &.bg-blur-effect {
       .main-img {
-        object-fit: contain !important; /* Muestra el banner completo sin recortar */
-        border-radius: 0; /* Quitamos bordes para que se funda bien con el fondo blur */
+        object-fit: contain !important;
+        border-radius: 0;
       }
-      
-      /* Aseguramos que el fondo borroso se vea bien en el espacio pequeño */
       .blur-layer {
         border-radius: 8px;
       }
@@ -119,7 +119,7 @@
     min-width: 0; 
   }
 
-  /* Título truncado (usando h6 como en tu HTML) */
+  /* Títulos y Estrellas - SE MANTIENE IGUAL */
   h6 {
     font-size: 0.95rem !important;
     margin-bottom: 0.15rem !important;
@@ -128,13 +128,12 @@
     text-overflow: ellipsis; 
   }
 
-  /* Estrellas más compactas */
   .text-warning {
     font-size: 0.8rem !important;
     margin-bottom: 0.4rem !important;
   }
 
-  /* 4. Selector y Botones Ultra-Compactos */
+  /* 4. Selector y Botones */
   .mt-auto {
     display: flex;
     flex-direction: column;
@@ -144,8 +143,6 @@
     select.form-select {
       padding: 0.15rem 0.5rem !important;
       font-size: 0.75rem !important;
-      margin-bottom: 0 !important;
-      background-position: right 0.25rem center; /* Ajusta la flechita del select */
     }
 
     .btn {

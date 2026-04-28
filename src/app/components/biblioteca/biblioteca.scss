@@ -457,7 +457,8 @@ header.container {
   /* NOTA: Asegúrate de que esta clase coincida con el div que envuelve tus columnas. 
      Si se llama diferente (ej: .tablero, .kanban-board), cámbiala aquí. */
 @media (max-width: 768px) {
-  .board-container { 
+  /* Usamos .kanban-container que es la clase real en tu HTML */
+  .kanban-container { 
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -465,50 +466,48 @@ header.container {
     scroll-snap-type: x mandatory;
     padding-bottom: 1.5rem;
     -webkit-overflow-scrolling: touch;
+    
     &::-webkit-scrollbar { display: none; }
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
   .kanban-column {
-    min-width: 75vw; /* Columna más estrecha para que asome la siguiente */
+    min-width: 75vw;
     scroll-snap-align: center;
     margin-right: 1rem;
     flex: 0 0 auto;
   }
 
-  /* 3. Tarjetas más compactas para aprovechar el espacio vertical */
-  .game-card {
-    touch-action: none !important; 
-    
-    /* Hacemos la imagen de portada más bajita */
-    img.card-img-top, .portada-juego { 
-      height: 140px !important; 
-      object-fit: cover;
-    }
-
-    /* Reducimos el relleno interno (padding) de la tarjeta */
-    .card-body, .p-3 {
-      padding: 0.75rem !important;
-    }
-
-    /* Título más pequeño */
-    h5 {
-      font-size: 1rem !important;
-      margin-bottom: 0.25rem !important;
-    }
-
-    /* Botones más estrechos */
-    .btn {
-      padding: 0.35rem 0.5rem !important;
-      font-size: 0.8rem !important;
-    }
+  .kanban-item {
+    position: relative;
+    /* Ya no bloqueamos el touch-action aquí para permitir el scroll */
+    touch-action: auto !important; 
   }
 
-  /* Desbloqueamos el scroll táctil de las tarjetas SI NO estamos en modo edición */
-  .board-container:not(.modo-edicion) {
-    ::ng-deep app-game-card, ::ng-deep .game-card {
-      touch-action: auto !important; 
+  /* 🛠️ EL TIRADOR PROFESIONAL */
+  .mobile-drag-handle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 100; /* Aseguramos que esté por encima de la tarjeta */
+    background: rgba(13, 110, 253, 0.9); /* Azul info para que destaque */
+    color: white;
+    width: 40px;
+    height: 40px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    
+    /* SOLO este elemento tiene touch-action: none */
+    touch-action: none !important; 
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+      transform: scale(1.1);
     }
   }
 }
