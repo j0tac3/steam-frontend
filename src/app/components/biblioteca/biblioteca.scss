@@ -504,4 +504,11 @@ header.container {
       font-size: 0.8rem !important;
     }
   }
+
+  /* Desbloqueamos el scroll táctil de las tarjetas SI NO estamos en modo edición */
+  .board-container:not(.modo-edicion) {
+    ::ng-deep app-game-card, ::ng-deep .game-card {
+      touch-action: auto !important; 
+    }
+  }
 }

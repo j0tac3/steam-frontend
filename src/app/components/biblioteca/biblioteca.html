@@ -127,13 +127,22 @@
           </div>
         }
         @else if (vistaActual() === 'tablero') {
+          <div class="d-md-none mb-3 d-flex justify-content-end px-2">
+              <button class="btn btn-sm rounded-pill fw-bold shadow-sm px-3" 
+                      [ngClass]="modoEdicion ? 'btn-success' : 'btn-outline-info'"
+                      (click)="toggleEdicion()">
+                {{ modoEdicion ? '✅ Guardar Orden' : '✏️ Organizar Tablero' }}
+              </button>
+            </div>
+            
           <div class="kanban-container d-flex gap-3 overflow-x-auto pb-4" cdkDropListGroup>
             
             <div class="kanban-column rounded-4 p-3" style="background: var(--glass-bg-panel); min-width: 280px; border-top: 4px solid var(--color-info);">
               <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
                 🎮 JUGANDO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('jugando').length }}</span>
               </h6>
-              <div class="kanban-list min-vh-50" 
+              <div class="kanban-list min-vh-50"
+                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion" 
                   cdkDropList [cdkDropListData]="getJuegosPorEstado('jugando')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'jugando')">
                 @for (juego of getJuegosPorEstado('jugando'); track juego.id) {
@@ -153,6 +162,7 @@
                 ⏳ PENDIENTE <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('pendiente').length }}</span>
               </h6>
               <div class="kanban-list min-vh-50" 
+                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
                   cdkDropList [cdkDropListData]="getJuegosPorEstado('pendiente')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'pendiente')">
                 @for (juego of getJuegosPorEstado('pendiente'); track juego.id) {
@@ -172,6 +182,7 @@
                 🏆 COMPLETADO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('completado').length }}</span>
               </h6>
               <div class="kanban-list min-vh-50" 
+                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
                   cdkDropList [cdkDropListData]="getJuegosPorEstado('completado')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'completado')">
                 @for (juego of getJuegosPorEstado('completado'); track juego.id) {
@@ -191,6 +202,7 @@
                 ❌ Abandonado <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('abandonado').length }}</span>
               </h6>
               <div class="kanban-list min-vh-50" 
+                  cdkDropList [cdkDropListDisabled]="isMobile && !modoEdicion"
                   cdkDropList [cdkDropListData]="getJuegosPorEstado('abandonado')" 
                   (cdkDropListDropped)="onJuegoSoltado($event, 'abandonado')">
                 @for (juego of getJuegosPorEstado('abandonado'); track juego.id) {

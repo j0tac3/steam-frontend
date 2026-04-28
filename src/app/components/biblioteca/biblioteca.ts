@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
@@ -55,6 +55,9 @@ export class BibliotecaComponent implements OnInit {
   elementosPorPagina = signal<number>(12);
 
   vistaActual = signal<'cuadricula' | 'tablero'>('cuadricula');
+    // Variables para controlar el modo edición en móviles
+  isMobile = window.innerWidth <= 768;
+  modoEdicion = false;
 
 ngOnInit() {
     // Solo llamamos a la función. El estado inicial de la señal ya es true.
@@ -317,6 +320,16 @@ ngOnInit() {
         this.actualizarEstado(juegoMovido.id, nuevoEstado);
       }
     }
+  }
+
+  // Opcional pero recomendado: detectar si el usuario gira la pantalla
+  @HostListener('window:resize') // <-- Le quitamos el ['$event']
+  onResize() {
+    this.isMobile = window.innerWidth <= 768;
+  }
+
+  toggleEdicion() {
+    this.modoEdicion = !this.modoEdicion;
   }
 
   cerrarSesion() {
