@@ -3,7 +3,21 @@
        [class.bg-blur-effect]="game.source === 'steam'"
        [style.--bg-image]="'url(' + (game.image_url || game.logo) + ')'"
        (click)="onVerInfo()">
+       
     <div class="blur-layer"></div>
+    
+    @if (game.platform) {
+      <div class="platform-badge" [attr.data-platform]="game.platform">
+        @switch (game.platform) {
+          @case ('PC') { <app-icon name="icon-pc"></app-icon> }
+          @case ('PS5') { <app-icon name="icon-ps"></app-icon> }
+          @case ('Xbox') { <app-icon name="icon-xbox"></app-icon> }
+          @case ('Switch') { <app-icon name="icon-switch"></app-icon> }
+          @default { <app-icon name="icon-pc"></app-icon> }
+        }
+      </div>
+    }
+
     <img [src]="game.image_url || game.logo" class="main-img" alt="Portada">
   </div>
   <div class="card-body p-3 d-flex flex-column">

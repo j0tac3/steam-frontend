@@ -82,7 +82,7 @@
   /* 🔴 CAMBIO 2: El Tirador (Drag Handle) */
 
 
-  /* 2. EL CONTENEDOR (Steam vs Normal) - SE MANTIENE IGUAL */
+/* 2. EL CONTENEDOR MÓVIL (Con el recorte arreglado) */
   .img-container {
     width: 75px !important;
     height: 100px !important;
@@ -90,21 +90,21 @@
     border-radius: 8px;
     flex-shrink: 0; 
     border-bottom: none; 
+    overflow: hidden; /* Evita que la imagen sobresalga */
     
     .main-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important; /* CRÍTICO: Recorte limpio, nada de aplastar */
       border-radius: 8px;
     }
 
+    /* Para las carátulas de Steam en móvil, anulamos el blur y recortamos normal */
     &.bg-blur-effect {
+      .blur-layer { display: none !important; }
       .main-img {
-        object-fit: contain !important;
-        border-radius: 0;
-      }
-      .blur-layer {
-        border-radius: 8px;
+        object-fit: cover !important; 
+        border-radius: 8px !important;
       }
     }
   }
@@ -150,4 +150,36 @@
       font-size: 0.75rem !important;
     }
   }
+}
+
+/* ==========================================================================
+   INSIGNIA DE PLATAFORMA
+   ========================================================================== */
+.platform-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+
+  app-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Colores de marca sutiles (Opcional) */
+  &[data-platform="PS5"] { border-color: rgba(0, 112, 204, 0.5); color: #8ab4f8; }
+  &[data-platform="Xbox"] { border-color: rgba(16, 124, 16, 0.5); color: #81c995; }
+  &[data-platform="Switch"] { border-color: rgba(228, 0, 15, 0.5); color: #f28b82; }
 }
