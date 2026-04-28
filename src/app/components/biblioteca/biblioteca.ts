@@ -13,6 +13,7 @@ import { IconComponent } from '../icon/icon';
 import { Game } from '../../models/game';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { RadarComponent } from '../radar/radar';
 
 @Component({
   selector: 'app-biblioteca',
@@ -26,7 +27,8 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
     GameFiltersComponent,
     IconComponent,
     SkeletonCardComponent,
-    DragDropModule
+    DragDropModule,
+    RadarComponent
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
