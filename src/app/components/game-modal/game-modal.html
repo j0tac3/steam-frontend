@@ -95,6 +95,20 @@
                         (input)="detalle.start_date = $any($event.target).value">
                 </div>
 
+                <div class="col-md-6 mb-3">
+                  <label class="section-label text-muted fw-bold mb-2 small">PLATAFORMA</label>
+                  <select class="form-select glass-input shadow-sm"
+                          [value]="detalle.platform || ''" 
+                          (change)="detalle.platform = $any($event.target).value">
+                    <option value="" class="text-dark">❓ Sin clasificar</option>
+                    <option value="PC" class="text-dark">💻 PC (Steam/Epic)</option>
+                    <option value="PS5" class="text-dark">🎮 PlayStation</option>
+                    <option value="Xbox" class="text-dark">🟢 Xbox</option>
+                    <option value="Switch" class="text-dark">🔴 Nintendo Switch</option>
+                    <option value="Mobile" class="text-dark">📱 Móvil</option>
+                  </select>
+                </div>
+
                 <div class="col-12">
                   <label class="section-label text-muted fw-bold mb-2 small">NOTAS Y PROGRESO</label>
                   <div class="glass-editor-wrapper mt-2">

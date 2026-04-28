@@ -278,7 +278,8 @@ ngOnInit() {
     const payload = {
       notes: game.notes,
       personal_rating: game.personal_rating,
-      start_date: game.start_date
+      start_date: game.start_date,
+      platform: game.platform
     };
 
     this.steamService.updateGameDiario(game.id, payload).subscribe({

@@ -24,4 +24,6 @@ export interface Game {
   description?: string; 
   detailed_description?: string; 
   about_the_game?: string;
+
+  platform?: string | null;
 }
