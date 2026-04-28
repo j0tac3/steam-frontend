@@ -450,3 +450,58 @@ header.container {
     }
   }
 }
+
+/* ==========================================================================
+   OPTIMIZACIÓN MÓVIL Y TÁCTIL (MOBILE-FIRST)
+   ========================================================================== */
+  /* NOTA: Asegúrate de que esta clase coincida con el div que envuelve tus columnas. 
+     Si se llama diferente (ej: .tablero, .kanban-board), cámbiala aquí. */
+@media (max-width: 768px) {
+  .board-container { 
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar { display: none; }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .kanban-column {
+    min-width: 75vw; /* Columna más estrecha para que asome la siguiente */
+    scroll-snap-align: center;
+    margin-right: 1rem;
+    flex: 0 0 auto;
+  }
+
+  /* 3. Tarjetas más compactas para aprovechar el espacio vertical */
+  .game-card {
+    touch-action: none !important; 
+    
+    /* Hacemos la imagen de portada más bajita */
+    img.card-img-top, .portada-juego { 
+      height: 140px !important; 
+      object-fit: cover;
+    }
+
+    /* Reducimos el relleno interno (padding) de la tarjeta */
+    .card-body, .p-3 {
+      padding: 0.75rem !important;
+    }
+
+    /* Título más pequeño */
+    h5 {
+      font-size: 1rem !important;
+      margin-bottom: 0.25rem !important;
+    }
+
+    /* Botones más estrechos */
+    .btn {
+      padding: 0.35rem 0.5rem !important;
+      font-size: 0.8rem !important;
+    }
+  }
+}
