@@ -1,0 +1,31 @@
+<div class="card-list d-flex align-items-center shadow-sm cursor-pointer">
+  
+  <div class="img-wrapper position-relative">
+    <img [src]="game().image_url || game().logo" class="cover-img" [alt]="game().title">
+    @if (game().platform) {
+      <div class="platform-mini position-absolute bottom-0 start-0 m-1 glass-badge">
+        {{ game().platform }}
+      </div>
+    }
+  </div>
+
+  <div class="content-wrapper flex-grow-1 p-3 d-flex flex-column justify-content-center h-100 border-start border-secondary border-opacity-10">
+    
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <h6 class="text-white fw-bold m-0 title-truncate pe-2">{{ game().title }}</h6>
+      <span class="status-dot flex-shrink-0" [attr.data-status]="game().status"></span>
+    </div>
+    
+    <p class="text-white-50 note-truncate m-0 mt-1">
+      {{ game().notes ? game().notes : 'Sin notas en el diario...' }}
+    </p>
+    
+    <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+      <div class="text-warning small" style="font-size: 0.75rem;">
+        {{ generarEstrellas(game().personal_rating) }}
+      </div>
+      <button class="btn btn-sm btn-glass rounded-pill px-3 fw-bold">JUGAR</button>
+    </div>
+    
+  </div>
+</div>

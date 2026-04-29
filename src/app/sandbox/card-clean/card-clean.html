@@ -1,0 +1,19 @@
+<div class="card-clean position-relative shadow-sm cursor-pointer">
+  <img [src]="game().image_url || game().logo" class="bg-img" [alt]="game().title">
+  
+  <div class="gradient-overlay"></div>
+
+  <div class="position-absolute top-0 start-0 w-100 p-2 d-flex justify-content-between align-items-start z-2">
+    <span class="glass-badge status-indicator" [attr.data-status]="game().status"></span>
+    @if (game().platform) {
+      <span class="glass-badge platform-badge">{{ game().platform }}</span>
+    }
+  </div>
+
+  <div class="position-absolute bottom-0 start-0 w-100 p-3 z-2">
+    <h6 class="text-white fw-bold m-0 text-truncate mb-1">{{ game().title }}</h6>
+    <div class="text-warning small" style="font-size: 0.75rem;">
+      {{ generarEstrellas(game().personal_rating) }}
+    </div>
+  </div>
+</div>

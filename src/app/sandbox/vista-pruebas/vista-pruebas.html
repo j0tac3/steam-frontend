@@ -1,0 +1,45 @@
+<div class="sandbox-container p-4 animate__animated animate__fadeIn">
+  
+  <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom border-white border-opacity-10">
+    <div>
+      <h2 class="text-white fw-bold m-0">🧪 Laboratorio de UI</h2>
+      <p class="text-white-50 small m-0">Probando nuevos diseños sin afectar a producción</p>
+    </div>
+
+    <div class="view-switcher-glass p-1 d-flex gap-1">
+      <button class="btn-view" [class.active]="tipoVista() === 'clean'" (click)="cambiarVista('clean')">
+        <i class="bi bi-grid-fill"></i> Clean Grid
+      </button>
+      <button class="btn-view" [class.active]="tipoVista() === 'list'" (click)="cambiarVista('list')">
+        <i class="bi bi-list-ul"></i> List View
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    @for (juego of misJuegos(); track juego.id) {
+      <div [class]="tipoVista() === 'clean' ? 'col-6 col-md-4 col-xl-2' : 'col-12 col-xl-6'">
+        
+        @if (tipoVista() === 'clean') {
+        <app-card-clean [game]="juego" 
+                        (click)="abrirModal(juego)">
+        </app-card-clean>
+        } @else {
+        <app-card-list  [game]="juego" 
+                        (click)="abrirModal(juego)">
+        </app-card-list>
+        }
+        
+      </div>
+    }
+
+  </div>
+
+  @if (juegoSeleccionado()) {
+    <app-modal-v2 
+        [game]="juegoSeleccionado()" 
+        (cerrarModal)="juegoSeleccionado.set(null)">
+    </app-modal-v2>
+    }
+</div>

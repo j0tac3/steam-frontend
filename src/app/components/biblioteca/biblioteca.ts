@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
@@ -28,7 +29,8 @@ import { RadarComponent } from '../radar/radar';
     IconComponent,
     SkeletonCardComponent,
     DragDropModule,
-    RadarComponent
+    RadarComponent,
+    RouterModule
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
