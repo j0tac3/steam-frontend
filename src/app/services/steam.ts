@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importamos Ht
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs/operators';
+import { SteamDeal } from '../models/deal';
 
 @Injectable({ providedIn: 'root' })
 export class SteamService {
@@ -96,6 +97,11 @@ export class SteamService {
     if (!url) return 'assets/no-image.png';
     // Cambiamos t_thumb por el tamaño deseado y aseguramos el https:
     return 'https:' + url.replace('t_thumb', size);
+  }
+
+  getRadarOfertas() {
+    // Cambia this.apiUrl por la ruta exacta de tu backend si es necesario
+    return this.http.get<SteamDeal[]>(`${this.myAppUrl}/radar/ofertas`); 
   }
 
 }

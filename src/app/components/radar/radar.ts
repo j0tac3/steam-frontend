@@ -1,19 +1,21 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+// ⚠️ IMPORTANTE: Ajusta estas rutas a donde tengas tu servicio e interfaz
+import { SteamService } from '../../services/steam'; 
+import { SteamDeal } from '../../models/deal';
 
 @Component({
   selector: 'app-radar',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule],
   templateUrl: './radar.html',
   styleUrl: './radar.scss'
 })
 export class RadarComponent implements OnInit {
-  private http = inject(HttpClient);
+  private gameService = inject(SteamService);
   
-  // Señales reactivas para la interfaz
-  juegosGratis = signal<any[]>([]);
+  // Señales reactivas tipadas con nuestra nueva interfaz
+  ofertas = signal<SteamDeal[]>([]);
   cargando = signal<boolean>(true);
   error = signal<string | null>(null);
 
@@ -24,29 +26,27 @@ export class RadarComponent implements OnInit {
   buscarChollos() {
     this.cargando.set(true);
     
-    // 1. Preparamos la URL original y la codificamos para que sea segura
-    const targetUrl = encodeURIComponent('https://www.gamerpower.com/api/giveaways?platform=steam&type=game');
-    
-    // 2. Usamos el Proxy público para saltarnos el bloqueo de CORS
-    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
-
-    this.http.get<any[]>(proxyUrl)
-      .subscribe({
-        next: (datos) => {
-          this.juegosGratis.set(datos);
-          this.cargando.set(false);
-          this.error.set(null); // Limpiamos el error si funciona
-        },
-        error: (err) => {
-          console.error('Error al buscar juegos:', err);
-          this.error.set('No hemos podido conectar con el radar de ofertas.');
-          this.cargando.set(false);
-        }
-      });
+    this.gameService.getRadarOfertas().subscribe({
+      next: (datos) => {
+        this.ofertas.set(datos);
+        this.cargando.set(false);
+        this.error.set(null); 
+      },
+      error: (err) => {
+        console.error('Error al buscar ofertas:', err);
+        this.error.set('No hemos podido conectar con el radar de ofertas.');
+        this.cargando.set(false);
+      }
+    });
   }
 
-  // Función para abrir la oferta en una pestaña nueva
-  irAOferta(url: string) {
-    window.open(url, '_blank');
+  // Convertimos el string "85.0000" en un simple "85" para el HTML
+  formatearDescuento(savings: string): string {
+    return Math.round(parseFloat(savings)).toString();
+  }
+
+  // Llevamos al usuario directamente a la tienda de Steam de forma segura
+  irAOferta(steamAppID: string) {
+    window.open(`https://store.steampowered.com/app/${steamAppID}`, '_blank');
   }
 }

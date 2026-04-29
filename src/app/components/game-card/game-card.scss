@@ -83,6 +83,7 @@
 
 
 /* 2. EL CONTENEDOR MÓVIL (Con el recorte arreglado) */
+ /* 2. EL CONTENEDOR MÓVIL (Restaurando el efecto Steam) */
   .img-container {
     width: 75px !important;
     height: 100px !important;
@@ -90,21 +91,41 @@
     border-radius: 8px;
     flex-shrink: 0; 
     border-bottom: none; 
-    overflow: hidden; /* Evita que la imagen sobresalga */
+    overflow: hidden;
+    position: relative; // Crítico para posicionar el blur
     
     .main-img {
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover !important; /* CRÍTICO: Recorte limpio, nada de aplastar */
+      object-fit: cover; // Por defecto para juegos normales (verticales)
       border-radius: 8px;
+      position: relative;
+      z-index: 2;
     }
 
-    /* Para las carátulas de Steam en móvil, anulamos el blur y recortamos normal */
+    /* 🚀 RESTAURACIÓN: El "Efecto Steam" para móviles */
     &.bg-blur-effect {
-      .blur-layer { display: none !important; }
+      background: #000; // Fondo de seguridad
+
+      .blur-layer { 
+        display: block !important; // ¡Vuelve a la vida!
+        position: absolute;
+        inset: -5px; // Un poco de margen para que el blur no deje bordes blancos
+        background-image: var(--bg-image);
+        background-size: cover;
+        background-position: center;
+        filter: blur(12px) brightness(0.6); // Desenfoque cinematográfico
+        opacity: 0.8;
+        z-index: 1;
+        transform: scale(1.2);
+      }
+
       .main-img {
-        object-fit: cover !important; 
-        border-radius: 8px !important;
+        /* 💡 La clave: 'contain' permite ver TODA la carátula horizontal 
+           flotando sobre el fondo difuminado */
+        object-fit: contain !important; 
+        border-radius: 0 !important; 
+        z-index: 2;
       }
     }
   }
