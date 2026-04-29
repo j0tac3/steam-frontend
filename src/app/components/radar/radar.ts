@@ -27,14 +27,23 @@ export class RadarComponent implements OnInit {
     this.cargando.set(true);
     
     this.gameService.getRadarOfertas().subscribe({
-      next: (datos) => {
-        this.ofertas.set(datos);
+      next: (datos: any) => {
+        // 🛡️ COMPROBACIÓN DE SEGURIDAD
+        // Verificamos si lo que llega es realmente una lista (Array)
+        if (Array.isArray(datos)) {
+          this.ofertas.set(datos);
+          this.error.set(null);
+        } else {
+          // Si Laravel nos manda el objeto de error {error: '...'}, lo capturamos aquí
+          this.error.set(datos.error || 'El radar está recalibrándose.');
+          this.ofertas.set([]); // IMPORTANTE: Vaciamos la lista para que el @for no explote
+        }
         this.cargando.set(false);
-        this.error.set(null); 
       },
       error: (err) => {
-        console.error('Error al buscar ofertas:', err);
-        this.error.set('No hemos podido conectar con el radar de ofertas.');
+        console.error('Error crítico en el radar:', err);
+        this.error.set('No hemos podido conectar con el servidor de ofertas.');
+        this.ofertas.set([]); // Seguridad ante todo
         this.cargando.set(false);
       }
     });
