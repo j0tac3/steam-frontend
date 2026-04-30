@@ -32,3 +32,42 @@
   gap: 1.5rem; 
   padding: 1rem 0;
 }
+
+/* ... mantén tus estilos anteriores y añade estos ... */
+
+.search-box-glass {
+  position: relative;
+  width: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    width: 350px; // Se ensancha ligeramente al escribir
+  }
+
+  .search-icon {
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 10px;
+  }
+
+  .search-input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}

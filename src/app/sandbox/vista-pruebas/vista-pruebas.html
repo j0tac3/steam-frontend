@@ -1,38 +1,44 @@
 <div class="sandbox-container p-4 animate__animated animate__fadeIn">
   
-  <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom border-white border-opacity-10">
+  <!-- Cabecera -->
+  <div class="d-flex justify-content-between align-items-end mb-5 pb-3 border-bottom border-white border-opacity-10">
     <div>
       <h2 class="text-white fw-bold m-0">🧪 Laboratorio de UI</h2>
       <p class="text-white-50 small m-0">Probando nuevos diseños sin afectar a producción</p>
     </div>
 
+    <!-- 🚀 NUEVO: Barra de Búsqueda -->
+    <div class="search-box-glass">
+      <i class="bi bi-search search-icon"></i>
+      <input 
+        type="text" 
+        [formControl]="buscador" 
+        placeholder="Buscar juego..." 
+        class="search-input">
+    </div>
+
     <div class="view-switcher-glass p-1 d-flex gap-1">
       <button class="btn-view" [class.active]="tipoVista() === 'clean'" (click)="cambiarVista('clean')">
-        <i class="bi bi-grid-fill"></i> Clean Grid
-      </button>
-      <button class="btn-view" [class.active]="tipoVista() === 'list'" (click)="cambiarVista('list')">
-        <i class="bi bi-list-ul"></i> List View
+        <i class="bi bi-grid-fill"></i>
       </button>
     </div>
   </div>
 
+  <!-- Rejilla de Juegos -->
   <div class="juegos-grid-container">
-    
     @for (juego of misJuegos(); track juego.id) {
       <div class="grid-item">
-        @if (tipoVista() === 'clean') {
-          <!-- 🚀 Escuchamos el ID que nos manda la tarjeta al hacer clic[cite: 2] -->
-          <app-card-clean [game]="juego" (clicked)="abrirModal($event)"></app-card-clean>
-        } @else {
-          <app-card-list [game]="juego"></app-card-list>
-        }
+        <app-card-clean [game]="juego" (clicked)="abrirModal($event)"></app-card-clean>
+      </div>
+    } @empty {
+      <!-- 🚀 Mensaje si no hay resultados -->
+      <div class="text-center w-100 py-5">
+        <p class="text-white-50">Escribe al menos 3 letras para buscar en IGDB...</p>
       </div>
     }
-
   </div>
 
   @if (juegoSeleccionado()) {
-    <!-- 🚀 Le pasamos el ID y usamos (close) como definimos en su TS[cite: 2] -->
     <app-modal-v2 
         [gameId]="juegoSeleccionado()!" 
         (close)="juegoSeleccionado.set(null)">
