@@ -16,30 +16,26 @@
     </div>
   </div>
 
-  <div class="row g-4">
+  <div class="juegos-grid-container">
     
     @for (juego of misJuegos(); track juego.id) {
-      <div [class]="tipoVista() === 'clean' ? 'col-6 col-md-4 col-xl-2' : 'col-12 col-xl-6'">
-        
+      <div class="grid-item">
         @if (tipoVista() === 'clean') {
-        <app-card-clean [game]="juego" 
-                        (click)="abrirModal(juego)">
-        </app-card-clean>
+          <!-- 🚀 Escuchamos el ID que nos manda la tarjeta al hacer clic[cite: 2] -->
+          <app-card-clean [game]="juego" (clicked)="abrirModal($event)"></app-card-clean>
         } @else {
-        <app-card-list  [game]="juego" 
-                        (click)="abrirModal(juego)">
-        </app-card-list>
+          <app-card-list [game]="juego"></app-card-list>
         }
-        
       </div>
     }
 
   </div>
 
   @if (juegoSeleccionado()) {
+    <!-- 🚀 Le pasamos el ID y usamos (close) como definimos en su TS[cite: 2] -->
     <app-modal-v2 
-        [game]="juegoSeleccionado()" 
-        (cerrarModal)="juegoSeleccionado.set(null)">
+        [gameId]="juegoSeleccionado()!" 
+        (close)="juegoSeleccionado.set(null)">
     </app-modal-v2>
-    }
+  }
 </div>

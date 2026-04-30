@@ -1,55 +1,138 @@
-.card-clean {
-  border-radius: 16px;
+.game-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4; // Mantiene la proporción rectangular vertical
+  border-radius: 16px; // Bordes redondeados como en la imagen
   overflow: hidden;
-  aspect-ratio: 3/4; /* Proporción perfecta de póster */
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
-  background: #1a1a1a;
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #121212; // Fondo por si la imagen tarda en cargar
 
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+  }
 
-    .bg-img {
-      transform: scale(1.08); /* Efecto zoom muy suave */
+  /* 1. La imagen al fondo ocupando todo */
+  .bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  /* 2. El gradiente inferior para proteger el texto */
+  .gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%; // Sube hasta un poco más de la mitad
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 100%);
+    z-index: 2;
+  }
+
+  /* 3. Controles Superiores (XBOX, Punto, Corazón) */
+  .top-controls {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 3;
+
+    .left-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #2e7d32; // Verde oscuro
+        box-shadow: 0 0 8px rgba(46, 125, 50, 0.8);
+      }
+
+      .platform-badge {
+        background: rgba(30, 40, 45, 0.7); // Tono oscuro azulado
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e0e0e0;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+    }
+
+    .favorite-btn {
+      background: rgba(20, 20, 20, 0.6);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.5);
+      transition: all 0.2s ease;
+
+      i.active {
+        color: #ef4444; // Rojo intenso para el corazón
+      }
+
+      &:hover {
+        background: rgba(40, 40, 40, 0.8);
+        transform: scale(1.1);
+      }
     }
   }
-}
 
-.bg-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s ease;
-}
+  /* 4. Información Inferior (Título y Estrellas) */
+  .bottom-info {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
-.gradient-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.9) 100%);
-  z-index: 1;
-}
+    .title {
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      // Para truncar el texto si el nombre es muy largo
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.glass-badge {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: 0.65rem;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
+    .stars-container {
+      display: flex;
+      gap: 3px;
 
-.status-indicator {
-  width: 12px;
-  height: 12px;
-  padding: 0;
-  border-radius: 50%;
+      .star-icon {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.2); // Estrellas vacías oscuras
 
-  &[data-status="completado"] { background: #198754; box-shadow: 0 0 8px #198754; }
-  &[data-status="jugando"] { background: #0d6efd; box-shadow: 0 0 8px #0d6efd; }
-  &[data-status="pendiente"] { background: #ffc107; box-shadow: 0 0 8px #ffc107; }
-  &[data-status="abandonado"] { background: #dc3545; box-shadow: 0 0 8px #dc3545; }
+        &.filled {
+          color: #d4af37; // Dorado para las llenas
+          text-shadow: 0 0 4px rgba(212, 175, 55, 0.4);
+        }
+      }
+    }
+  }
 }

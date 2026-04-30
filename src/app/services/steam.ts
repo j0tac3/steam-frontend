@@ -104,4 +104,10 @@ export class SteamService {
     return this.http.get<SteamDeal[]>(`${this.myAppUrl}/radar/ofertas`); 
   }
 
+  // 🚀 Alternar estado de favorito
+  toggleFavorite(gameId: number) {
+    // Usamos patch porque solo modificamos un campo pequeño
+    return this.http.patch(`${this.myAppUrl}/games/${gameId}/favorite`, {});
+  }
+
 }

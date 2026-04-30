@@ -1,34 +1,53 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core'; // 🚀 Añadimos signal
+import { DecimalPipe, DatePipe } from '@angular/common';
+import { IgdbDataService } from '../../services/igdb-data'; // Verifica que la ruta sea correcta
+import { IgdbGame } from '../../interfaces/igdb';
 
 @Component({
   selector: 'app-modal-v2',
   standalone: true,
-  imports: [CommonModule],
+  imports: [DecimalPipe, DatePipe], 
   templateUrl: './modal-v2.html',
-  styleUrl: './modal-v2.scss'
+  styleUrls: ['./modal-v2.scss']
 })
-export class ModalV2Component {
-  // Recibimos el juego
-  game = input.required<any>();
+export class ModalV2Component implements OnInit {
+  @Input({ required: true }) gameId!: number;
+  @Output() close = new EventEmitter<void>();
   
-  // Emitimos un evento cuando el usuario quiera cerrar el modal
-  cerrarModal = output<void>();
+  // 🚀 Convertimos a Signals para una reactividad instantánea
+  public game = signal<IgdbGame | null>(null);
+  public loading = signal<boolean>(true);
 
-  cerrar() {
-    this.cerrarModal.emit();
+  constructor(private igdbService: IgdbDataService) {}
+
+  ngOnInit() {
+    this.igdbService.getDetallePro(this.gameId).subscribe({
+      next: (res) => {
+        // 🚀 Usamos .set() para actualizar el valor
+        this.game.set(res);
+        this.loading.set(false);
+        console.log('✅ Datos cargados en el Signal:', res);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar:', err);
+        this.loading.set(false);
+      }
+    });
   }
 
-  generarEstrellas(rating: any): string {
-    const numRating = Number(rating);
-    
-    // Si no hay nota, es nula o es 0
-    if (isNaN(numRating) || numRating <= 0) return 'Sin evaluar';
+  getFullCover(imageId?: string): string {
+    return imageId 
+      ? `https://images.igdb.com/igdb/image/upload/t_720p/${imageId}.jpg`
+      : 'https://placehold.co/600x800/1a1a1a/6441a5?text=Sin+Portada';
+  }
 
-    // Aseguramos que la nota esté entre 1 y 5 (y redondeamos por si hay decimales)
-    const estrellasSolidas = Math.min(Math.max(Math.round(numRating), 1), 5);
-    const estrellasVacias = 5 - estrellasSolidas;
+  getPlatformsText(): string {
+    const currentGame = this.game(); // Extraemos el valor del signal
+    if (!currentGame?.platforms) return 'Desconocido';
+    return currentGame.platforms.map(p => p.name).join(' • ');
+  }
 
-    return '★'.repeat(estrellasSolidas) + '☆'.repeat(estrellasVacias);
+  cerrar() {
+    this.close.emit();
   }
 }

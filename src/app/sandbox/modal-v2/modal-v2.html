@@ -1,49 +1,52 @@
-<div class="modal-overlay animate__animated animate__fadeIn" (click)="cerrar()">
-  
-  <div class="modal-content-v2 animate__animated animate__slideInUp" (click)="$event.stopPropagation()">
-    
-    <button class="btn-close-glass" (click)="cerrar()">
-      <i class="bi bi-x-lg"></i>
-    </button>
+<div class="modal-backdrop" (click)="cerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="cerrar()">&times;</button>
 
-    <div class="hero-header position-relative">
-      <img [src]="game().image_url || game().logo" class="hero-img w-100 object-fit-cover" [alt]="game().title">
-      <div class="hero-gradient"></div>
-      
-      <div class="hero-info position-absolute bottom-0 start-0 w-100 p-4 z-2">
-        @if (game().platform) {
-          <span class="badge-platform mb-2 d-inline-block">{{ game().platform }}</span>
-        }
-        <h2 class="game-title text-white fw-bold m-0 lh-sm">{{ game().title }}</h2>
-        
-        <div class="d-flex align-items-center gap-2 mt-2">
-          <span class="status-dot" [attr.data-status]="game().status"></span>
-          <span class="text-white-50 text-uppercase fw-bold small">{{ game().status }}</span>
+    <!-- 🚀 Usamos paréntesis para leer el Signal -->
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Descifrando información...</p>
+      </div>
+    } @else if (game()) {
+      <div class="modal-grid">
+        <div class="sidebar">
+          <img [src]="getFullCover(game()?.cover?.image_id)" [alt]="game()?.name">
+          
+          @if (game()?.rating) {
+            <div class="stats">
+              <div class="stat-item">
+                <span class="label">Puntuación</span>
+                <span class="value success">{{ game()?.rating | number:'1.0-0' }}%</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="main-info">
+          <h1>{{ game()?.name }}</h1>
+          
+          <div class="tags">
+            @for (genre of game()?.genres; track genre.id) {
+              <span class="tag">{{ genre.name }}</span>
+            }
+          </div>
+
+          <div class="description">
+            @if (game()?.summary) {
+              <h3>Sinopsis</h3>
+              <p>{{ game()?.summary }}</p>
+            }
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <strong>Plataformas:</strong>
+              <span>{{ getPlatformsText() }}</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="modal-body p-4 pb-5 mb-4">
-      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-        <span class="text-white-50">Valoración Personal</span>
-        <div class="stars-large text-warning fs-5">
-          {{ generarEstrellas(game().personal_rating) }}
-        </div>
-      </div>
-      
-      <h6 class="text-white fw-bold mb-3">Notas del Diario</h6>
-      <div class="notes-glass-panel p-3">
-        <p class="text-white-50 m-0" style="white-space: pre-line; line-height: 1.6;">
-          {{ game().notes ? game().notes : 'No has escrito ninguna nota sobre este juego todavía. ¿Qué te pareció?' }}
-        </p>
-      </div>
-    </div>
-
-    <div class="action-bar-glass position-absolute bottom-0 start-0 w-100 p-3">
-      <button class="btn btn-edit w-100 fw-bold rounded-pill text-dark shadow-sm">
-        <i class="bi bi-pencil-fill me-2"></i> EDITAR DIARIO
-      </button>
-    </div>
-
+    }
   </div>
 </div>

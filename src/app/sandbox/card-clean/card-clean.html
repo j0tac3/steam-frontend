@@ -1,19 +1,33 @@
-<div class="card-clean position-relative shadow-sm cursor-pointer">
-  <img [src]="game().image_url || game().logo" class="bg-img" [alt]="game().title">
+<div class="game-card" (click)="verDetalle()">
   
+  <!-- Imagen de fondo que ocupa toda la tarjeta -->
+  <img class="bg-image" [src]="getCoverUrl(game.cover)" [alt]="game.name" loading="lazy">
+  
+  <!-- Sombra inferior para dar legibilidad al texto -->
   <div class="gradient-overlay"></div>
 
-  <div class="position-absolute top-0 start-0 w-100 p-2 d-flex justify-content-between align-items-start z-2">
-    <span class="glass-badge status-indicator" [attr.data-status]="game().status"></span>
-    @if (game().platform) {
-      <span class="glass-badge platform-badge">{{ game().platform }}</span>
-    }
+  <!-- Zona Superior: Indicadores y Botón -->
+  <div class="top-controls">
+    <div class="left-group">
+      <div class="status-dot"></div>
+      <div class="platform-badge">{{ getPlatformBadge() }}</div>
+    </div>
+    
+    <button class="favorite-btn" (click)="toggleFavorite($event)">
+      <!-- Ajusta estas clases si usas FontAwesome (ej: fas fa-heart) -->
+      <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill active' : 'bi-heart'"></i>
+    </button>
   </div>
 
-  <div class="position-absolute bottom-0 start-0 w-100 p-3 z-2">
-    <h6 class="text-white fw-bold m-0 text-truncate mb-1">{{ game().title }}</h6>
-    <div class="text-warning small" style="font-size: 0.75rem;">
-      {{ generarEstrellas(game().personal_rating) }}
+  <!-- Zona Inferior: Título y Estrellas -->
+  <div class="bottom-info">
+    <h3 class="title">{{ game.name }}</h3>
+    
+    <div class="stars-container">
+      @for (star of [1, 2, 3, 4, 5]; track star) {
+        <i class="bi bi-star-fill star-icon" [class.filled]="isStarFilled(star)"></i>
+      }
     </div>
   </div>
+
 </div>
