@@ -2,7 +2,6 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="cerrar()">&times;</button>
 
-    <!-- 🚀 Usamos paréntesis para leer el Signal -->
     @if (loading()) {
       <div class="loading-state">
         <div class="spinner"></div>
@@ -39,7 +38,28 @@
             }
           </div>
 
-          <div class="meta-grid">
+          @if (game()?.screenshots && game()!.screenshots!.length > 0) {
+            <div class="carousel-wrapper mt-4">
+              <div class="carousel-header">
+                <h3>Capturas de pantalla</h3>
+                <div class="carousel-controls">
+                  <button class="btn-scroll" (click)="scroll(scrollContainer, 'left')"><i class="bi bi-chevron-left"></i></button>
+                  <button class="btn-scroll" (click)="scroll(scrollContainer, 'right')"><i class="bi bi-chevron-right"></i></button>
+                </div>
+              </div>
+
+              <!-- El contenedor con la referencia local -->
+              <div class="screenshots-container" #scrollContainer>
+                @for (snap of game()?.screenshots; track snap.id) {
+                  <div class="screenshot-card" (click)="abrirImagenCompleta(snap.image_id)">
+                    <img [src]="getScreenshotUrl(snap.image_id)" alt="Gameplay">
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <div class="meta-grid mt-4">
             <div class="meta-item">
               <strong>Plataformas:</strong>
               <span>{{ getPlatformsText() }}</span>

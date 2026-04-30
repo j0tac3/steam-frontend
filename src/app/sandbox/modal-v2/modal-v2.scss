@@ -70,7 +70,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* El resto de la estructura interna */
 .modal-grid {
   display: grid;
   grid-template-columns: 350px 1fr;
@@ -115,6 +114,7 @@
 }
 
 .main-info {
+  min-width: 0;
   h1 { margin: 0 0 15px 0; font-size: 2.5rem; color: white; line-height: 1.2; padding-right: 40px; }
 
   .tags .tag {
@@ -136,6 +136,83 @@
     .mt-4 { margin-top: 25px; }
   }
 
+  .carousel-wrapper {
+    position: relative;
+    max-width: 100%;
+
+    .carousel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      h3 {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 1px;
+        margin: 0;
+      }
+
+      .carousel-controls {
+        display: flex;
+        gap: 8px;
+
+        .btn-scroll {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover { background: rgba(255, 255, 255, 0.15); }
+        }
+      }
+    }
+
+    .screenshots-container {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding-bottom: 5px;
+      
+      /* Ocultar la barra de scroll */
+      scrollbar-width: none; 
+      -ms-overflow-style: none; 
+      &::-webkit-scrollbar { 
+        display: none; 
+      }
+
+      .screenshot-card {
+        flex: 0 0 260px;
+        max-width: 260px;
+        aspect-ratio: 16 / 9;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: zoom-in;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        &:hover img {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
   .meta-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -151,13 +228,5 @@
       strong { color: #888; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 4px; }
       span { color: white; font-size: 1rem; }
     }
-  }
-
-  .btn-trailer {
-    display: inline-flex; align-items: center; justify-content: center;
-    background: #e11d48; color: white; padding: 14px 28px; border-radius: 8px;
-    text-decoration: none; font-weight: bold; transition: background 0.2s, transform 0.1s;
-
-    &:hover { background: #be123c; transform: scale(1.02); }
   }
 }

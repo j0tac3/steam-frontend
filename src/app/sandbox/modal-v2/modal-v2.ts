@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core'; // 🚀 Añadimos signal
+import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
-import { IgdbDataService } from '../../services/igdb-data'; // Verifica que la ruta sea correcta
-import { IgdbGame } from '../../interfaces/igdb';
+import { IgdbDataService } from '../../services/igdb-data'; // Verifica tu ruta
+import { IgdbGame } from '../../interfaces/igdb'; // Verifica tu ruta
 
 @Component({
   selector: 'app-modal-v2',
@@ -14,7 +14,6 @@ export class ModalV2Component implements OnInit {
   @Input({ required: true }) gameId!: number;
   @Output() close = new EventEmitter<void>();
   
-  // 🚀 Convertimos a Signals para una reactividad instantánea
   public game = signal<IgdbGame | null>(null);
   public loading = signal<boolean>(true);
 
@@ -23,13 +22,11 @@ export class ModalV2Component implements OnInit {
   ngOnInit() {
     this.igdbService.getDetallePro(this.gameId).subscribe({
       next: (res) => {
-        // 🚀 Usamos .set() para actualizar el valor
         this.game.set(res);
         this.loading.set(false);
-        console.log('✅ Datos cargados en el Signal:', res);
       },
       error: (err) => {
-        console.error('❌ Error al cargar:', err);
+        console.error('Error al cargar:', err);
         this.loading.set(false);
       }
     });
@@ -42,9 +39,28 @@ export class ModalV2Component implements OnInit {
   }
 
   getPlatformsText(): string {
-    const currentGame = this.game(); // Extraemos el valor del signal
+    const currentGame = this.game();
     if (!currentGame?.platforms) return 'Desconocido';
     return currentGame.platforms.map(p => p.name).join(' • ');
+  }
+
+  getScreenshotUrl(imageId: string): string {
+    return `https://images.igdb.com/igdb/image/upload/t_screenshot_med/${imageId}.jpg`;
+  }
+
+  abrirImagenCompleta(imageId: string) {
+    const urlFull = `https://images.igdb.com/igdb/image/upload/t_1080p/${imageId}.jpg`;
+    window.open(urlFull, '_blank');
+  }
+
+  scroll(container: HTMLElement, direction: 'left' | 'right') {
+    const scrollAmount = 320; 
+    
+    if (direction === 'left') {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   }
 
   cerrar() {

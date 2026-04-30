@@ -5,21 +5,39 @@ export interface IgdbGame {
   storyline?: string;
   first_release_date?: number;
   rating?: number;
-  rating_count?: number;
   aggregated_rating?: number;
-  aggregated_rating_count?: number;
-
+  
+  // Objetos anidados
   cover?: {
     id: number;
-    image_id: string;
+    url?: string;
+    image_id?: string;
   };
 
-  genres?: Array<{ id: number; name: string }>;
-  platforms?: Array<{ id: number; name: string }>;
-  
-  videos?: Array<{
+  // 🚀 AÑADIMOS ESTO PARA QUITAR EL ERROR
+  screenshots?: {
+    id: number;
+    image_id: string;
+  }[];
+
+  artworks?: {
+    id: number;
+    image_id: string;
+  }[];
+
+  genres?: {
+    id: number;
+    name: string;
+  }[];
+
+  platforms?: {
+    id: number;
+    name: string;
+  }[];
+
+  videos?: {
     id: number;
     name: string;
     video_id: string;
-  }>;
+  }[];
 }
