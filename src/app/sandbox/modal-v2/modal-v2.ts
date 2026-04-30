@@ -6,7 +6,7 @@ import { IgdbGame } from '../../interfaces/igdb'; // Verifica tu ruta
 @Component({
   selector: 'app-modal-v2',
   standalone: true,
-  imports: [DecimalPipe, DatePipe], 
+  imports: [DecimalPipe], 
   templateUrl: './modal-v2.html',
   styleUrls: ['./modal-v2.scss']
 })
