@@ -5,7 +5,9 @@ export interface IgdbGame {
   storyline?: string;
   first_release_date?: number;
   rating?: number;
+  rating_count?: number;
   aggregated_rating?: number;
+  aggregated_rating_count?: number;
   
   // Objetos anidados
   cover?: {
@@ -26,6 +28,11 @@ export interface IgdbGame {
   }[];
 
   genres?: {
+    id: number;
+    name: string;
+  }[];
+
+  game_modes?: {
     id: number;
     name: string;
   }[];

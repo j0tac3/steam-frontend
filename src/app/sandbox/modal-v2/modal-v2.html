@@ -1,5 +1,9 @@
 <div class="modal-backdrop" (click)="cerrar()">
   <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- Píldora indicadora de deslizamiento (solo en móvil) -->
+    <div class="drag-pill d-md-none"></div>
+
     <button class="close-btn" (click)="cerrar()">&times;</button>
 
     @if (loading()) {
@@ -9,25 +13,57 @@
       </div>
     } @else if (game()) {
       <div class="modal-grid">
+        
+        <!-- CABECERA MÓVIL (Solo visible en menos de 900px) -->
+        <div class="mobile-header">
+          <img  [src]="getFullCover(game()?.cover?.image_id)" 
+                [alt]="game()?.name" 
+                class="cover-thumb">
+          <h1 class="mobile-title">{{ game()?.name }}</h1>
+        </div>
+
         <div class="sidebar">
-          <img [src]="getFullCover(game()?.cover?.image_id)" [alt]="game()?.name">
+          <!-- 🚀 AQUÍ ESTABA EL ERROR: Faltaba la imagen de PC -->
+          <img [src]="getFullCover(game()?.cover?.image_id)" 
+               [alt]="game()?.name" 
+               class="desktop-cover">
           
-          @if (game()?.rating) {
-            <div class="stats">
+          <div class="stats">
+            <!-- NOTA DE LA CRÍTICA (Prensa) -->
+            @if (game()?.aggregated_rating) {
               <div class="stat-item">
-                <span class="label">Puntuación</span>
-                <span class="value success">{{ game()?.rating | number:'1.0-0' }}%</span>
+                <div class="stat-info">
+                  <span class="label"><i class="bi bi-newspaper"></i> Prensa</span>
+                  <span class="sub-label">Basado en {{ game()?.aggregated_rating_count }} reseñas</span>
+                </div>
+                <span class="value success">{{ game()?.aggregated_rating | number:'1.0-0' }}%</span>
               </div>
-            </div>
-          }
+            }
+            <!-- NOTA DE LOS USUARIOS -->
+            @if (game()?.rating) {
+              <div class="stat-item">
+                <div class="stat-info">
+                  <span class="label"><i class="bi bi-people"></i> Usuarios</span>
+                  <span class="sub-label">Basado en {{ game()?.rating_count }} votos</span>
+                </div>
+                <span class="value info">{{ game()?.rating | number:'1.0-0' }}%</span>
+              </div>
+            }
+          </div>
         </div>
 
         <div class="main-info">
-          <h1>{{ game()?.name }}</h1>
+          <!-- TÍTULO DE ESCRITORIO -->
+          <h1 class="desktop-title">{{ game()?.name }}</h1>
           
           <div class="tags">
             @for (genre of game()?.genres; track genre.id) {
               <span class="tag">{{ genre.name }}</span>
+            }
+          </div>
+          <div class="tags">
+            @for (mode of game()?.game_modes; track mode.id) {
+              <span class="tag">{{ mode.name }}</span>
             }
           </div>
           <div class="meta-grid mt-4">
@@ -51,22 +87,20 @@
           </div>
 
           @if (game()?.screenshots && game()!.screenshots!.length > 0) {
-            <div class="carousel-wrapper mt-4">
-              <div class="carousel-header">
-                <h3>Capturas de pantalla</h3>
-                <div class="carousel-controls">
-                  <button class="btn-scroll" (click)="scroll(scrollContainer, 'left')"><i class="bi bi-chevron-left"></i></button>
-                  <button class="btn-scroll" (click)="scroll(scrollContainer, 'right')"><i class="bi bi-chevron-right"></i></button>
+            <div class="screenshots-section mt-5">
+              <h3 class="section-title text-white-50 mb-3">CAPTURAS DE PANTALLA</h3>
+              <div class="carousel-wrapper">
+                <button class="nav-btn prev-btn" (click)="scroll(screenshotTrack, 'left')">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="carousel-track" #screenshotTrack>
+                  @for (shot of game()?.screenshots; track shot.id) {
+                    <img [src]="getScreenshotUrl(shot.image_id)" alt="Captura de {{ game()?.name }}" class="screenshot-img" loading="lazy">
+                  }
                 </div>
-              </div>
-
-              <!-- El contenedor con la referencia local -->
-              <div class="screenshots-container" #scrollContainer>
-                @for (snap of game()?.screenshots; track snap.id) {
-                  <div class="screenshot-card" (click)="abrirImagenCompleta(snap.image_id)">
-                    <img [src]="getScreenshotUrl(snap.image_id)" alt="Gameplay">
-                  </div>
-                }
+                <button class="nav-btn next-btn" (click)="scroll(screenshotTrack, 'right')">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
               </div>
             </div>
           }
