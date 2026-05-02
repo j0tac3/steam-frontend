@@ -1,19 +1,43 @@
+/* =========================================
+   1. CONTENEDOR PRINCIPAL Y EVENTO HOVER
+   ========================================= */
+.card-wrapper {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+
+  &:hover {
+    .game-card {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    }
+    .hover-overlay {
+      opacity: 1; 
+    }
+    .game-info {
+      opacity: 1;
+      transform: translateY(0); 
+    }
+    .add-btn-overlay {
+      opacity: 1;
+      pointer-events: auto; 
+      bottom: 20px; 
+    }
+  }
+}
+
+/* =========================================
+   2. LA TARJETA Y LA CAPA OSCURA
+   ========================================= */
 .game-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4; // Mantiene la proporción rectangular vertical
-  border-radius: 16px; // Bordes redondeados como en la imagen
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
   overflow: hidden;
-  cursor: pointer;
+  background-color: #121212;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: #121212; // Fondo por si la imagen tarda en cargar
 
-  &:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
-  }
-
-  /* 1. La imagen al fondo ocupando todo */
   .bg-image {
     position: absolute;
     top: 0;
@@ -24,115 +48,75 @@
     z-index: 1;
   }
 
-  /* 2. El gradiente inferior para proteger el texto */
-  .gradient-overlay {
+  .hover-overlay {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 60%; // Sube hasta un poco más de la mitad
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 100%);
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px); 
     z-index: 2;
+    opacity: 0; 
+    transition: opacity 0.3s ease;
   }
+}
 
-  /* 3. Controles Superiores (XBOX, Punto, Corazón) */
-  .top-controls {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    z-index: 3;
+/* =========================================
+   3. TEXTOS Y BOTÓN (SOBRE LA CAPA)
+   ========================================= */
+.game-info {
+  position: absolute;
+  top: 35%; 
+  left: 0;
+  width: 100%;
+  padding: 0 15px;
+  text-align: center;
+  z-index: 3;
+  
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-    .left-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  .title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0; /* Sin margen inferior ya que no hay año debajo */
+    line-height: 1.2;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 
-      .status-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #2e7d32; // Verde oscuro
-        box-shadow: 0 0 8px rgba(46, 125, 50, 0.8);
-      }
-
-      .platform-badge {
-        background: rgba(30, 40, 45, 0.7); // Tono oscuro azulado
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #e0e0e0;
-        font-size: 0.75rem;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        padding: 4px 10px;
-        border-radius: 6px;
-      }
-    }
-
-    .favorite-btn {
-      background: rgba(20, 20, 20, 0.6);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.5);
-      transition: all 0.2s ease;
-
-      i.active {
-        color: #ef4444; // Rojo intenso para el corazón
-      }
-
-      &:hover {
-        background: rgba(40, 40, 40, 0.8);
-        transform: scale(1.1);
-      }
-    }
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Le damos 4 líneas enteras al título por si es larguísimo */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
+}
 
-  /* 4. Información Inferior (Título y Estrellas) */
-  .bottom-info {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.add-btn-overlay {
+  position: absolute;
+  bottom: 10px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(88, 101, 242, 0.95);
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  
+  opacity: 0;
+  pointer-events: none; 
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-    .title {
-      color: #ffffff;
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin: 0;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-      // Para truncar el texto si el nombre es muy largo
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .stars-container {
-      display: flex;
-      gap: 3px;
-
-      .star-icon {
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.2); // Estrellas vacías oscuras
-
-        &.filled {
-          color: #d4af37; // Dorado para las llenas
-          text-shadow: 0 0 4px rgba(212, 175, 55, 0.4);
-        }
-      }
-    }
+  &:hover {
+    background: rgba(88, 101, 242, 1);
+    transform: translateX(-50%) scale(1.05);
   }
 }

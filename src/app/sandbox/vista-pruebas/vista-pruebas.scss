@@ -26,14 +26,18 @@
     }
   }
 }
-.juegos-grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1.5rem; 
-  padding: 1rem 0;
-}
 
-/* ... mantén tus estilos anteriores y añade estos ... */
+/* =========================================
+   ZONA DE BÚSQUEDA
+   ========================================= */
+
+/* 🚀 Contenedor Padre Flexbox para alinear Input + Texto */
+.search-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Todo alineado a la izquierda */
+  gap: 8px; /* Separación exacta de 8px entre la barra y el texto */
+}
 
 .search-box-glass {
   position: relative;
@@ -70,4 +74,30 @@
       color: rgba(255, 255, 255, 0.3);
     }
   }
+}
+
+/* 🚀 Ajustes finales del texto de ayuda */
+.search-hint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45); /* Gris muy sutil */
+  padding-left: 12px; /* Margen para alinearlo con el interior del buscador */
+  pointer-events: none;
+  animation: fadeInHint 0.5s ease-in-out;
+}
+
+@keyframes fadeInHint {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   REJILLA DE JUEGOS
+   ========================================= */
+
+.juegos-grid-container {
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem; 
+  padding: 1rem 0;
 }

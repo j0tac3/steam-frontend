@@ -7,7 +7,15 @@
       <p class="text-white-50 small m-0">Probando nuevos diseños sin afectar a producción</p>
     </div>
 
-    <!-- 🚀 NUEVO: Barra de Búsqueda -->
+     <div class="view-switcher-glass p-1 d-flex gap-1">
+      <button class="btn-view" [class.active]="tipoVista() === 'clean'" (click)="cambiarVista('clean')">
+        <i class="bi bi-grid-fill"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 🚀 NUEVO: Contenedor específico para el buscador y su mensaje -->
+  <div class="search-wrapper mb-4">
     <div class="search-box-glass">
       <i class="bi bi-search search-icon"></i>
       <input 
@@ -16,14 +24,12 @@
         placeholder="Buscar juego..." 
         class="search-input">
     </div>
-
-    <div class="view-switcher-glass p-1 d-flex gap-1">
-      <button class="btn-view" [class.active]="tipoVista() === 'clean'" (click)="cambiarVista('clean')">
-        <i class="bi bi-grid-fill"></i>
-      </button>
-    </div>
+    
+    <span class="search-hint">
+      💡 Consejo: Si no lo encuentras, prueba a buscar su título original o en inglés.
+    </span>
   </div>
-
+     
   <!-- Rejilla de Juegos -->
   <div class="juegos-grid-container">
     @for (juego of misJuegos(); track juego.id) {
@@ -31,13 +37,13 @@
         <app-card-clean [game]="juego" (clicked)="abrirModal($event)"></app-card-clean>
       </div>
     } @empty {
-      <!-- 🚀 Mensaje si no hay resultados -->
       <div class="text-center w-100 py-5">
         <p class="text-white-50">Escribe al menos 3 letras para buscar en IGDB...</p>
       </div>
     }
   </div>
 
+  <!-- Modal V2 -->
   @if (juegoSeleccionado()) {
     <app-modal-v2 
         [gameId]="juegoSeleccionado()!" 

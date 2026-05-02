@@ -5,6 +5,7 @@ import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 import { IconComponent } from '../icon/icon';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
 import { Game } from '../../models/game';
+import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 
 @Component({
   selector: 'app-game-search',
@@ -12,7 +13,8 @@ import { Game } from '../../models/game';
   imports: [CommonModule, 
             SearchGameCardComponent,
             IconComponent,
-            SkeletonCardComponent
+            SkeletonCardComponent,
+            CardCleanComponent
           ],
   templateUrl: './game-search.html',
   styleUrl: './game-search.scss'

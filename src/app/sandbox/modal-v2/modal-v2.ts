@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { IgdbDataService } from '../../services/igdb-data'; // Verifica tu ruta
 import { IgdbGame } from '../../interfaces/igdb'; // Verifica tu ruta
+import { ComponentResourceCollector } from '@angular/cdk/schematics';
 
 @Component({
   selector: 'app-modal-v2',
@@ -22,6 +23,7 @@ export class ModalV2Component implements OnInit {
   ngOnInit() {
     this.igdbService.getDetallePro(this.gameId).subscribe({
       next: (res) => {
+        console.log(res);
         this.game.set(res);
         this.loading.set(false);
       },
@@ -61,6 +63,22 @@ export class ModalV2Component implements OnInit {
     } else {
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
+  }
+
+  // 🚀 Convierte el timestamp de IGDB a una fecha completa en español o avisa si no hay
+  getFormattedDate(timestamp?: number): string {
+    // Si no hay fecha o es 0, devolvemos el mensaje por defecto
+    if (!timestamp) {
+      return 'Fecha de salida sin confirmar';
+    }
+    
+    const date = new Date(timestamp * 1000); 
+    
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   cerrar() {

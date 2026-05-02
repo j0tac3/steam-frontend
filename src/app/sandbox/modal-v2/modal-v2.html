@@ -5,7 +5,7 @@
     @if (loading()) {
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Descifrando información...</p>
+        <p>Cargando datos...</p>
       </div>
     } @else if (game()) {
       <div class="modal-grid">
@@ -29,6 +29,18 @@
             @for (genre of game()?.genres; track genre.id) {
               <span class="tag">{{ genre.name }}</span>
             }
+          </div>
+          <div class="meta-grid mt-4">
+            <div class="meta-item">
+              <strong>Plataformas:</strong>
+              <span>{{ getPlatformsText() }}</span>
+            </div>
+          </div>
+          <div class="game-metadata">
+            <div class="metadata-pill" [class.unconfirmed]="!game()?.first_release_date">
+              <i [class]="game()?.first_release_date ? 'bi bi-calendar3' : 'bi bi-hourglass-split'"></i>
+              <span>{{ getFormattedDate(game()?.first_release_date) }}</span>
+            </div>
           </div>
 
           <div class="description">
@@ -58,13 +70,6 @@
               </div>
             </div>
           }
-
-          <div class="meta-grid mt-4">
-            <div class="meta-item">
-              <strong>Plataformas:</strong>
-              <span>{{ getPlatformsText() }}</span>
-            </div>
-          </div>
         </div>
       </div>
     }
