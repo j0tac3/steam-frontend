@@ -1,141 +1,105 @@
 import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
-import { Router } from '@angular/router';
-import { GameModalComponent } from '../game-modal/game-modal';
-import { GameCardComponent } from '../game-card/game-card';
+
 import { StatsPanelComponent } from '../stats-panel/stats-panel';
-import { SearchGameCardComponent } from '../search-game-card/search-game-card';
 import { GameSearchComponent } from '../game-search/game-search';
 import { GameFiltersComponent } from '../game-filters/game-filters';
 import { IconComponent } from '../icon/icon';
-import { Game } from '../../models/game';
-import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { RadarComponent } from '../radar/radar';
+import { ModalV2Component } from '../../sandbox/modal-v2/modal-v2';
+import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
+
+import { SavedGame } from '../../models/saved-games';
+import { Game } from '../../models/game'; 
 
 @Component({
   selector: 'app-biblioteca',
   standalone: true,
   imports: [
-    CommonModule,
-    GameModalComponent,
-    GameCardComponent,
-    StatsPanelComponent,
-    GameSearchComponent,
-    GameFiltersComponent,
-    IconComponent,
-    SkeletonCardComponent,
-    DragDropModule,
-    RadarComponent,
-    RouterModule
+    CommonModule, StatsPanelComponent, GameSearchComponent, GameFiltersComponent,
+    IconComponent, DragDropModule, RouterModule,
+    ModalV2Component, CardCleanComponent
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
 })
 export class BibliotecaComponent implements OnInit {
-  public myLibrary = signal<Game[]>([]);
+  public myLibrary = signal<SavedGame[]>([]);
   public cargandoBiblioteca = signal<boolean>(true);
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private steamService = inject(SteamService);
+  private gameService = inject(SteamService); 
 
-  filtroPlataforma = signal('todas');
   filtroTexto = signal('');
   filtroEstado = signal('todos');
+  filtroPlataforma = signal('todas');
   criterioOrden = signal<'nombre' | 'rating' | 'reciente'>('nombre');
 
-  juegoDetalle = signal<Game | null>(null);
-  cargandoDetalle = signal(false);
-  
-  // AÑADIDO: Soporte para 'warning'
-  notificacion = signal<{mensaje: string, tipo: 'success' | 'error' | 'warning'} | null>(null);
+  notificacion = signal<{mensaje: string, tipo: 'success' | 'error' | 'warning', mostrarBoton?: boolean} | null>(null);
+  vistaActual = signal<'cuadricula' | 'tablero'>('cuadricula');
+  isMobile = window.innerWidth <= 768;
 
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(12);
 
-  vistaActual = signal<'cuadricula' | 'tablero'>('cuadricula');
-    // Variables para controlar el modo edición en móviles
-  isMobile = window.innerWidth <= 768;
-  modoEdicion = false;
+  isModalOpen = signal<boolean>(false);
+  selectedGameId = signal<number | string | null>(null);
+  selectedGameSource = signal<'igdb' | 'steam'>('igdb');
+  modoModal = signal<'read' | 'action'>('read'); 
+  juegoModalEnBiblioteca = signal<boolean>(false);
+  juegoSeleccionadoData = signal<any>(null); 
 
-ngOnInit() {
-    // Solo llamamos a la función. El estado inicial de la señal ya es true.
+  ngOnInit() {
     this.cargarBiblioteca();
   }
 
   cargarBiblioteca() {
-    // Opcional: asegurarnos de que el esqueleto se muestra al recargar
     this.cargandoBiblioteca.set(true); 
-
-    this.steamService.getMyGames().subscribe({
-      next: (juegos) => {
+    this.gameService.getMyGames().subscribe({
+      next: (juegos: SavedGame[]) => {
         this.myLibrary.set(juegos);
-        // ¡MAGIA ASÍNCRONA! Apagamos el esqueleto AQUÍ ADENTRO
         this.cargandoBiblioteca.set(false); 
       },
       error: (err) => {
         console.error('Error al cargar biblioteca:', err);
-        // Apagamos el esqueleto también si hay error para no dejar la pantalla bloqueada
         this.cargandoBiblioteca.set(false); 
       }
     });
   }
 
-  // AÑADIDO: Soporte para 'warning'
-  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success') {
-    this.notificacion.set({ mensaje, tipo });
-    setTimeout(() => this.notificacion.set(null), 3500); 
-  }
-
+  // --- LÓGICA COMPUTADA ---
   bibliotecaFiltrada = computed(() => {
     const texto = this.filtroTexto().toLowerCase().trim();
     const estado = this.filtroEstado();
-    const plataforma = this.filtroPlataforma(); // 🟢 NUEVO
+    const plataforma = this.filtroPlataforma();
     const orden = this.criterioOrden();
 
     let lista = this.myLibrary().filter(juego => {
-      const nombreJuego = (juego.title || juego.name || '').toLowerCase();
-      const coincideTexto = nombreJuego.includes(texto);
+      const coincideTexto = juego.title.toLowerCase().includes(texto);
       const coincideEstado = estado === 'todos' || juego.status === estado;
-
-      // 🟢 NUEVA LÓGICA DE PLATAFORMA
-      // Si buscamos 'todas', pasa. Si no, debe coincidir exactamente.
-      const coincidePlataforma = plataforma === 'todas' || juego.platform === plataforma;
-
+      const coincidePlataforma = plataforma === 'todas' || (juego as any).platform === plataforma;
       return coincideTexto && coincideEstado && coincidePlataforma;
     });
 
     return lista.sort((a, b) => {
-      if (orden === 'nombre') {
-        const nombreA = (a.title || a.name || '');
-        const nombreB = (b.title || b.name || '');
-        return nombreA.localeCompare(nombreB);
-      } else if (orden === 'rating') {
-        return (b.personal_rating || 0) - (a.personal_rating || 0);
-      } else {
-        return (b.id || 0) - (a.id || 0);
-      }
+      if (orden === 'nombre') return a.title.localeCompare(b.title);
+      if (orden === 'reciente') return Number(b.id || 0) - Number(a.id || 0);
+      return 0;
     });
   });
 
   bibliotecaPaginada = computed(() => {
     const inicio = (this.paginaActual() - 1) * this.elementosPorPagina();
-    const fin = inicio + this.elementosPorPagina();
-    return this.bibliotecaFiltrada().slice(inicio, fin);
+    return this.bibliotecaFiltrada().slice(inicio, inicio + this.elementosPorPagina());
   });
 
-  totalPaginas = computed(() => {
-    const total = this.bibliotecaFiltrada().length;
-    return Math.ceil(total / this.elementosPorPagina()) || 1;
-  });
-
-  paginasArray = computed(() => {
-    return Array.from({ length: this.totalPaginas() }, (_, i) => i + 1);
-  });
+  totalPaginas = computed(() => Math.ceil(this.bibliotecaFiltrada().length / this.elementosPorPagina()) || 1);
+  paginasArray = computed(() => Array.from({ length: this.totalPaginas() }, (_, i) => i + 1));
 
   totalJuegos = computed(() => this.myLibrary().length);
   pendientes = computed(() => this.myLibrary().filter(g => g.status === 'pendiente').length);
@@ -143,213 +107,123 @@ ngOnInit() {
   completados = computed(() => this.myLibrary().filter(g => g.status === 'completado').length);
   abandonado = computed(() => this.myLibrary().filter(g => g.status === 'abandonado').length);
 
-  actualizarFiltroPlataforma(plataforma: string) {
-    this.filtroPlataforma.set(plataforma);
-    this.paginaActual.set(1);
-  }
+  actualizarFiltroPlataforma(p: string) { this.filtroPlataforma.set(p); this.paginaActual.set(1); }
+  actualizarFiltroEstado(e: string) { this.filtroEstado.set(e); this.paginaActual.set(1); }
+  actualizarFiltroTexto(t: string) { this.filtroTexto.set(t); this.paginaActual.set(1); }
+  
+  // --- ACCIONES DE DATOS ---
 
-  actualizarFiltroEstado(estado: string) {
-    this.filtroEstado.set(estado);
-    this.paginaActual.set(1);
-  }
+  // 🚀 AÑADIDO: Recibe los datos del Modal V2 y decide si CREA o ACTUALIZA
+  guardarJuegoDesdeModal(payload: any) {
+    // 1. Buscamos si el juego ya existe en nuestra colección cruzando el external_id
+    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(payload.external_id));
 
-  actualizarFiltroTexto(texto: string) {
-    this.filtroTexto.set(texto);
-    this.paginaActual.set(1);
-  }
-
-  actualizarCriterioOrden(orden: 'nombre' | 'rating' | 'reciente') {
-    this.criterioOrden.set(orden);
-    this.paginaActual.set(1);
-  }
-
-  resetFiltros() {
-    this.filtroTexto.set('');
-    this.filtroEstado.set('todos');
-    this.filtroPlataforma.set('todas'); // 🟢 NUEVO
-    this.criterioOrden.set('nombre');
-    this.paginaActual.set(1);
-  }
-
-  private hacerScrollArriba() {
-    const contenedor = document.getElementById('ancla-grid-biblioteca');
-    if (contenedor) {
-      const y = contenedor.getBoundingClientRect().top + window.scrollY - 100;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  }
-
-  irAPagina(pagina: number) {
-    if (pagina >= 1 && pagina <= this.totalPaginas()) {
-      this.paginaActual.set(pagina);
-      this.hacerScrollArriba();
-    }
-  }
-
-  siguientePagina() {
-    if (this.paginaActual() < this.totalPaginas()) {
-      this.paginaActual.set(this.paginaActual() + 1);
-      this.hacerScrollArriba();
-    }
-  }
-
-  paginaAnterior() {
-    if (this.paginaActual() > 1) {
-      this.paginaActual.set(this.paginaActual() - 1);
-      this.hacerScrollArriba();
-    }
-  }
-
-  guardarJuego(game: Game) {
-    const payload = {
-      title: game.name, 
-      steam_appid: String(game.appid),
-      image_url: game.logo,
-      status: 'pendiente',
-      source: game.es_igdb ? 'igdb' : 'steam'
-    };
-
-    this.steamService.saveGame(payload).subscribe({
-      next: () => {
-        this.cargarBiblioteca(); 
-        this.mostrarNotificacion(`¡${game.name} añadido a tu colección!`, 'success');
-      },
-      error: (err) => {
-        console.error("Error al guardar:", err);
-        this.mostrarNotificacion('Hubo un error al guardar el juego', 'error');
-      }
-    });
-  }
-
-  borrarJuego(id: number) {
-    if (confirm('¿Seguro que quieres eliminar este juego?')) {
-      this.steamService.deleteGame(id).subscribe({
+    if (juegoExistente && juegoExistente.id) {
+      // 🟢 RUTA A: EDICIÓN (Ya lo tenemos)
+      // Usamos el ID interno de tu BD (juegoExistente.id) para actualizarlo
+      this.gameService.updateGame(juegoExistente.id, payload).subscribe({
         next: () => {
-          this.cargarBiblioteca();
-          this.mostrarNotificacion('Juego eliminado de tu biblioteca', 'success');
+          this.cargarBiblioteca(); 
+          this.mostrarNotificacion(`¡${payload.title} ha sido actualizado!`, 'success');
+          this.cerrarModal();
         },
         error: (err) => {
-          console.error('Error al borrar:', err);
-          this.mostrarNotificacion('Error al intentar eliminar el juego', 'error');
-        }
-      });
-    }
-  }
-
-  actualizarEstado(id: number, nuevoEstado: string) {
-    this.steamService.updateStatus(id, nuevoEstado).subscribe({
-      next: () => {
-        this.cargarBiblioteca();
-        const estadoFormateado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
-        this.mostrarNotificacion(`Estado cambiado a: ${estadoFormateado}`, 'success');
-      },
-      error: (err) => {
-        console.error('Error al actualizar:', err);
-        this.mostrarNotificacion('Error al cambiar el estado', 'error');
-      }
-    });
-  }
-
-  verDetalles(game: Game) {
-    const gameId = game.steam_appid || game.appid || game.id;
-
-    // GUARDIA DE TIPO: Si no hay ID, TypeScript detiene la ejecución y evitamos el error
-    if (!gameId) {
-      console.error('El juego seleccionado no tiene un ID válido:', game);
-      this.mostrarNotificacion('Error al abrir: El juego no tiene ID', 'error');
-      return; 
-    }
-
-    this.cargandoDetalle.set(true);
-    this.juegoDetalle.set(game);
-
-    const esIgdb = game.source === 'igdb' || game.es_igdb === true;
-
-    // A partir de aquí, TypeScript ya sabe al 100% que gameId NO es undefined
-    if (esIgdb) {
-      this.steamService.getIgdbDetails(gameId).subscribe({
-        next: (data) => {
-          this.juegoDetalle.set({ ...game, ...data, source: 'igdb' });
-          this.cargandoDetalle.set(false);
+          console.error('Error al actualizar desde modal', err);
+          this.mostrarNotificacion('Error al actualizar el juego', 'error');
         }
       });
     } else {
-      // Envolvemos gameId en String() para garantizar que sea un texto
-      this.steamService.getGameDetails(String(gameId)).subscribe({
-        next: (data) => {
-          this.juegoDetalle.set({ ...game, ...data, source: 'steam' });
-          this.cargandoDetalle.set(false);
+      this.gameService.saveGame(payload).subscribe({
+        next: () => {
+          this.cargarBiblioteca(); 
+          // 🚀 PASAMOS 'true' AL FINAL PARA MOSTRAR EL BOTÓN
+          this.mostrarNotificacion(`¡${payload.title} añadido a tu colección!`, 'success', true);
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error('Error al guardar nuevo desde modal', err);
+          this.mostrarNotificacion('Error al guardar el juego', 'error');
         }
       });
     }
   }
 
-  guardarDiario(game: Game) {
-    if (!game.id) {
-          console.error('Intento de guardar un diario de un juego sin ID');
-          return; 
-    }
-
-    const payload = {
-      notes: game.notes,
-      personal_rating: game.personal_rating,
-      start_date: game.start_date,
-      platform: game.platform
-    };
-
-    this.steamService.updateGameDiario(game.id, payload).subscribe({
-      next: (response) => {
-        if (response.game) {
-          this.juegoDetalle.set({ ...this.juegoDetalle(), ...response.game });
-        }
-        this.cargarBiblioteca(); 
-        this.mostrarNotificacion('Progreso actualizado', 'success');
-      },
-      error: (err) => console.error(err)
-    });
-  }
-
-  // Filtra los juegos al vuelo para cada columna
-  getJuegosPorEstado(estado: string): Game[] {
+  // --- DRAG & DROP ---
+  getJuegosPorEstado(estado: string): SavedGame[] {
     return this.bibliotecaFiltrada().filter(j => j.status === estado);
   }
 
-  // La física de soltar la tarjeta
-  onJuegoSoltado(event: CdkDragDrop<Game[]>, nuevoEstado: string) {
+  onJuegoSoltado(event: CdkDragDrop<SavedGame[]>, nuevoEstado: string) {
     if (event.previousContainer === event.container) {
-      // Si lo sueltas en la misma columna, solo cambia el orden visual
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // Si lo cambias de columna, hacemos la transferencia y actualizamos tu Base de Datos
       const juegoMovido = event.previousContainer.data[event.previousIndex];
-      juegoMovido.status = nuevoEstado as Game['status'];
       
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
+      // 1. Movimiento visual temporal (Angular CDK)
+      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+      
+      // 🚀 2. LA MAGIA: Actualizamos la señal principal localmente
+      // Así Angular sabe que este juego ahora pertenece a otra columna y no lo devuelve atrás
+      // 🚀 2. LA MAGIA: Actualizamos la señal principal localmente
+      this.myLibrary.update(juegos => 
+        juegos.map(juego => 
+          juego.id === juegoMovido.id 
+            // Le decimos a TypeScript que confíe en que nuevoEstado es de este tipo exacto
+            ? { ...juego, status: nuevoEstado as 'pendiente' | 'jugando' | 'completado' | 'abandonado' } 
+            : juego
+        )
       );
 
-      // Usamos tu función existente para guardar el cambio en la BBDD
+      // 3. Actualizamos en el Backend en segundo plano
       if (juegoMovido.id) {
-        this.actualizarEstado(juegoMovido.id, nuevoEstado);
+        this.gameService.updateStatus(juegoMovido.id, nuevoEstado).subscribe({
+          next: () => this.mostrarNotificacion('Estado actualizado', 'success'),
+          error: () => {
+            // Si el servidor da error, recargamos la BD original para revertir la tarjeta
+            this.cargarBiblioteca(); 
+            this.mostrarNotificacion('Error al actualizar', 'error');
+          }
+        });
       }
     }
   }
 
-  // Opcional pero recomendado: detectar si el usuario gira la pantalla
-  @HostListener('window:resize') // <-- Le quitamos el ['$event']
-  onResize() {
-    this.isMobile = window.innerWidth <= 768;
+  // --- MODAL ---
+
+  // 🚀 AÑADIDO: Abre el modal en modo LECTURA (Curiosear)
+  abrirModoLectura(game: any) {
+    this.selectedGameId.set(game.external_id);
+    this.selectedGameSource.set(game.source || 'igdb');
+    this.modoModal.set('read');
+    
+    // 🚀 Buscamos el juego entero
+    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(game.external_id));
+    this.juegoModalEnBiblioteca.set(!!juegoExistente);
+    this.juegoSeleccionadoData.set(juegoExistente || null);
+    
+    this.isModalOpen.set(true);
   }
 
-  toggleEdicion() {
-    this.modoEdicion = !this.modoEdicion;
+  // 🚀 AÑADIDO: Abre el modal en modo ACCIÓN (Configurar para guardar)
+  abrirModoAccion(game: any) {
+    this.selectedGameId.set(game.external_id);
+    this.selectedGameSource.set(game.source || 'igdb');
+    this.modoModal.set('action');
+    
+    this.juegoModalEnBiblioteca.set(false);
+    this.juegoSeleccionadoData.set(null); // 🚀 Como es nuevo, pasamos null
+    
+    this.isModalOpen.set(true);
   }
 
-  cerrarSesion() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  @HostListener('window:resize')
+  onResize() { this.isMobile = window.innerWidth <= 768; }
+
+    mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success', mostrarBoton = false) {
+    this.notificacion.set({ mensaje, tipo, mostrarBoton });
+    setTimeout(() => this.notificacion.set(null), 4000); // 💡 Le damos medio segundo extra al usuario para que le dé tiempo a hacer clic
   }
+
+  cerrarModal() { this.isModalOpen.set(false); this.selectedGameId.set(null); }
+  cerrarSesion() { this.authService.logout(); this.router.navigate(['/login']); }
 }

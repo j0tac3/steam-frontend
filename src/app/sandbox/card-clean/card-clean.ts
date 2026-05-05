@@ -1,6 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, input } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-import { IgdbGame } from '../../interfaces/igdb';
 
 @Component({
   selector: 'app-card-clean',
@@ -10,26 +9,21 @@ import { IgdbGame } from '../../interfaces/igdb';
   styleUrls: ['./card-clean.scss']
 })
 export class CardCleanComponent {
-  @Input({ required: true }) game!: IgdbGame;
-  @Input() showAddButton = false;
+  // Entradas estrictas y directas
+  gameId = input.required<string>(); // Usaremos el external_id aquí
+  title = input.required<string>();
+  imageUrl = input.required<string>(); // Ya no necesitamos que sea undefined
+  showAddButton = input<boolean>(false);
   
-  @Output() clicked = new EventEmitter<number>();
-  @Output() addClicked = new EventEmitter<number>();
-
-  getCoverUrl(cover?: any): string {
-    if (!cover || !cover.url) {
-      return 'https://placehold.co/300x400/1a1a1a/6441a5?text=Sin+Imagen'; 
-    }
-    let fullUrl = 'https:' + cover.url;
-    return fullUrl.replace('t_thumb', 't_cover_big');
-  }
+  @Output() clicked = new EventEmitter<string>();
+  @Output() addClicked = new EventEmitter<string>();
 
   verDetalle() {
-    this.clicked.emit(this.game.id);
+    this.clicked.emit(this.gameId());
   }
 
   onAddClick(event: Event) {
     event.stopPropagation(); 
-    this.addClicked.emit(this.game.id);
+    this.addClicked.emit(this.gameId());
   }
 }

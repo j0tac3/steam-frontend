@@ -1,10 +1,16 @@
 <div class="modal-backdrop" (click)="cerrar()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     
-    <!-- Píldora indicadora de deslizamiento (solo en móvil) -->
     <div class="drag-pill d-md-none"></div>
 
     <button class="close-btn" (click)="cerrar()">&times;</button>
+
+    <!-- 🚀 LÁPIZ DE EDICIÓN: Solo visible en PC, modo lectura, Y si el juego es nuestro -->
+    @if (modalMode === 'read' && game() && enBiblioteca()) {
+      <button class="edit-btn d-none d-md-flex" (click)="activarEdicion()" title="Editar juego">
+        <i class="bi bi-pencil"></i>
+      </button>
+    }
 
     @if (loading()) {
       <div class="loading-state">
@@ -14,79 +20,159 @@
     } @else if (game()) {
       <div class="modal-grid">
         
-        <!-- CABECERA MÓVIL (Solo visible en menos de 900px) -->
+        <!-- ========================================== -->
+        <!-- CABECERA MÓVIL                             -->
+        <!-- ========================================== -->
         <div class="mobile-header">
-          <img  [src]="getFullCover(game()?.cover?.image_id)" 
-                [alt]="game()?.name" 
-                class="cover-thumb">
-          <h1 class="mobile-title">{{ game()?.name }}</h1>
+          <img [src]="game()?.coverUrl" [alt]="game()?.name" class="cover-thumb">
+          <div>
+            <h1 class="mobile-title">{{ game()?.name }}</h1>
+            
+            <!-- 🚀 BOTONES MÓVIL (Dependen del contexto) -->
+            @if (modalMode === 'read') {
+              @if (enBiblioteca()) {
+                <button class="btn btn-sm btn-outline-light mt-2 rounded-pill px-3" (click)="activarEdicion()">
+                  <i class="bi bi-pencil"></i> Editar notas
+                </button>
+              } @else {
+                <button class="btn btn-sm btn-primary mt-2 rounded-pill px-3 fw-bold" (click)="activarEdicion()">
+                  <i class="bi bi-plus-lg"></i> Añadir a mi lista
+                </button>
+              }
+            }
+          </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- COLUMNA IZQUIERDA (CARÁTULA Y CONTROLES)   -->
+        <!-- ========================================== -->
         <div class="sidebar">
-          <!-- 🚀 AQUÍ ESTABA EL ERROR: Faltaba la imagen de PC -->
-          <img [src]="getFullCover(game()?.cover?.image_id)" 
-               [alt]="game()?.name" 
-               class="desktop-cover">
+          <img [src]="game()?.coverUrl" [alt]="game()?.name" class="desktop-cover">
           
-          <div class="stats">
-            <!-- NOTA DE LA CRÍTICA (Prensa) -->
-            @if (game()?.aggregated_rating) {
+          <!-- 🚀 BOTÓN AÑADIR PC: Solo en modo lectura si NO lo tenemos -->
+          @if (modalMode === 'read' && !enBiblioteca()) {
+            <button class="btn btn-primary w-100 mt-4 d-none d-md-flex justify-content-center align-items-center gap-2 fw-bold rounded-pill py-2 shadow-sm" (click)="activarEdicion()">
+              <i class="bi bi-plus-lg"></i> Añadir a mi lista
+            </button>
+          }
+
+          <!-- 🚀 PANEL DE ACCIÓN -->
+          @if (modalMode === 'action') {
+            <div class="action-panel mt-4">
+              
+              <!-- PLATAFORMAS -->
+              <div class="mb-4">
+                <h6 class="text-white-50 fw-bold small mb-3"><i class="bi bi-controller"></i> PLATAFORMAS</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-selected]="detalleForm.platforms.includes('PC')" (click)="togglePlatform('PC')">
+                    @if (detalleForm.platforms.includes('PC')) { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 💻 } PC
+                  </button>
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-selected]="detalleForm.platforms.includes('PS5')" (click)="togglePlatform('PS5')">
+                    @if (detalleForm.platforms.includes('PS5')) { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 🎮 } PS
+                  </button>
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-selected]="detalleForm.platforms.includes('Xbox')" (click)="togglePlatform('Xbox')">
+                    @if (detalleForm.platforms.includes('Xbox')) { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 🟢 } Xbox
+                  </button>
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-selected]="detalleForm.platforms.includes('Switch')" (click)="togglePlatform('Switch')">
+                    @if (detalleForm.platforms.includes('Switch')) { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 🔴 } Switch
+                  </button>
+                </div>
+              </div>
+
+              <!-- ESTADO -->
+              <div class="mb-4">
+                <h6 class="text-white-50 fw-bold small mb-3"><i class="bi bi-kanban"></i> LISTA</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">
+                    @if (detalleForm.status === 'pendiente') { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { ⏳ } Pendiente
+                  </button>
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-primary]="detalleForm.status === 'jugando'" (click)="setStatus('jugando')">
+                    @if (detalleForm.status === 'jugando') { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 🎮 } Jugando
+                  </button>
+                  <button class="btn btn-sm rounded-pill chip-btn" [class.is-success]="detalleForm.status === 'completado'" (click)="setStatus('completado')">
+                    @if (detalleForm.status === 'completado') { <i class="bi bi-check-lg text-dark fw-bold"></i> } @else { 🏆 } Completado
+                  </button>
+                </div>
+              </div>
+
+              <!-- GUARDAR -->
+              <button class="btn w-100 fw-bold rounded-pill mt-2 py-2 btn-guardar" 
+                      [class.ready]="hasChanges" 
+                      [disabled]="!hasChanges"
+                      (click)="guardarJuego()">
+                Guardar en Biblioteca
+              </button>
+            </div>
+          }
+
+          <!-- STATS ORIGINALES DE IGDB -->
+          <div class="stats mt-4">
+            @if (game()?.criticScore) {
               <div class="stat-item">
                 <div class="stat-info">
                   <span class="label"><i class="bi bi-newspaper"></i> Prensa</span>
-                  <span class="sub-label">Basado en {{ game()?.aggregated_rating_count }} reseñas</span>
+                  @if (game()?.criticScoreCount) {
+                    <span class="sub-label">Basado en {{ game()?.criticScoreCount }} reseñas</span>
+                  }
                 </div>
-                <span class="value success">{{ game()?.aggregated_rating | number:'1.0-0' }}%</span>
+                <span class="value success">{{ game()?.criticScore | number:'1.0-0' }}%</span>
               </div>
             }
-            <!-- NOTA DE LOS USUARIOS -->
-            @if (game()?.rating) {
+            @if (game()?.userScore) {
               <div class="stat-item">
                 <div class="stat-info">
                   <span class="label"><i class="bi bi-people"></i> Usuarios</span>
-                  <span class="sub-label">Basado en {{ game()?.rating_count }} votos</span>
+                  @if (game()?.userScoreCount) {
+                    <span class="sub-label">Basado en {{ game()?.userScoreCount }} votos</span>
+                  }
                 </div>
-                <span class="value info">{{ game()?.rating | number:'1.0-0' }}%</span>
+                <span class="value info">{{ game()?.userScore | number:'1.0-0' }}%</span>
               </div>
             }
           </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- COLUMNA DERECHA (SINOPSIS Y METADATOS)     -->
+        <!-- ========================================== -->
         <div class="main-info">
-          <!-- TÍTULO DE ESCRITORIO -->
           <h1 class="desktop-title">{{ game()?.name }}</h1>
           
+          <!-- METADATOS: Tags y Plataformas de IGDB -->
           <div class="tags">
-            @for (genre of game()?.genres; track genre.id) {
-              <span class="tag">{{ genre.name }}</span>
+            @for (genre of game()?.genres; track $index) {
+              <span class="tag">{{ genre }}</span>
             }
           </div>
           <div class="tags">
-            @for (mode of game()?.game_modes; track mode.id) {
-              <span class="tag">{{ mode.name }}</span>
+            @for (mode of game()?.gameModes; track $index) {
+              <span class="tag">{{ mode }}</span>
             }
           </div>
+          
           <div class="meta-grid mt-4">
             <div class="meta-item">
-              <strong>Plataformas:</strong>
-              <span>{{ getPlatformsText() }}</span>
+              <strong>Disponible en:</strong>
+              <span>{{ game()?.platforms?.join(' • ') || 'Desconocido' }}</span>
             </div>
           </div>
+          
           <div class="game-metadata">
-            <div class="metadata-pill" [class.unconfirmed]="!game()?.first_release_date">
-              <i [class]="game()?.first_release_date ? 'bi bi-calendar3' : 'bi bi-hourglass-split'"></i>
-              <span>{{ getFormattedDate(game()?.first_release_date) }}</span>
+            <div class="metadata-pill" [class.unconfirmed]="!game()?.releaseDate">
+              <i [class]="game()?.releaseDate ? 'bi bi-calendar3' : 'bi bi-hourglass-split'"></i>
+              <span>{{ getFormattedDate(game()?.releaseDate) }}</span>
             </div>
           </div>
 
+          <!-- SINOPSIS Y CAPTURAS -->
           <div class="description">
             @if (game()?.summary) {
-              <h3>Sinopsis</h3>
+              <h3 class="text-white-50 mt-4 mb-2">Sinopsis</h3>
               <p>{{ game()?.summary }}</p>
             }
           </div>
 
-          @if (game()?.screenshots && game()!.screenshots!.length > 0) {
+          @if (game()?.screenshots && game()!.screenshots.length > 0) {
             <div class="screenshots-section mt-5">
               <h3 class="section-title text-white-50 mb-3">CAPTURAS DE PANTALLA</h3>
               <div class="carousel-wrapper">
@@ -94,8 +180,12 @@
                   <i class="bi bi-chevron-left"></i>
                 </button>
                 <div class="carousel-track" #screenshotTrack>
-                  @for (shot of game()?.screenshots; track shot.id) {
-                    <img [src]="getScreenshotUrl(shot.image_id)" alt="Captura de {{ game()?.name }}" class="screenshot-img" loading="lazy">
+                  @for (shotUrl of game()?.screenshots; track $index) {
+                    <img [src]="shotUrl" 
+                         alt="Captura" 
+                         class="screenshot-img" 
+                         loading="lazy"
+                         (click)="abrirImagenCompleta(shotUrl)">
                   }
                 </div>
                 <button class="nav-btn next-btn" (click)="scroll(screenshotTrack, 'right')">
@@ -104,8 +194,9 @@
               </div>
             </div>
           }
-        </div>
-      </div>
+        </div> <!-- Cierra main-info -->
+
+      </div> <!-- Cierra modal-grid -->
     }
   </div>
 </div>

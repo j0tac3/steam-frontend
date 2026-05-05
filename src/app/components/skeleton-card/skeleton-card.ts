@@ -4,22 +4,71 @@ import { Component } from '@angular/core';
   selector: 'app-skeleton-card',
   standalone: true,
   template: `
-    <div class="skeleton-wrapper">
-      <div class="skeleton-img shimmer"></div>
+    <div class="skeleton-card shimmer-base">
+      <!-- Placeholder del botón FAB (Añadir) -->
+      <div class="skeleton-fab"></div>
       
-      <div class="skeleton-content">
-        <div class="skeleton-title shimmer"></div>
-        <div class="skeleton-btn shimmer"></div>
+      <!-- Placeholder del texto inferior -->
+      <div class="skeleton-info">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-title short"></div>
       </div>
     </div>
   `,
   styles: [`
     :host {
       display: block;
-      height: 100%;
+      width: 100%;
     }
 
-    /* Animación de barrido (Shimmer effect) */
+    /* La tarjeta base calcada de la nueva card-clean (Aspect Ratio 2:3) */
+    .skeleton-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      border-radius: 12px;
+      background-color: #1a1a1a;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Placeholder del botón FAB en la esquina superior derecha */
+    .skeleton-fab {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Contenedor de la información en la base */
+    .skeleton-info {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      width: 100%;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Líneas de texto fantasma */
+    .skeleton-title {
+      height: 12px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      width: 85%;
+    }
+
+    /* Segunda línea más corta para simular texto real */
+    .skeleton-title.short {
+      width: 50%;
+    }
+
+    /* Animación de barrido (Shimmer effect) global */
     @keyframes shimmer {
       0% {
         background-position: -200px 0;
@@ -29,58 +78,18 @@ import { Component } from '@angular/core';
       }
     }
 
-    .shimmer {
-      /* Usa las variables CSS que creamos antes para el Modo Oscuro */
-      background: rgba(255, 255, 255, 0.05);
+    /* Aplicamos el efecto de luz atravesando la tarjeta */
+    .shimmer-base {
       background-image: linear-gradient(
         90deg,
         rgba(255, 255, 255, 0) 0,
-        rgba(255, 255, 255, 0.08) 20%,
-        rgba(255, 255, 255, 0.15) 60%,
+        rgba(255, 255, 255, 0.03) 20%,
+        rgba(255, 255, 255, 0.08) 60%,
         rgba(255, 255, 255, 0)
       );
       background-size: 200px 100%;
       background-repeat: no-repeat;
       animation: shimmer 1.5s infinite linear;
-    }
-
-    .skeleton-wrapper {
-      background: var(--glass-bg-panel, rgba(25, 25, 30, 0.4));
-      border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.05));
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 320px; /* Altura aproximada de tus tarjetas */
-    }
-
-    .skeleton-img {
-      width: 100%;
-      height: 220px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-    }
-
-    .skeleton-content {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      flex-grow: 1;
-      justify-content: space-between;
-    }
-
-    .skeleton-title {
-      height: 20px;
-      width: 80%;
-      border-radius: 4px;
-    }
-
-    .skeleton-btn {
-      height: 36px;
-      width: 100%;
-      border-radius: 6px;
-      margin-top: auto;
     }
   `]
 })

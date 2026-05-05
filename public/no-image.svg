@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+  <!-- Fondo oscuro premium -->
+  <rect width="600" height="900" fill="#0b0e14"/>
+  <!-- Borde interior sutil -->
+  <rect x="10" y="10" width="580" height="880" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" rx="10"/>
+  
+  <!-- Icono de imagen rota/faltante -->
+  <g transform="translate(250, 380)" opacity="0.3">
+    <path d="M20 20h60v60H20z" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="45" cy="40" r="6" fill="#ffffff"/>
+    <path d="M20 80l20-20 15 15 10-10 15 15" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Texto -->
+  <text x="50%" y="55%" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#94a3b8" text-anchor="middle" dominant-baseline="middle">
+    Sin Portada
+  </text>
+</svg>

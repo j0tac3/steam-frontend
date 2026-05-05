@@ -1,7 +1,7 @@
 <div class="card h-100 game-card border-0 shadow-sm" [attr.data-status]="game.status">
   <div class="img-container" 
        [class.bg-blur-effect]="game.source === 'steam'"
-       [style.--bg-image]="'url(' + (game.image_url || game.logo) + ')'"
+       [style.--bg-image]="'url(' + (game.cover_url || '/no-image.svg') + ')'"
        (click)="onVerInfo()">
        
     <div class="blur-layer"></div>
@@ -18,8 +18,10 @@
       </div>
     }
 
-    <img [src]="game.image_url || game.logo" class="main-img" alt="Portada">
+    <!-- 🚀 Usamos la nueva propiedad cover_url -->
+    <img [src]="game.cover_url || '/no-image.svg'" class="main-img" alt="Portada">
   </div>
+  
   <div class="card-body p-3 d-flex flex-column">
     <h6 class="fw-bold text-truncate mb-1 text-white" [title]="game.title">{{ game.title }}</h6>
     

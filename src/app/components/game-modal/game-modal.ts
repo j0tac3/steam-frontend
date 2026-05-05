@@ -2,7 +2,7 @@ import { Component, input, output, signal, inject, effect, computed } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Game } from '../../models/game';
+// 🚀 Quitamos la importación estricta de 'Game'
 import { QuillModule } from 'ngx-quill';
 
 @Component({
@@ -18,11 +18,12 @@ import { QuillModule } from 'ngx-quill';
 export class GameModalComponent {
   private sanitizer = inject(DomSanitizer);
 
-  juegoDetalle = input<Game | null>(null);
+  // 🚀 CAMBIO: Usamos 'any' temporalmente para que no choque con los campos antiguos de tu HTML
+  juegoDetalle = input<any | null>(null);
   cargandoDetalle = input<boolean>(false);
   esBiblioteca = input<boolean>(false);
   
-  guardarDiario = output<Game>();
+  guardarDiario = output<any>();
   close = output<void>(); 
   
   activeTab = signal<'info' | 'diario'>('info');
@@ -38,7 +39,6 @@ export class GameModalComponent {
     }
   }
 
-  // Devuelve un array [true, true, false, false, false] basado en la nota
   getStarArray(): boolean[] {
     const rating = this.juegoDetalle()?.personal_rating || 0;
     const count = Math.round(rating / 2);
@@ -56,12 +56,11 @@ export class GameModalComponent {
     this.close.emit();
   }
 
-// --- LÓGICA DE GESTOS Y ESTADO ---
+  // --- LÓGICA DE GESTOS Y ESTADO ---
   translateY = signal<number>(0);
   isDragging = signal<boolean>(false);
   private startY = 0;
 
-  // AÑADIDO: Guardamos el ID del juego actual para saber si hemos cambiado de juego
   private currentOpenGameId: number | string | null = null;
 
   backdropOpacity = computed(() => {
@@ -74,15 +73,16 @@ export class GameModalComponent {
     effect(() => {
       const currentJuego = this.juegoDetalle();
       if (currentJuego) {
-        // 🚀 LA MAGIA: Solo reseteamos a la pestaña 'info' si el ID es diferente (es un juego nuevo)
-        // Si es el mismo juego (porque hemos guardado y actualizado los datos), NO tocamos las pestañas.
-        if (this.currentOpenGameId !== currentJuego.id) {
+        // 🚀 CAMBIO: Buscamos el 'id' (BD) o el 'external_id' (API)
+        const idActual = currentJuego.id || currentJuego.external_id;
+        
+        if (this.currentOpenGameId !== idActual) {
           this.activeTab.set('info');
           this.translateY.set(0);
-          this.currentOpenGameId = currentJuego.id ?? null;
+          this.currentOpenGameId = idActual ?? null;
         }
       } else {
-        this.currentOpenGameId = null; // Reseteamos al cerrar
+        this.currentOpenGameId = null; 
       }
     });
   }

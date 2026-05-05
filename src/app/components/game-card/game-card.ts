@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon';
-import { Game } from '../../models/game'; // Ajusta la ruta a tu carpeta models
+import { SavedGame } from '../../models/saved-games'; // 🚀 Import the extended model
 
 @Component({
   selector: 'app-game-card',
@@ -11,11 +11,11 @@ import { Game } from '../../models/game'; // Ajusta la ruta a tu carpeta models
   styleUrl: './game-card.scss'
 })
 export class GameCardComponent {
-  // 1. Sustituimos 'any' por 'Game'
-  @Input() game!: Game;
+  // 🚀 Change Game to SavedGame
+  @Input() game!: SavedGame;
 
-  // 2. Tipamos los eventos de salida
-  @Output() verInfo = new EventEmitter<Game>();
+  // 🚀 Update the event emitter type
+  @Output() verInfo = new EventEmitter<SavedGame>();
   @Output() borrar = new EventEmitter<number>();
   @Output() cambiarEstado = new EventEmitter<{id: number, nuevoEstado: string}>();
 
@@ -34,7 +34,7 @@ export class GameCardComponent {
   }
 
   onBorrar() {
-    // Guardia de seguridad: nos aseguramos de que haya un ID antes de emitir
+    // 🚀 Since game is now SavedGame, TypeScript knows 'id' exists
     if (this.game.id) {
       this.borrar.emit(this.game.id);
     }

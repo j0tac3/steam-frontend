@@ -1,335 +1,130 @@
 <div class="main-container min-vh-100 pb-5"> 
   <nav class="navbar navbar-dark sticky-top glass-navbar mb-4 py-3">
     <div class="container d-flex justify-content-between align-items-center">
-      
       <div class="d-flex align-items-center brand-container">
-        <span class="fs-2 me-2 brand-icon text-primary">
-          <app-icon name="icon-gamepad"></app-icon>
-        </span>
+        <span class="fs-2 me-2 brand-icon text-primary"><app-icon name="icon-gamepad"></app-icon></span>
         <h2 class="text-white m-0 fs-4 fw-black tracking-wide brand-text">Mi Biblioteca</h2>
       </div>
-      
-      <hr class="text-white-50 opacity-10 my-4">
-      <div class="px-3 pb-3">
-        <button class="btn btn-outline-info w-100 rounded-pill border-opacity-25 shadow-sm fw-bold" routerLink="/sandbox">
-          <i class="bi bi-flask me-2"></i>
-        </button>
-      </div>
-
-      <button class="btn-logout-icon" (click)="cerrarSesion()">
-        <app-icon name="icon-logout"></app-icon>
-      </button>
+      <button class="btn-logout-icon" (click)="cerrarSesion()"><app-icon name="icon-logout"></app-icon></button>
     </div>
   </nav>
 
-  <section class="container mb-5 external-search-area">
-    <div class="glass-panel p-4 rounded-4 position-relative overflow-hidden">
-      <div class="d-flex align-items-center mb-3 text-white-50">
-        <span class="fs-4 me-2">
-          <app-icon name="icon-cloud"></app-icon>
-        </span>
-        <h5 class="m-0 fw-bold text-uppercase tracking-wide">Añadir a la colección</h5>
+  <!-- Sistema de Notificaciones Toast -->
+  <!-- Sistema de Notificaciones Toast -->
+  @if (notificacion(); as notif) {
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+      <div class="toast show glass-toast text-white" [ngClass]="'bg-' + notif.tipo">
+        <div class="toast-body fw-bold d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <app-icon name="icon-gamepad" class="me-2"></app-icon>
+            <!-- 🚀 Usamos la variable segura 'notif' en vez de llamar a la señal -->
+            {{ notif.mensaje }}
+          </div>
+          
+          <!-- 🚀 EL NUEVO BOTÓN DE ATAJO -->
+          @if (notif.mostrarBoton) {
+            <button class="btn btn-sm btn-light rounded-pill ms-3 fw-bold shadow-sm" 
+                    style="font-size: 0.75rem; white-space: nowrap;" 
+                    (click)="vistaActual.set('tablero'); notificacion.set(null)">
+              Ver Tablero <i class="bi bi-arrow-right-short"></i>
+            </button>
+          }
+        </div>
       </div>
-      
-      <div class="w-100">
-        <app-game-search 
-          [misJuegos]="myLibrary()"
-          (addGame)="guardarJuego($event)"
-          (viewDetails)="verDetalles($event)"
-          (notificar)="mostrarNotificacion($event.mensaje, $event.tipo)">
-        </app-game-search>
-      </div>
+    </div>
+  }
+
+  <section class="container mb-5">
+    <div class="glass-panel p-4 rounded-4">
+      <!-- 🚀 CONECTAMOS LOS EVENTOS DEL BUSCADOR -->
+      <app-game-search 
+        [misJuegos]="myLibrary()"
+        (viewDetails)="abrirModoLectura($event)"
+        (addGame)="abrirModoAccion($event)"
+        (notificar)="mostrarNotificacion($event.mensaje, $event.tipo)">
+      </app-game-search>
     </div>
   </section>
 
-  <hr class="container border-secondary opacity-25 mb-5">
-
   <main class="container">
     <div class="row g-4">
-      <aside class="col-lg-4 col-xl-3 mb-4 mb-lg-0">
-        <div class="sidebar-sticky-tools d-flex flex-column gap-4">
-          <app-stats-panel 
-            [total]="totalJuegos()"
-            [pendientes]="pendientes()"
-            [jugando]="jugando()"
-            [completados]="completados()"
-            [abandonados]="abandonado()"
-            [filtroActual]="filtroEstado()"
-            (filtroSeleccionado)="actualizarFiltroEstado($event)">
-          </app-stats-panel>
+      <aside class="col-lg-4 col-xl-3">
+        <app-stats-panel 
+          [total]="totalJuegos()" [pendientes]="pendientes()"
+          [jugando]="jugando()" [completados]="completados()" [abandonados]="abandonado()"
+          [filtroActual]="filtroEstado()" (filtroSeleccionado)="actualizarFiltroEstado($event)">
+        </app-stats-panel>
 
-          <div class="glass-panel p-4 rounded-4 w-100 m-0">
-            <h6 class="text-white-50 fw-bold mb-3 text-uppercase tracking-wide">Filtros Locales</h6>
-            <app-game-filters 
-              [filtroTexto]="filtroTexto()" 
-              [filtroEstado]="filtroEstado()"
-              [filtroPlataforma]="filtroPlataforma()" 
-              [totalMostrados]="bibliotecaFiltrada().length"
-              (textoCambiado)="actualizarFiltroTexto($event)" 
-              (estadoCambiado)="actualizarFiltroEstado($event)"
-              (plataformaCambiada)="actualizarFiltroPlataforma($event)">
-            </app-game-filters>
-            
-            <div class="mt-4">
-              <label class="text-white-50 small mb-2 fw-bold text-uppercase">Ordenar por</label>
-              <select class="form-select bg-dark text-white border-secondary shadow-none" 
-                      [value]="criterioOrden()"
-                      (change)="actualizarCriterioOrden($any($event.target).value)">
-                <option value="nombre">🔠 Nombre (A-Z)</option>
-                <option value="rating">⭐ Calificación</option>
-                <option value="reciente">📅 Más recientes</option>
-              </select>
-            </div>
-
-            @if (filtroTexto() || filtroEstado() !== 'todos' || criterioOrden() !== 'nombre') {
-              <button class="btn btn-outline-danger btn-sm w-100 mt-4 fw-bold" (click)="resetFiltros()">
-                LIMPIAR FILTROS
-              </button>
-            }
-          </div>
-
+        <div class="glass-panel p-4 rounded-4 mt-4">
+          <app-game-filters 
+            [filtroTexto]="filtroTexto()" 
+            [filtroEstado]="filtroEstado()"
+            [filtroPlataforma]="filtroPlataforma()"
+            [totalMostrados]="bibliotecaFiltrada().length"
+            (textoCambiado)="actualizarFiltroTexto($event)" 
+            (estadoCambiado)="actualizarFiltroEstado($event)"
+            (plataformaCambiada)="actualizarFiltroPlataforma($event)">
+          </app-game-filters>
         </div>
       </aside>
 
       <div class="col-lg-8 col-xl-9">
-        <div id="ancla-grid-biblioteca"></div>
-        <div class="d-flex justify-content-end mb-4 animate__animated animate__fadeIn">
-          <div class="btn-group p-1 rounded-3" style="background: var(--glass-bg-nav); border: 1px solid var(--glass-border);">
-            <button type="button" class="btn border-0 rounded-2 fw-bold text-white transition-all" 
-                    [style.background]="vistaActual() === 'cuadricula' ? 'var(--color-info)' : 'transparent'"
-                    (click)="vistaActual.set('cuadricula')">
-              ▦ Cuadrícula
-            </button>
-            <button type="button" class="btn border-0 rounded-2 fw-bold text-white transition-all" 
-                    [style.background]="vistaActual() === 'tablero' ? 'var(--color-info)' : 'transparent'"
-                    (click)="vistaActual.set('tablero')">
-              📋 Tablero
-            </button>
+        <div class="d-flex justify-content-end mb-4">
+          <div class="btn-group p-1 rounded-3 glass-panel">
+            <button class="btn btn-sm text-white" [class.bg-primary]="vistaActual() === 'cuadricula'" (click)="vistaActual.set('cuadricula')">▦ Cuadrícula</button>
+            <button class="btn btn-sm text-white" [class.bg-primary]="vistaActual() === 'tablero'" (click)="vistaActual.set('tablero')">📋 Tablero</button>
           </div>
         </div>
+
         @if (vistaActual() === 'cuadricula') {
           <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
-            @if (cargandoBiblioteca()) {
-              
-              @for (dummy of [1,2,3,4,5,6,7,8]; track dummy) {
-                <div class="col">
-                  <app-skeleton-card></app-skeleton-card>
-                </div>
-              }
-            } @else {
-              @for (game of bibliotecaPaginada(); track game.id) {
-                <div class="col">
-                  <app-game-card 
-                    [game]="game"
-                    (verInfo)="verDetalles($event)"
-                    (borrar)="borrarJuego($event)"
-                    (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                  </app-game-card>
-                </div>
-              } @empty {
-                <div class="col-12 text-center text-white-50 py-5">
-                  <app-icon name="icon-gamepad" class="fs-1 d-block mb-3"></app-icon>
-                  <h4>Tu biblioteca está vacía</h4>
-                </div>
-              }
+            @for (game of bibliotecaPaginada(); track game.external_id) {
+              <div class="col">
+                <app-card-clean 
+                  [gameId]="game.external_id" 
+                  [title]="game.title" 
+                  [imageUrl]="game.cover_url || '/no-image.svg'" 
+                  (clicked)="abrirModoLectura(game)">
+                </app-card-clean>
+              </div>
             }
           </div>
         }
+
         @else if (vistaActual() === 'tablero') {
-          <div class="d-md-none mb-3 d-flex justify-content-end px-2">
-              <button class="btn btn-sm rounded-pill fw-bold shadow-sm px-3" 
-                      [ngClass]="modoEdicion ? 'btn-success' : 'btn-outline-info'"
-                      (click)="toggleEdicion()">
-                {{ modoEdicion ? '✅ Guardar Orden' : '✏️ Organizar Tablero' }}
-              </button>
-            </div>
-            
           <div class="kanban-container d-flex gap-3 overflow-x-auto pb-4" cdkDropListGroup>
-            
-            <div class="kanban-column rounded-4 p-3" style="background: var(--glass-bg-panel); min-width: 280px; border-top: 4px solid var(--color-info);">
-              <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
-                🎮 JUGANDO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('jugando').length }}</span>
-              </h6>
-              <div class="kanban-list"
-                  cdkDropList 
-                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
-                  [cdkDropListData]="getJuegosPorEstado('jugando')" 
-                  (cdkDropListDropped)="onJuegoSoltado($event, 'jugando')">
-                
-                @for (juego of getJuegosPorEstado('jugando'); track juego.id) {
-                  <div class="kanban-item mb-3 position-relative" cdkDrag>
-                    
-                    <div class="mobile-drag-handle d-md-none" cdkDragHandle>
-                      <app-icon name="icon-drag"></app-icon>
+            @for (estado of ['jugando', 'pendiente', 'completado', 'abandonado']; track estado) {
+              <div class="kanban-column rounded-4 p-3 glass-panel" style="min-width: 280px;">
+                <h6 class="text-white fw-bold mb-3 text-uppercase">{{ estado }}</h6>
+                <div class="kanban-list" cdkDropList [cdkDropListData]="getJuegosPorEstado(estado)" (cdkDropListDropped)="onJuegoSoltado($event, estado)">
+                  @for (game of getJuegosPorEstado(estado); track game.external_id) {
+                    <div class="kanban-item mb-3" cdkDrag>
+                      <app-card-clean 
+                        [gameId]="game.external_id" 
+                        [title]="game.title" 
+                        [imageUrl]="game.cover_url || '/no-image.svg'" 
+                        (clicked)="abrirModoLectura(game)">
+                      </app-card-clean>
                     </div>
-
-                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
-                      <app-game-card [game]="juego" 
-                                    (verInfo)="verDetalles($event)" 
-                                    (borrar)="borrarJuego($event)" 
-                                    (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                      </app-game-card>
-                    </div>
-                  </div>
-                }
+                  }
+                </div>
               </div>
-            </div>
-
-            <div class="kanban-column rounded-4 p-3" style="background: var(--glass-bg-panel); min-width: 280px; border-top: 4px solid var(--color-warning);">
-              <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
-                ⏳ PENDIENTE <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('pendiente').length }}</span>
-              </h6>
-              <div class="kanban-list"
-                  cdkDropList 
-                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
-                  [cdkDropListData]="getJuegosPorEstado('pendiente')" 
-                  (cdkDropListDropped)="onJuegoSoltado($event, 'pendiente')">
-                
-                @for (juego of getJuegosPorEstado('pendiente'); track juego.id) {
-                  <div class="kanban-item mb-3 position-relative" cdkDrag>
-                    
-                    <div class="mobile-drag-handle d-md-none" cdkDragHandle>
-                      <app-icon name="icon-drag"></app-icon>
-                    </div>
-
-                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
-                      <app-game-card [game]="juego" 
-                                    (verInfo)="verDetalles($event)" 
-                                    (borrar)="borrarJuego($event)" 
-                                    (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                      </app-game-card>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-
-            <div class="kanban-column rounded-4 p-3" style="background: var(--glass-bg-panel); min-width: 280px; border-top: 4px solid var(--color-success);">
-              <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
-                🏆 COMPLETADO <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('completado').length }}</span>
-              </h6>
-              <div class="kanban-list"
-                  cdkDropList 
-                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
-                  [cdkDropListData]="getJuegosPorEstado('completado')" 
-                  (cdkDropListDropped)="onJuegoSoltado($event, 'completado')">
-                
-                @for (juego of getJuegosPorEstado('completado'); track juego.id) {
-                  <div class="kanban-item mb-3 position-relative" cdkDrag>
-                    
-                    <div class="mobile-drag-handle d-md-none" cdkDragHandle>
-                      <app-icon name="icon-drag"></app-icon>
-                    </div>
-
-                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
-                      <app-game-card [game]="juego" 
-                                    (verInfo)="verDetalles($event)" 
-                                    (borrar)="borrarJuego($event)" 
-                                    (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                      </app-game-card>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-
-            <div class="kanban-column rounded-4 p-3" style="background: var(--glass-bg-panel); min-width: 280px; border-top: 4px solid var(--color-success);">
-              <h6 class="text-white fw-bold mb-3 d-flex justify-content-between align-items-center">
-                ❌ Abandonado <span class="badge bg-secondary rounded-pill">{{ getJuegosPorEstado('abandonado').length }}</span>
-              </h6>
-              <div class="kanban-list"
-                  cdkDropList 
-                  [cdkDropListDisabled]="isMobile && !modoEdicion" 
-                  [cdkDropListData]="getJuegosPorEstado('abandonado')" 
-                  (cdkDropListDropped)="onJuegoSoltado($event, 'abandonado')">
-                
-                @for (juego of getJuegosPorEstado('abandonado'); track juego.id) {
-                  <div class="kanban-item mb-3 position-relative" cdkDrag>
-                    
-                    <div class="mobile-drag-handle d-md-none" cdkDragHandle>
-                      <app-icon name="icon-drag"></app-icon>
-                    </div>
-
-                    <div class="h-100 w-100" cdkDragHandle [cdkDragHandleDisabled]="isMobile">
-                      <app-game-card [game]="juego" 
-                                    (verInfo)="verDetalles($event)" 
-                                    (borrar)="borrarJuego($event)" 
-                                    (cambiarEstado)="actualizarEstado($event.id, $event.nuevoEstado)">
-                      </app-game-card>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-
+            }
           </div>
-        }
-
-        @if (bibliotecaFiltrada().length === 0) {
-          <div class="glass-panel text-center py-5 rounded-4 mt-2">
-            <div class="display-1 mb-3 text-white-50 opacity-50">
-              <app-icon name="icon-gamepad"></app-icon>
-            </div>
-            <h5 class="text-muted fw-bold">
-              {{ filtroTexto() ? 'No se encontraron juegos con ese nombre' : 'Tu colección está vacía en esta categoría' }}
-            </h5>
-          </div>
-        }
-
-        @if (totalPaginas() > 1) {
-          <nav class="d-flex justify-content-center mt-5 mb-3">
-            <ul class="pagination pagination-premium gap-2 m-0">
-              
-              <li class="page-item" [class.disabled]="paginaActual() === 1">
-                <button class="page-link" (click)="paginaAnterior()">Anterior</button>
-              </li>
-              
-              @for (pagina of paginasArray(); track pagina) {
-                <li class="page-item" [class.active]="pagina === paginaActual()">
-                  <button class="page-link" (click)="irAPagina(pagina)">{{ pagina }}</button>
-                </li>
-              }
-
-              <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
-                <button class="page-link" (click)="siguientePagina()">Siguiente</button>
-              </li>
-
-            </ul>
-          </nav>
         }
       </div>
-
     </div>
-
-    <app-radar></app-radar>
   </main>
 
-  @if (juegoDetalle()) {
-    <app-game-modal 
-      [juegoDetalle]="juegoDetalle()" 
-      [cargandoDetalle]="cargandoDetalle()"
-      [esBiblioteca]="juegoDetalle()?.status !== undefined" 
-      (guardarDiario)="guardarDiario($event)"
-      (close)="juegoDetalle.set(null)">
-    </app-game-modal>
-  }
-
-  @if (notificacion()) {
-    <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 2000">
-      <div class="toast show align-items-center text-white border-0 glass-toast" 
-           [class.bg-success]="notificacion()?.tipo === 'success'"
-           [class.bg-danger]="notificacion()?.tipo === 'error'"
-           [class.bg-warning]="notificacion()?.tipo === 'warning'"
-           role="alert">
-        <div class="d-flex">
-          <div class="toast-body fw-bold" [class.text-dark]="notificacion()?.tipo === 'warning'">
-            {{ notificacion()?.tipo === 'success' ? '✅' : (notificacion()?.tipo === 'error' ? '❌' : '⚠️') }} {{ notificacion()?.mensaje }}
-          </div>
-          <button type="button" class="btn-close me-2 m-auto" 
-                  [class.btn-close-white]="notificacion()?.tipo !== 'warning'"
-                  (click)="notificacion.set(null)" aria-label="Close"></button>
-        </div>
-      </div>
-    </div>
+  @if (isModalOpen() && selectedGameId()) {
+    <app-modal-v2 
+      [gameId]="selectedGameId()!" 
+      [source]="selectedGameSource()" 
+      [initialMode]="modoModal()"
+      [enBiblioteca]="juegoModalEnBiblioteca()"
+      [existingData]="juegoSeleccionadoData()"
+      (saved)="guardarJuegoDesdeModal($event)"
+      (close)="cerrarModal()">
+    </app-modal-v2>
   }
 </div>

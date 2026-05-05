@@ -1,19 +1,25 @@
 <div class="card-wrapper" (click)="verDetalle()">
-  
   <div class="game-card">
-    <img class="bg-image" [src]="getCoverUrl(game.cover)" [alt]="game.name" loading="lazy">
+    <img class="bg-image" [src]="imageUrl()" [alt]="title()" loading="lazy">
     
-    <div class="hover-overlay"></div>
-
-    <div class="game-info">
-      <h3 class="title">{{ game.name }}</h3>
-    </div>
-
-    @if (showAddButton) {
-      <button class="add-btn-overlay" (click)="onAddClick($event)">
-        <i class="bi bi-plus-lg"></i> Añadir
+    <!-- Degradado progresivo solo en la base -->
+    <div class="gradient-overlay"></div>
+    
+    <!-- Botón FAB (Floating Action Button) esquina superior derecha -->
+    @if (showAddButton()) {
+      <button class="fab-add-btn" (click)="onAddClick($event)" aria-label="Añadir a biblioteca">
+        <i class="bi bi-plus"></i>
       </button>
+    } @else {
+      <!-- Check de "Ya en colección" -->
+      <div class="fab-added-badge" title="Ya en tu colección">
+        <i class="bi bi-check2"></i>
+      </div>
     }
-  </div>
 
+    <!-- Título en la base -->
+    <div class="game-info">
+      <h3 class="title">{{ title() }}</h3>
+    </div>
+  </div>
 </div>

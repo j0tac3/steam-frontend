@@ -1,113 +1,90 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importamos HttpHeaders
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { tap } from 'rxjs/operators';
-import { SteamDeal } from '../models/deal';
+import { environment } from '../../environments/environment'; //
 
 @Injectable({ providedIn: 'root' })
-export class SteamService {
-  private myAppUrl: string = environment.apiUrl;
+// Sugerencia: Renombra la clase a GameService (y el archivo a game.service.ts)
+// ya que Steam ya no es el centro de tu app.
+export class SteamService { 
+  private apiUrl: string = environment.apiUrl; //[cite: 7]
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Función privada para generar las cabeceras.
-   * Esto añade el Token y evita el error de CORS.
+   * Genera las cabeceras con el Token de autenticación[cite: 7]
    */
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // Recuperamos el token guardado al loguear
+    const token = localStorage.getItem('token'); 
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
   }
 
-  // 1. Buscar juegos
-  getGames(termino: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.myAppUrl}/steam/search?q=${termino}`, {
+  // --- 1. BUSCADOR CENTRALIZADO ---
+  searchGames(termino: string): Observable<any[]> {
+    // Angular solo llama a tu Laravel, y Laravel se encarga de IGDB
+    return this.http.get<any[]>(`${this.apiUrl}/games/search?q=${termino}`, {
       headers: this.getHeaders()
     });
   }
 
-  // 2. Obtener MI biblioteca (Aquí es donde te daba el error)
+  // --- 2. GESTIÓN DE MI BIBLIOTECA ---
   getMyGames(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.myAppUrl}/games`, {
-      headers: this.getHeaders() // Enviamos el token
+    return this.http.get<any[]>(`${this.apiUrl}/games`, {
+      headers: this.getHeaders() //[cite: 7]
     });
   }
 
-  // 3. Guardar un juego
   saveGame(juego: any): Observable<any> {
-    return this.http.post(`${this.myAppUrl}/games`, juego, {
-      headers: this.getHeaders()
+    return this.http.post(`${this.apiUrl}/games`, juego, {
+      headers: this.getHeaders() //[cite: 7]
     });
   }
 
-  // 4. Borrar un juego
   deleteGame(id: number): Observable<any> {
-    return this.http.delete(`${this.myAppUrl}/games/${id}`, {
-      headers: this.getHeaders()
+    return this.http.delete(`${this.apiUrl}/games/${id}`, {
+      headers: this.getHeaders() //[cite: 7]
     });
   }
 
-  // 5. Actualizar estado
- // En services/steam.ts
+  // --- 3. ACTUALIZACIONES PARCIALES (PATCH) ---
+  
   updateStatus(id: number, status: string): Observable<any> {
-    // Cambiamos .patch por .put
-    return this.http.put(`${this.myAppUrl}/games/${id}`, { status });
-  }
-
-  // 6. Detalles del juego
-  getGameDetails(appid: string): Observable<any> {
-    return this.http.get(`${this.myAppUrl}/steam/details/${appid}`, {
-      headers: this.getHeaders()
-    });
-  }
-
-
-// 1b. Buscar juegos en IGDB
-  buscarEnIGDB(termino: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.myAppUrl}/igdb/buscar?nombre=${termino}`);
-  }
-
-  buscarJuegosIGDB(nombre: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.myAppUrl}/igdb/buscar?nombre=${nombre}`).pipe(
-    //tap((res: any) => console.log('📦 Respuesta completa de IGDB:', res))
-    tap((res: any) => console.log('', res))
-    // El 'tap' permite ver el log sin alterar el flujo de datos
-  );
-}
-
-  // Obtener detalles extendidos desde IGDB (vía nuestro backend)
-  getIgdbDetails(id: string | number): Observable<any> {
-    return this.http.get<any>(`${this.myAppUrl}/igdb-details/${id}`, {
+    // Cambiado a PATCH y añadidos los headers correctos[cite: 7]
+    return this.http.patch(`${this.apiUrl}/games/${id}/status`, { status }, {
       headers: this.getHeaders()
     });
   }
 
   updateGameDiario(gameId: number | string, data: any): Observable<any> {
-    return this.http.patch(`${this.myAppUrl}/games/${gameId}/diario`, data);
+    // Añadidos los headers que faltaban[cite: 7]
+    return this.http.patch(`${this.apiUrl}/games/${gameId}/diario`, data, {
+      headers: this.getHeaders()
+    });
   }
 
-  /**
-   * UTILIDAD: Limpiador de portadas de IGDB
-   * IGDB devuelve miniaturas por defecto. Este método cambia el tamaño
-   */
-  formatIgdbImageUrl(url: string, size: string = 't_cover_big'): string {
-    if (!url) return 'assets/no-image.png';
-    // Cambiamos t_thumb por el tamaño deseado y aseguramos el https:
-    return 'https:' + url.replace('t_thumb', size);
+  toggleFavorite(gameId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/games/${gameId}/favorite`, {}, {
+      headers: this.getHeaders() //[cite: 7]
+    });
   }
 
-  getRadarOfertas() {
-    // Cambia this.apiUrl por la ruta exacta de tu backend si es necesario
-    return this.http.get<SteamDeal[]>(`${this.myAppUrl}/radar/ofertas`); 
+  // --- 4. EXTRAS ---
+  getRadarOfertas(): Observable<any[]> {
+    // Esta ruta es pública, no necesita token[cite: 7]
+    return this.http.get<any[]>(`${this.apiUrl}/radar/ofertas`); 
   }
 
-  // 🚀 Alternar estado de favorito
-  toggleFavorite(gameId: number) {
-    // Usamos patch porque solo modificamos un campo pequeño
-    return this.http.patch(`${this.myAppUrl}/games/${gameId}/favorite`, {});
+  // --- 5. DETALLES DEL JUEGO (Laravel Orquestador) ---
+  getGameDetails(id: string | number, source: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/games/details/${id}?source=${source}`, {
+      headers: this.getHeaders()
+    });
   }
 
+  updateGame(id: number | string, data: any): Observable<any> {
+    // IMPORTANTE: Aquí se usa PUT o PATCH, no POST.
+    return this.http.put(`${this.apiUrl}/games/${id}`, data);
+  }
 }
