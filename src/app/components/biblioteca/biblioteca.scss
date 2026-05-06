@@ -485,21 +485,26 @@ header.container {
     touch-action: auto !important; 
   }
 
-  /* 🛠️ EL TIRADOR PROFESIONAL */
+  /* 🛠️ EL TIRADOR PROFESIONAL PARA MÓVILES */
   .mobile-drag-handle {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 100; /* Aseguramos que esté por encima de la tarjeta */
-    background: rgba(13, 110, 253, 0.9); /* Azul info para que destaque */
+    top: -10px; /* Lo subimos un poco para que sobresalga por arriba */
+    left: 50%; /* Lo centramos */
+    transform: translateX(-50%);
+    z-index: 100;
+    
+    /* Diseño tipo 'Pestaña' / 'Pill' */
+    background: rgba(13, 110, 253, 0.95); /* Azul Bootstrap */
+    backdrop-filter: blur(4px);
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 24px;
     display: flex !important;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-size: 1.2rem;
     
     /* SOLO este elemento tiene touch-action: none */
     touch-action: none !important; 
@@ -507,7 +512,8 @@ header.container {
 
     &:active {
       cursor: grabbing;
-      transform: scale(1.1);
+      transform: translateX(-50%) scale(1.1);
+      background: #0b5ed7; /* Azul más oscuro al pulsar */
     }
   }
 }
@@ -522,11 +528,23 @@ header.container {
   flex-direction: column;
 }
 
+/* 1. Evitar que las listas vacías desaparezcan y añadir SCROLL INTERNO */
 .kanban-list {
-  flex: 1; /* Hace que la lista ocupe todo el alto de la columna vacía */
-  min-height: 150px; /* Área mínima garantizada para soltar tarjetas */
+  flex: 1; 
+  min-height: 150px; 
+  
+  /* 🚀 LA MAGIA DEL SCROLL ESTILO TRELLO */
+  max-height: calc(100vh - 320px); /* El 320px es el espacio de tu cabecera/menús. Puedes ajustarlo */
+  overflow-y: auto; /* Solo hace scroll la lista, no la página entera */
+  
   border-radius: 12px;
   transition: background-color 0.2s ease;
+  
+  /* Scrollbar bonita y fina (Glassmorphism) para las columnas */
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 }
 
 /* Efecto cuando pasas una tarjeta por encima de una lista vacía */
@@ -549,6 +567,11 @@ header.container {
 
   /* Quitar el borde de edición de Angular si se pone tonto */
   outline: none !important; 
+
+  .card-wrapper {
+    transform: rotate(3deg) scale(1.05);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+  }
 }
 
 /* 3. El hueco fantasma que deja la tarjeta en la lista origen */
@@ -566,5 +589,86 @@ header.container {
 
 .kanban-list.cdk-drop-list-dragging .kanban-item:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   BOTTOM SHEET (MENÚ RÁPIDO NATIVO)
+   ========================================================================== */
+.bottom-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-out;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.bottom-sheet-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+  background: var(--glass-bg-panel);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+
+  &.show {
+    transform: translateY(0);
+  }
+
+  .bs-header {
+    position: relative;
+    
+    .drag-pill {
+      width: 40px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin: 0 auto 20px;
+    }
+
+    .bs-thumbnail {
+      width: 50px;
+      height: 75px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+  }
+
+  /* Efecto Hover para los botones de la lista */
+  .list-group-item-action {
+    border-radius: 12px;
+    margin-bottom: 4px;
+    transition: background-color 0.2s;
+    
+    &:hover, &:focus {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      color: white !important;
+    }
+  }
+
+  /* Optimización para Pantallas Grandes (PC) */
+  @media (min-width: 768px) {
+    max-width: 450px;
+    left: 50%;
+    margin-left: -225px; /* Centrado perfecto */
+    bottom: 20px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    
+    /* En PC la pill de arrastre no hace falta */
+    .drag-pill { display: none; }
+  }
 }
 

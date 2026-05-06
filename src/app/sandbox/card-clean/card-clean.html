@@ -1,23 +1,33 @@
-<div class="card-wrapper" (click)="verDetalle()">
+<!-- 🚀 AÑADIMOS LA CLASE DE DESPEDIDA AL CONTENEDOR PRINCIPAL -->
+<div class="card-wrapper" (click)="verDetalle()" [class.is-leaving]="isLeaving()">
   <div class="game-card">
     <img class="bg-image" [src]="imageUrl()" [alt]="title()" loading="lazy">
     
-    <!-- Degradado progresivo solo en la base -->
     <div class="gradient-overlay"></div>
     
-    <!-- Botón FAB (Floating Action Button) esquina superior derecha -->
-    @if (showAddButton()) {
-      <button class="fab-add-btn" (click)="onAddClick($event)" aria-label="Añadir a biblioteca">
-        <i class="bi bi-plus"></i>
+    @if (context() === 'search') {
+      @if (showAddButton()) {
+        <button class="fab-add-btn" (click)="onAddClick($event)" aria-label="Añadir a biblioteca">
+          <i class="bi bi-plus"></i>
+        </button>
+      } @else {
+        <div class="fab-added-badge" title="Ya en tu colección">
+          <i class="bi bi-check2"></i>
+        </div>
+      }
+    } @else if (context() === 'library') {
+      <button class="fab-options-btn" (click)="onOptionsClick($event)" aria-label="Opciones del juego">
+        <i class="bi bi-three-dots-vertical"></i>
       </button>
-    } @else {
-      <!-- Check de "Ya en colección" -->
-      <div class="fab-added-badge" title="Ya en tu colección">
-        <i class="bi bi-check2"></i>
-      </div>
+      
+      @if (status() === 'jugando') {
+        <!-- 🚀 AÑADIMOS LA CLASE DEL LATIDO AL TROFEO -->
+        <button class="fab-complete-btn" [class.pop-anim]="isPopping()" (click)="onCompleteClick($event)" title="¡Me lo he pasado!">
+          <i class="bi bi-trophy-fill"></i>
+        </button>
+      }
     }
 
-    <!-- Título en la base -->
     <div class="game-info">
       <h3 class="title">{{ title() }}</h3>
     </div>

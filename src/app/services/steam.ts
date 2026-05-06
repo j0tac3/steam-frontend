@@ -87,4 +87,10 @@ export class SteamService {
     // IMPORTANTE: Aquí se usa PUT o PATCH, no POST.
     return this.http.put(`${this.apiUrl}/games/${id}`, data);
   }
+
+  // 🚀 NUEVO: Actualizar preferencias del usuario en BBDD
+  updateUserPreferences(preferences: any) {
+    // Asegúrate de que la ruta coincida con la que vayas a crear en el api.php de Laravel
+    return this.http.patch(`${this.apiUrl}/user/preferences`, preferences);
+  }
 }

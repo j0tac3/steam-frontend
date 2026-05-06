@@ -77,32 +77,83 @@
         </div>
 
         @if (vistaActual() === 'cuadricula') {
+          <!-- GRID DE TARJETAS -->
           <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
             @for (game of bibliotecaPaginada(); track game.external_id) {
               <div class="col">
                 <app-card-clean 
                   [gameId]="game.external_id" 
                   [title]="game.title" 
-                  [imageUrl]="game.cover_url || '/no-image.svg'" 
+                  [imageUrl]="game.cover_url || '/no-image.svg'"
+                  [context]="'library'"
+                  [status]="game.status" 
+                  (completeClicked)="marcarComoCompletado(game, $event)"
+                  (optionsClicked)="abrirMenuRapido(game)"
                   (clicked)="abrirModoLectura(game)">
                 </app-card-clean>
               </div>
             }
           </div>
+
+          <!-- 🚀 BOTONES DE PAGINACIÓN RECUPERADOS -->
+          @if (totalPaginas() > 1) {
+            <nav class="d-flex justify-content-center mt-5 mb-2">
+              <ul class="pagination pagination-premium">
+                <!-- Botón Anterior -->
+                <li class="page-item" [class.disabled]="paginaActual() === 1">
+                  <a class="page-link" (click)="paginaActual() > 1 && paginaActual.set(paginaActual() - 1)">
+                    <i class="bi bi-chevron-left"></i> Anterior
+                  </a>
+                </li>
+                
+                <!-- Números de página -->
+                @for (pagina of paginasArray(); track pagina) {
+                  <li class="page-item" [class.active]="paginaActual() === pagina">
+                    <a class="page-link" (click)="paginaActual.set(pagina)">{{ pagina }}</a>
+                  </li>
+                }
+                
+                <!-- Botón Siguiente -->
+                <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
+                  <a class="page-link" (click)="paginaActual() < totalPaginas() && paginaActual.set(paginaActual() + 1)">
+                    Siguiente <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          }
         }
 
         @else if (vistaActual() === 'tablero') {
           <div class="kanban-container d-flex gap-3 overflow-x-auto pb-4" cdkDropListGroup>
             @for (estado of ['jugando', 'pendiente', 'completado', 'abandonado']; track estado) {
               <div class="kanban-column rounded-4 p-3 glass-panel" style="min-width: 280px;">
-                <h6 class="text-white fw-bold mb-3 text-uppercase">{{ estado }}</h6>
-                <div class="kanban-list" cdkDropList [cdkDropListData]="getJuegosPorEstado(estado)" (cdkDropListDropped)="onJuegoSoltado($event, estado)">
+                <h6 class="text-white fw-bold mb-3 text-uppercase d-flex align-items-center gap-2">
+                  {{ estado }}
+                  <!-- 🚀 NUEVO: Contador dinámico -->
+                  <span class="badge bg-secondary rounded-pill" style="font-size: 0.75rem;">
+                    {{ getJuegosPorEstado(estado).length }}
+                  </span>
+                </h6>
+                <div  class="kanban-list" cdkDropList 
+                      [cdkDropListData]="getJuegosPorEstado(estado)" 
+                      (cdkDropListDropped)="onJuegoSoltado($event, estado)"
+                      (cdkDragStarted)="vibrarAlArrastrar()">
                   @for (game of getJuegosPorEstado(estado); track game.external_id) {
                     <div class="kanban-item mb-3" cdkDrag>
+                      @if (isMobile) {
+                      <div class="mobile-drag-handle" cdkDragHandle>
+                        <i class="bi bi-grip-horizontal"></i>
+                      </div>
+                    }
                       <app-card-clean 
                         [gameId]="game.external_id" 
                         [title]="game.title" 
                         [imageUrl]="game.cover_url || '/no-image.svg'" 
+                        [context]="'library'"
+                        [status]="game.status" 
+                        (completeClicked)="marcarComoCompletado(game, $event)"
+                        (optionsClicked)="abrirMenuRapido(game)"
                         (clicked)="abrirModoLectura(game)">
                       </app-card-clean>
                     </div>
@@ -127,4 +178,56 @@
       (close)="cerrarModal()">
     </app-modal-v2>
   }
+
+  <div class="bottom-sheet-overlay" [class.show]="isMenuRapidoOpen()" (click)="cerrarMenuRapido()"></div>
+  
+  <div class="bottom-sheet-container glass-panel" [class.show]="isMenuRapidoOpen()">
+    @if (juegoMenuRapido(); as juegoActivo) {
+      <div class="bs-header">
+        <div class="drag-pill"></div>
+        <div class="d-flex align-items-center gap-3">
+          <img [src]="juegoActivo.cover_url || '/no-image.svg'" [alt]="juegoActivo.title" class="bs-thumbnail rounded">
+          <div>
+            <h5 class="text-white mb-1 fw-bold text-truncate" style="max-width: 250px;">{{ juegoActivo.title }}</h5>
+            <span class="badge bg-secondary text-uppercase" style="font-size: 0.7rem;">{{ juegoActivo.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bs-body mt-3">
+        <div class="list-group list-group-flush bg-transparent">
+          <!-- OPIONES DE ESTADO RÁPIDO -->
+          @if (juegoActivo.status !== 'jugando') {
+            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('jugando')">
+              <i class="bi bi-controller text-primary me-3 fs-5"></i> Empezar a jugar
+            </button>
+          }
+          @if (juegoActivo.status !== 'completado') {
+            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('completado')">
+              <i class="bi bi-trophy-fill text-success me-3 fs-5"></i> Marcar como completado
+            </button>
+          }
+          @if (juegoActivo.status !== 'abandonado') {
+            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('abandonado')">
+              <i class="bi bi-x-circle text-danger me-3 fs-5"></i> Abandonar
+            </button>
+          }
+          @if (juegoActivo.status !== 'pendiente') {
+            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('pendiente')">
+              <i class="bi bi-hourglass-split text-warning me-3 fs-5"></i> Mover a pendientes
+            </button>
+          }
+
+          <!-- EDITAR Y ELIMINAR -->
+          <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3 mt-2" (click)="abrirEdicionDesdeMenu()">
+            <i class="bi bi-journal-text text-info me-3 fs-5"></i> Editar diario y detalles
+          </button>
+          
+          <button class="list-group-item list-group-item-action bg-transparent text-danger d-flex align-items-center py-3" (click)="eliminarJuegoRapido()">
+            <i class="bi bi-trash3 text-danger me-3 fs-5"></i> Eliminar de la biblioteca
+          </button>
+        </div>
+      </div>
+    }
+  </div>
 </div>

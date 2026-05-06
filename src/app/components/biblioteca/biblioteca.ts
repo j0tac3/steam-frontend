@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, HostListener, effect, NgZone } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -15,6 +15,7 @@ import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 
 import { SavedGame } from '../../models/saved-games';
 import { Game } from '../../models/game'; 
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-biblioteca',
@@ -41,7 +42,9 @@ export class BibliotecaComponent implements OnInit {
   criterioOrden = signal<'nombre' | 'rating' | 'reciente'>('nombre');
 
   notificacion = signal<{mensaje: string, tipo: 'success' | 'error' | 'warning', mostrarBoton?: boolean} | null>(null);
-  vistaActual = signal<'cuadricula' | 'tablero'>('cuadricula');
+  vistaActual = signal<'cuadricula' | 'tablero'>(
+    (localStorage.getItem('vistaBiblioteca') as 'cuadricula' | 'tablero') || 'cuadricula'
+  );
   isMobile = window.innerWidth <= 768;
 
   paginaActual = signal<number>(1);
@@ -54,6 +57,24 @@ export class BibliotecaComponent implements OnInit {
   juegoModalEnBiblioteca = signal<boolean>(false);
   juegoSeleccionadoData = signal<any>(null); 
 
+  // --- VARIABLES DEL MENÚ RÁPIDO (BOTTOM SHEET) ---
+  isMenuRapidoOpen = signal<boolean>(false);
+  juegoMenuRapido = signal<any>(null);
+
+  private ngZone = inject(NgZone);
+
+  constructor() {
+    effect(() => {
+      const nuevaVista = this.vistaActual();
+      // Cada vez que vistaActual cambie, Angular ejecutará esta línea automáticamente
+      localStorage.setItem('vistaBiblioteca', this.vistaActual());
+
+      this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe({
+        error: (err) => console.error('No se pudo guardar la preferencia en BD', err)
+      });
+    });
+  }
+
   ngOnInit() {
     this.cargarBiblioteca();
   }
@@ -61,8 +82,8 @@ export class BibliotecaComponent implements OnInit {
   cargarBiblioteca() {
     this.cargandoBiblioteca.set(true); 
     this.gameService.getMyGames().subscribe({
-      next: (juegos: SavedGame[]) => {
-        this.myLibrary.set(juegos);
+      next: (res: any) => {
+        this.myLibrary.set(res.data ? res.data : res);
         this.cargandoBiblioteca.set(false); 
       },
       error: (err) => {
@@ -226,4 +247,117 @@ export class BibliotecaComponent implements OnInit {
 
   cerrarModal() { this.isModalOpen.set(false); this.selectedGameId.set(null); }
   cerrarSesion() { this.authService.logout(); this.router.navigate(['/login']); }
+
+  // --- LÓGICA DEL MENÚ RÁPIDO ---
+  abrirMenuRapido(game: any) {
+    this.juegoMenuRapido.set(game);
+    this.isMenuRapidoOpen.set(true);
+  }
+
+  cerrarMenuRapido() {
+    this.isMenuRapidoOpen.set(false);
+    // Esperamos a que termine la animación CSS (300ms) antes de vaciar los datos
+    setTimeout(() => this.juegoMenuRapido.set(null), 300); 
+  }
+
+  cambiarEstadoRapido(nuevoEstado: 'pendiente' | 'jugando' | 'completado' | 'abandonado') {
+    const juego = this.juegoMenuRapido();
+    if (!juego || !juego.id) return;
+
+    // 1. Optimistic UI: Actualizamos localmente al instante
+    this.myLibrary.update(juegos => 
+      juegos.map(j => j.id === juego.id ? { ...j, status: nuevoEstado } : j)
+    );
+
+    // 2. Petición en segundo plano
+    this.gameService.updateStatus(juego.id, nuevoEstado).subscribe({
+      next: () => this.mostrarNotificacion(`Movido a ${nuevoEstado}`, 'success'),
+      error: () => {
+        this.cargarBiblioteca(); // Revertimos si falla
+        this.mostrarNotificacion('Error al cambiar el estado', 'error');
+      }
+    });
+
+    this.cerrarMenuRapido();
+  }
+
+  abrirEdicionDesdeMenu() {
+    const juego = this.juegoMenuRapido();
+    this.cerrarMenuRapido();
+    if (juego) {
+      // Pequeño timeout para evitar que se superpongan las animaciones de los modales
+      setTimeout(() => this.abrirModoAccion(juego), 100); 
+    }
+  }
+
+  eliminarJuegoRapido() {
+    const juego = this.juegoMenuRapido();
+    if (!juego || !juego.id) return;
+
+    if (confirm(`¿Estás seguro de que deseas eliminar "${juego.title}" de tu biblioteca?`)) {
+      this.gameService.deleteGame(juego.id).subscribe({
+        next: () => {
+          this.myLibrary.update(juegos => juegos.filter(j => j.id !== juego.id));
+          this.mostrarNotificacion('Juego eliminado', 'success');
+        },
+        error: () => this.mostrarNotificacion('Error al eliminar', 'error')
+      });
+      this.cerrarMenuRapido();
+    }
+  }
+
+  // 🚀 FUNCIÓN DEL BOTÓN DE VICTORIA
+// 🚀 COREOGRAFÍA DEL ÉXITO
+  marcarComoCompletado(game: any, coords?: {clientX: number, clientY: number}) {
+    if (!game || !game.id) return;
+
+    // 0.2s - EL MICRO-CONFETI (Calculando coordenadas en pantalla)
+    setTimeout(() => {
+      if (coords) {
+        this.ngZone.runOutsideAngular(() => {
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            // Convertimos píxeles a porcentajes (0 a 1) para la librería
+            origin: { 
+              x: coords.clientX / window.innerWidth, 
+              y: coords.clientY / window.innerHeight 
+            },
+            colors: ['#198754', '#30d760', '#ffffff'],
+            zIndex: 1060,
+            disableForReducedMotion: true // Buenas prácticas de accesibilidad
+          });
+        });
+      }
+    }, 200);
+
+    // 0.4s - EL MENSAJE TOAST
+    setTimeout(() => {
+      this.mostrarNotificacion(`¡Enhorabuena! Has terminado ${game.title}`, 'success');
+    }, 400);
+
+    // 0.8s - LA DESPEDIDA (Optimistic UI retrasado)
+    // Esperamos a que termine la animación CSS para borrar la tarjeta del DOM
+    setTimeout(() => {
+      this.myLibrary.update(juegos => 
+        juegos.map(j => j.id === game.id ? { ...j, status: 'completado' } : j)
+      );
+
+      // Petición backend silenciosa
+      this.gameService.updateStatus(game.id, 'completado').subscribe({
+        error: () => {
+          this.cargarBiblioteca(); 
+          this.mostrarNotificacion('Error al actualizar el estado', 'error');
+        }
+      });
+    }, 800);
+  }
+
+  // 🚀 FEEDBACK HÁPTICO
+  vibrarAlArrastrar() {
+    // Comprobamos si el dispositivo soporta vibración (los iPhone en web a veces lo bloquean, Android funciona perfecto)
+    if (typeof window !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(50); // Vibra suavemente durante 50 milisegundos
+    }
+  }
 }

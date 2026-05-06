@@ -12,8 +12,9 @@
       transform: translateY(-5px);
       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
     }
-    .fab-add-btn {
-      opacity: 1; /* En PC se muestra al hacer hover */
+    /* 🚀 AQUÍ ESTÁ LA MAGIA: Aparecen los botones al pasar el ratón en PC */
+    .fab-add-btn, .fab-options-btn, .fab-complete-btn {
+      opacity: 1; 
     }
   }
 
@@ -59,7 +60,9 @@
 /* =========================================
    3. BOTÓN FAB Y BADGES (Esquina Superior)
    ========================================= */
-.fab-add-btn, .fab-added-badge {
+
+/* 1. ESTILOS BASE COMPARTIDOS POR LOS 4 BOTONES */
+.fab-add-btn, .fab-added-badge, .fab-options-btn, .fab-complete-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -75,14 +78,13 @@
   transition: all 0.2s ease;
 }
 
+/* 2. ESTILO ESPECÍFICO: Botón Añadir (Buscador) */
 .fab-add-btn {
-  background: rgba(88, 101, 242, 0.85); /* Azul translúcido */
+  background: rgba(88, 101, 242, 0.85);
   backdrop-filter: blur(5px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
-  /* En PC lo ocultamos hasta el hover, en móvil lo mostraremos siempre */
-  opacity: 0; 
+  opacity: 0; /* Oculto en PC hasta hover */
 
   &:hover {
     background: rgba(88, 101, 242, 1);
@@ -94,11 +96,75 @@
   }
 }
 
+/* 3. ESTILO ESPECÍFICO: Check Verde (Buscador) */
 .fab-added-badge {
-  background: rgba(25, 135, 84, 0.85); /* Verde éxito translúcido */
+  background: rgba(25, 135, 84, 0.85); 
   backdrop-filter: blur(5px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 4. ESTILO ESPECÍFICO: Botón Opciones (Biblioteca) */
+.fab-options-btn {
+  background: rgba(255, 255, 255, 0.15); /* Gris/Blanco translúcido elegante */
+  backdrop-filter: blur(5px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0; /* Oculto en PC hasta hover */
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+/* 5. 🚀 ESTILO ESPECÍFICO: Botón ¡Me lo he pasado! */
+/* 5. 🚀 ESTILO ESPECÍFICO: Botón ¡Me lo he pasado! (Glassmorphism Fino) */
+.fab-complete-btn {
+  left: 10px;
+  right: auto;
+  background: rgba(30, 215, 96, 0.2); /* Verde translúcido elegante */
+  backdrop-filter: blur(5px);
+  color: #ffffff; /* Trofeo blanco brillante */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0; 
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(30, 215, 96, 0.4);
+    transform: scale(1.1);
+  }
+  
+  /* 🚀 EL LATIDO (0.0s) */
+  &.pop-anim {
+    animation: pop-heartbeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+}
+
+@keyframes pop-heartbeat {
+  0% { transform: scale(1.1); }
+  50% { transform: scale(1.4); } /* Sube a 140% y baja rápido */
+  100% { transform: scale(1.1); }
+}
+
+/* =========================================
+   🚀 LA DESPEDIDA (0.8s)
+   ========================================= */
+.card-wrapper.is-leaving {
+  animation: card-leave 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  pointer-events: none; /* Evita que el usuario pulse dos veces por error */
+}
+
+@keyframes card-leave {
+  0% { opacity: 1; transform: scale(1); }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.8) translateY(30px); /* Se hace pequeña y cae suavemente */
+  }
 }
 
 /* =========================================
@@ -114,8 +180,8 @@
 
   .title {
     color: #ffffff;
-    font-size: 1rem; /* Reducido para no saturar */
-    font-weight: 600; /* Peso más legible */
+    font-size: 1rem;
+    font-weight: 600; 
     margin: 0;
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
@@ -131,9 +197,11 @@
    5. ADAPTACIÓN TÁCTIL (MÓVILES)
    ========================================= */
 @media (hover: none), (max-width: 768px) {
-  .card-wrapper .fab-add-btn {
-    opacity: 1; /* En móviles el botón siempre es visible */
-    /* Lo hacemos un poco más grande para el dedo */
+  /* 🚀 En móviles los 3 botones siempre son visibles y más grandes */
+  .card-wrapper .fab-add-btn, 
+  .card-wrapper .fab-options-btn, 
+  .card-wrapper .fab-complete-btn {
+    opacity: 1; 
     width: 40px; 
     height: 40px;
   }
