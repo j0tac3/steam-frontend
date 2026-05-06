@@ -15,6 +15,8 @@ export class CardCleanComponent {
   showAddButton = input<boolean>(false);
   status = input<string>();
   context = input<'search' | 'library'>('search'); 
+  isFavorite = input<boolean>(false);
+  personalRating = input<number>(0);
   
   @Output() clicked = new EventEmitter<string>();
   @Output() addClicked = new EventEmitter<string>();
@@ -51,10 +53,20 @@ export class CardCleanComponent {
     // Activamos la animación CSS de Despedida (que dura 0.8s)
     this.isLeaving.set(true);
 
+    setTimeout(() => this.isLeaving.set(false), 850);
+
     // Pasamos el relevo a Biblioteca con las coordenadas del ratón
     this.completeClicked.emit({
       clientX: event.clientX,
       clientY: event.clientY
     });
+  }
+
+  @Output() favoriteToggled = new EventEmitter<void>();
+
+  toggleFavorite(event: MouseEvent) {
+    event.stopPropagation();
+    // Emitimos al padre (Biblioteca) para que haga la llamada a la API y actualice la UI
+    this.favoriteToggled.emit();
   }
 }

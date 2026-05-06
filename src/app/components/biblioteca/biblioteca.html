@@ -89,6 +89,8 @@
                   [status]="game.status" 
                   (completeClicked)="marcarComoCompletado(game, $event)"
                   (optionsClicked)="abrirMenuRapido(game)"
+                  [isFavorite]="game.is_favorite" 
+                  [personalRating]="game.personal_rating"
                   (clicked)="abrirModoLectura(game)">
                 </app-card-clean>
               </div>
@@ -125,7 +127,10 @@
         }
 
         @else if (vistaActual() === 'tablero') {
-          <div class="kanban-container d-flex gap-3 overflow-x-auto pb-4" cdkDropListGroup>
+          <div  class="kanban-container 
+                d-flex gap-3 overflow-x-auto pb-4" 
+                cdkDropListGroup 
+                cdkScrollable>
             @for (estado of ['jugando', 'pendiente', 'completado', 'abandonado']; track estado) {
               <div class="kanban-column rounded-4 p-3 glass-panel" style="min-width: 280px;">
                 <h6 class="text-white fw-bold mb-3 text-uppercase d-flex align-items-center gap-2">
@@ -154,6 +159,8 @@
                         [status]="game.status" 
                         (completeClicked)="marcarComoCompletado(game, $event)"
                         (optionsClicked)="abrirMenuRapido(game)"
+                        [isFavorite]="game.is_favorite" 
+                        [personalRating]="game.personal_rating"
                         (clicked)="abrirModoLectura(game)">
                       </app-card-clean>
                     </div>
@@ -175,6 +182,7 @@
       [enBiblioteca]="juegoModalEnBiblioteca()"
       [existingData]="juegoSeleccionadoData()"
       (saved)="guardarJuegoDesdeModal($event)"
+      (favoriteChanged)="actualizarFavoritoLocal($event)"
       (close)="cerrarModal()">
     </app-modal-v2>
   }
@@ -197,6 +205,13 @@
       <div class="bs-body mt-3">
         <div class="list-group list-group-flush bg-transparent">
           <!-- OPIONES DE ESTADO RÁPIDO -->
+          <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="toggleFavoriteSheet()">
+            @if (juegoActivo.is_favorite) {
+              <i class="bi bi-heart-fill text-danger me-3 fs-5"></i> Quitar de favoritos
+            } @else {
+              <i class="bi bi-heart text-danger me-3 fs-5"></i> Marcar como favorito
+            }
+          </button>
           @if (juegoActivo.status !== 'jugando') {
             <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('jugando')">
               <i class="bi bi-controller text-primary me-3 fs-5"></i> Empezar a jugar

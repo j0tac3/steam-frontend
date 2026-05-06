@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, HostListener, effect, NgZo
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
@@ -23,7 +24,7 @@ import confetti from 'canvas-confetti';
   imports: [
     CommonModule, StatsPanelComponent, GameSearchComponent, GameFiltersComponent,
     IconComponent, DragDropModule, RouterModule,
-    ModalV2Component, CardCleanComponent
+    ModalV2Component, CardCleanComponent, ScrollingModule
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
@@ -141,12 +142,13 @@ export class BibliotecaComponent implements OnInit {
 
     if (juegoExistente && juegoExistente.id) {
       // 🟢 RUTA A: EDICIÓN (Ya lo tenemos)
-      // Usamos el ID interno de tu BD (juegoExistente.id) para actualizarlo
       this.gameService.updateGame(juegoExistente.id, payload).subscribe({
         next: () => {
+          this.juegoSeleccionadoData.set({ ...juegoExistente, ...payload });
+
           this.cargarBiblioteca(); 
           this.mostrarNotificacion(`¡${payload.title} ha sido actualizado!`, 'success');
-          this.cerrarModal();
+          // 🚀 BORRAMOS this.cerrarModal(); PARA QUE EL MODAL SE QUEDE ABIERTO Y VEAS LO QUE HAS ESCRITO
         },
         error: (err) => {
           console.error('Error al actualizar desde modal', err);
@@ -231,8 +233,11 @@ export class BibliotecaComponent implements OnInit {
     this.selectedGameSource.set(game.source || 'igdb');
     this.modoModal.set('action');
     
-    this.juegoModalEnBiblioteca.set(false);
-    this.juegoSeleccionadoData.set(null); // 🚀 Como es nuevo, pasamos null
+    // 🚀 SOLUCIÓN: Buscamos si el juego ya existe en nuestra colección
+    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(game.external_id));
+    
+    this.juegoModalEnBiblioteca.set(!!juegoExistente);
+    this.juegoSeleccionadoData.set(juegoExistente || null); 
     
     this.isModalOpen.set(true);
   }
@@ -278,6 +283,33 @@ export class BibliotecaComponent implements OnInit {
       }
     });
 
+    this.cerrarMenuRapido();
+  }
+
+  // 🚀 AÑADIDO: Lógica para Favoritos desde el Menú Rápido (Bottom Sheet)
+  toggleFavoriteSheet() {
+    const juego = this.juegoMenuRapido();
+    if (!juego || !juego.id) return;
+
+    const nuevoEstadoFav = !juego.is_favorite;
+
+    // 1. Optimistic UI: Actualizamos localmente en la biblioteca general
+    this.myLibrary.update(juegos => 
+      juegos.map(j => j.id === juego.id ? { ...j, is_favorite: nuevoEstadoFav } : j)
+    );
+    
+    // 2. Actualizamos la variable del Menú Rápido para que cambie el icono visualmente al instante
+    this.juegoMenuRapido.set({ ...juego, is_favorite: nuevoEstadoFav });
+
+    // 3. Petición silenciosa al Backend
+    this.gameService.toggleFavorite(juego.id).subscribe({
+      error: () => {
+        this.cargarBiblioteca(); // Revertimos si falla el servidor
+        this.mostrarNotificacion('Error al actualizar favorito', 'error');
+      }
+    });
+
+    // Cerramos el menú para mejor experiencia de usuario
     this.cerrarMenuRapido();
   }
 
@@ -358,6 +390,21 @@ export class BibliotecaComponent implements OnInit {
     // Comprobamos si el dispositivo soporta vibración (los iPhone en web a veces lo bloquean, Android funciona perfecto)
     if (typeof window !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(50); // Vibra suavemente durante 50 milisegundos
+    }
+  }
+
+  actualizarFavoritoLocal(isFav: boolean) {
+    const currentId = this.selectedGameId();
+    if (!currentId) return;
+    
+    // Actualizamos la señal maestra para que la tarjeta muestre el corazón
+    this.myLibrary.update(juegos => 
+      juegos.map(j => String(j.external_id) === String(currentId) ? { ...j, is_favorite: isFav } : j)
+    );
+    
+    // Actualizamos los datos del modal para que si lo cierras y abres, se acuerde
+    if (this.juegoSeleccionadoData()) {
+      this.juegoSeleccionadoData.update(data => ({ ...data, is_favorite: isFav }));
     }
   }
 }
