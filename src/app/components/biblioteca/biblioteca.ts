@@ -3,6 +3,8 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { toObservable } from '@angular/core/rxjs-interop'; // 🚀 NUEVO IMPORT
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators'; // 🚀 NUEVOS IMPORTS
 
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
@@ -269,16 +271,19 @@ export class BibliotecaComponent implements OnInit {
     const juego = this.juegoMenuRapido();
     if (!juego || !juego.id) return;
 
-    // 1. Optimistic UI: Actualizamos localmente al instante
+    // 1. Efecto visual instantáneo (Optimistic UI)
     this.myLibrary.update(juegos => 
       juegos.map(j => j.id === juego.id ? { ...j, status: nuevoEstado } : j)
     );
 
-    // 2. Petición en segundo plano
+    // 2. Petición al servidor y recarga
     this.gameService.updateStatus(juego.id, nuevoEstado).subscribe({
-      next: () => this.mostrarNotificacion(`Movido a ${nuevoEstado}`, 'success'),
+      next: () => {
+        this.mostrarNotificacion(`Movido a ${nuevoEstado}`, 'success');
+        this.cargarBiblioteca(); // 🚀 FIX: Usamos tu función original
+      },
       error: () => {
-        this.cargarBiblioteca(); // Revertimos si falla
+        this.cargarBiblioteca(); // 🚀 FIX: Usamos tu función original
         this.mostrarNotificacion('Error al cambiar el estado', 'error');
       }
     });
@@ -338,45 +343,39 @@ export class BibliotecaComponent implements OnInit {
     }
   }
 
-  // 🚀 FUNCIÓN DEL BOTÓN DE VICTORIA
-// 🚀 COREOGRAFÍA DEL ÉXITO
-  marcarComoCompletado(game: any, coords?: {clientX: number, clientY: number}) {
+  marcarComoCompletado(game: any, coords?: any) {
     if (!game || !game.id) return;
 
-    // 0.2s - EL MICRO-CONFETI (Calculando coordenadas en pantalla)
+    if (coords?.preventDefault) { coords.preventDefault(); coords.stopPropagation(); }
+
     setTimeout(() => {
-      if (coords) {
+      if (coords && coords.clientX) {
         this.ngZone.runOutsideAngular(() => {
           confetti({
             particleCount: 80,
             spread: 60,
-            // Convertimos píxeles a porcentajes (0 a 1) para la librería
-            origin: { 
-              x: coords.clientX / window.innerWidth, 
-              y: coords.clientY / window.innerHeight 
-            },
+            origin: { x: coords.clientX / window.innerWidth, y: coords.clientY / window.innerHeight },
             colors: ['#198754', '#30d760', '#ffffff'],
             zIndex: 1060,
-            disableForReducedMotion: true // Buenas prácticas de accesibilidad
+            disableForReducedMotion: true 
           });
         });
       }
     }, 200);
 
-    // 0.4s - EL MENSAJE TOAST
     setTimeout(() => {
       this.mostrarNotificacion(`¡Enhorabuena! Has terminado ${game.title}`, 'success');
     }, 400);
 
-    // 0.8s - LA DESPEDIDA (Optimistic UI retrasado)
-    // Esperamos a que termine la animación CSS para borrar la tarjeta del DOM
     setTimeout(() => {
+      // Efecto visual instantáneo
       this.myLibrary.update(juegos => 
         juegos.map(j => j.id === game.id ? { ...j, status: 'completado' } : j)
       );
 
-      // Petición backend silenciosa
       this.gameService.updateStatus(game.id, 'completado').subscribe({
+        // 🚀 FIX: Sincronizamos con tu función original
+        next: () => this.cargarBiblioteca(),
         error: () => {
           this.cargarBiblioteca(); 
           this.mostrarNotificacion('Error al actualizar el estado', 'error');

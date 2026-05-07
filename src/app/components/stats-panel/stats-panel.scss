@@ -40,20 +40,18 @@
    ========================================================================== */
 .premium-progress {
   display: flex;
-  height: 8px;
+  height: 2px; /* 🚀 FASE 1: Reducida para no redundar con el donut */
   width: 100%;
   background: var(--glass-border);
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 1.5rem;
   margin-top: 1rem;
-
+  /* ... mantén el resto de .bar y colores igual ... */
   .bar {
     height: 100%;
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  /* Bebemos de la paleta semántica global */
   .success { background: var(--color-success); }
   .primary { background: var(--color-info); }
   .warning { background: var(--color-warning); }
@@ -77,18 +75,27 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
 
-  &:hover {
+  &:hover:not(.is-inactive) {
     background: var(--glass-bg-btn);
     transform: translateY(-2px);
   }
 
+  /* 🚀 FASE 1: Feedback Visual Activo */
   &.active-filter {
-    background: var(--glass-bg-btn-hover);
+    background: rgba(255, 255, 255, 0.08) !important; 
     border-color: var(--glass-border-light);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+  }
+
+  /* 🚀 FASE 1: Atenuación Visual Inactiva */
+  &.is-inactive {
+    opacity: 0.4;
+    transform: scale(0.97);
+    filter: grayscale(50%);
   }
 
   .label {
@@ -100,11 +107,15 @@
     color: var(--text-muted);
     text-transform: uppercase;
     margin-bottom: 4px;
-    white-space: normal;
-    word-break: break-word;
+    
+    /* 🚀 FASE 1: FIX Text Wrapping */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
     line-height: 1.1;
   }
-
+  
+  /* ... mantén el .dot y .value igual ... */
   .dot {
     width: 8px; 
     height: 8px;
@@ -112,7 +123,6 @@
     flex-shrink: 0;
     margin-top: 1px; 
     
-    /* Clases de utilidad para los puntos de la leyenda */
     &.dot-success { background: var(--color-success); }
     &.dot-primary { background: var(--color-info); }
     &.dot-warning { background: var(--color-warning); }

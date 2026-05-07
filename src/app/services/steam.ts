@@ -1,19 +1,13 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment'; //
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
-// Sugerencia: Renombra la clase a GameService (y el archivo a game.service.ts)
-// ya que Steam ya no es el centro de tu app.
 export class SteamService { 
-  private apiUrl: string = environment.apiUrl; //[cite: 7]
+  private http = inject(HttpClient);
+  private apiUrl: string = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
-
-  /**
-   * Genera las cabeceras con el Token de autenticación[cite: 7]
-   */
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token'); 
     return new HttpHeaders({
@@ -21,76 +15,80 @@ export class SteamService {
     });
   }
 
-  // --- 1. BUSCADOR CENTRALIZADO ---
   searchGames(termino: string): Observable<any[]> {
-    // Angular solo llama a tu Laravel, y Laravel se encarga de IGDB
     return this.http.get<any[]>(`${this.apiUrl}/games/search?q=${termino}`, {
       headers: this.getHeaders()
     });
   }
 
-  // --- 2. GESTIÓN DE MI BIBLIOTECA ---
-  getMyGames(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/games`, {
-      headers: this.getHeaders() //[cite: 7]
+  getMyGames(status: string | null = null, platform: string | null = null, search: string = '', page: number = 1): Observable<any> {
+    let params = new HttpParams().set('page', page.toString());
+    
+    if (status && status !== 'todos') params = params.set('status', status);
+    if (platform && platform !== 'todas') params = params.set('platform', platform);
+    if (search) params = params.set('search', search);
+
+    return this.http.get<any>(`${this.apiUrl}/games`, {
+      headers: this.getHeaders(),
+      params
+    });
+  }
+
+  getLibraryStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/games/stats`, {
+      headers: this.getHeaders()
     });
   }
 
   saveGame(juego: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/games`, juego, {
-      headers: this.getHeaders() //[cite: 7]
+      headers: this.getHeaders() 
     });
   }
 
-  deleteGame(id: number): Observable<any> {
+  updateGame(id: number | string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/games/${id}`, data, {
+      headers: this.getHeaders()
+    });
+  }
+
+  deleteGame(id: number | string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/games/${id}`, {
-      headers: this.getHeaders() //[cite: 7]
+      headers: this.getHeaders() 
     });
   }
-
-  // --- 3. ACTUALIZACIONES PARCIALES (PATCH) ---
   
-  updateStatus(id: number, status: string): Observable<any> {
-    // Cambiado a PATCH y añadidos los headers correctos[cite: 7]
+  updateStatus(id: number | string, status: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/games/${id}/status`, { status }, {
       headers: this.getHeaders()
     });
   }
 
   updateGameDiario(gameId: number | string, data: any): Observable<any> {
-    // Añadidos los headers que faltaban[cite: 7]
     return this.http.patch(`${this.apiUrl}/games/${gameId}/diario`, data, {
       headers: this.getHeaders()
     });
   }
 
-  toggleFavorite(gameId: number): Observable<any> {
+  toggleFavorite(gameId: number | string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/games/${gameId}/favorite`, {}, {
-      headers: this.getHeaders() //[cite: 7]
+      headers: this.getHeaders() 
     });
   }
 
-  // --- 4. EXTRAS ---
   getRadarOfertas(): Observable<any[]> {
-    // Esta ruta es pública, no necesita token[cite: 7]
     return this.http.get<any[]>(`${this.apiUrl}/radar/ofertas`); 
   }
 
-  // --- 5. DETALLES DEL JUEGO (Laravel Orquestador) ---
   getGameDetails(id: string | number, source: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/games/details/${id}?source=${source}`, {
       headers: this.getHeaders()
     });
   }
 
-  updateGame(id: number | string, data: any): Observable<any> {
-    // IMPORTANTE: Aquí se usa PUT o PATCH, no POST.
-    return this.http.put(`${this.apiUrl}/games/${id}`, data);
-  }
-
-  // 🚀 NUEVO: Actualizar preferencias del usuario en BBDD
-  updateUserPreferences(preferences: any) {
-    // Asegúrate de que la ruta coincida con la que vayas a crear en el api.php de Laravel
-    return this.http.patch(`${this.apiUrl}/user/preferences`, preferences);
+  updateUserPreferences(preferences: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/user/preferences`, preferences, {
+      headers: this.getHeaders()
+    });
   }
 }

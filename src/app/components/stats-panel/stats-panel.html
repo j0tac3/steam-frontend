@@ -32,28 +32,32 @@
   <div class="legend-grid">
     <div class="stat-pill" 
          [class.active-filter]="filtroActual() === 'completado'"
-         (click)="filtroSeleccionado.emit('completado')">
+         [class.is-inactive]="filtroActual() !== 'todos' && filtroActual() !== 'completado'"
+         (click)="filtroActual() === 'completado' ? filtroSeleccionado.emit('todos') : filtroSeleccionado.emit('completado')">
       <span class="label"><span class="dot dot-success"></span> Completados</span>
       <span class="value">{{ completados() }}</span>
     </div>
 
     <div class="stat-pill" 
          [class.active-filter]="filtroActual() === 'jugando'"
-         (click)="filtroSeleccionado.emit('jugando')">
+         [class.is-inactive]="filtroActual() !== 'todos' && filtroActual() !== 'jugando'"
+         (click)="filtroActual() === 'jugando' ? filtroSeleccionado.emit('todos') : filtroSeleccionado.emit('jugando')">
       <span class="label"><span class="dot dot-primary"></span> Jugando</span>
       <span class="value">{{ jugando() }}</span>
     </div>
 
     <div class="stat-pill" 
          [class.active-filter]="filtroActual() === 'pendiente'"
-         (click)="filtroSeleccionado.emit('pendiente')">
+         [class.is-inactive]="filtroActual() !== 'todos' && filtroActual() !== 'pendiente'"
+         (click)="filtroActual() === 'pendiente' ? filtroSeleccionado.emit('todos') : filtroSeleccionado.emit('pendiente')">
       <span class="label"><span class="dot dot-warning"></span> Pendientes</span>
       <span class="value">{{ pendientes() }}</span>
     </div>
 
     <div class="stat-pill" 
          [class.active-filter]="filtroActual() === 'abandonado'"
-         (click)="filtroSeleccionado.emit('abandonado')">
+         [class.is-inactive]="filtroActual() !== 'todos' && filtroActual() !== 'abandonado'"
+         (click)="filtroActual() === 'abandonado' ? filtroSeleccionado.emit('todos') : filtroSeleccionado.emit('abandonado')">
       <span class="label"><span class="dot dot-danger"></span> Abandonados</span>
       <span class="value">{{ abandonados() }}</span>
     </div>
