@@ -44,21 +44,21 @@
     <div class="row g-4">
       <aside class="col-lg-4 col-xl-3">
         <app-stats-panel 
-          [total]="totalJuegos()" 
-          [pendientes]="pendientes()"
-          [jugando]="jugando()" 
-          [completados]="completados()" 
-          [abandonados]="abandonado()"
-          [filtroActual]="filtroEstado()" 
+          [total]="estadisticas().total" 
+          [pendientes]="estadisticas().pendientes"
+          [jugando]="estadisticas().jugando" 
+          [completados]="estadisticas().completados" 
+          [abandonados]="estadisticas().abandonado"
+          [filtroActual]="filtros().status" 
           (filtroSeleccionado)="actualizarFiltroEstado($event)">
         </app-stats-panel>
 
         <div class="glass-panel p-4 rounded-4 mt-4">
           <app-game-filters 
-            [filtroTexto]="filtroTexto()" 
-            [filtroEstado]="filtroEstado()"
-            [filtroPlataforma]="filtroPlataforma()"
-            [totalMostrados]="bibliotecaFiltrada().length"
+            [filtroTexto]="filtros().search" 
+            [filtroEstado]="filtros().status"
+            [filtroPlataforma]="filtros().platform"
+            [totalMostrados]="totalEncontrados()"
             (textoCambiado)="actualizarFiltroTexto($event)" 
             (estadoCambiado)="actualizarFiltroEstado($event)"
             (plataformaCambiada)="actualizarFiltroPlataforma($event)">
@@ -76,7 +76,7 @@
 
         @if (vistaActual() === 'cuadricula') {
           <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
-            @for (game of bibliotecaPaginada(); track game.external_id) {
+            @for (game of myLibrary(); track game.external_id) {
               <div class="col">
                 <app-card-clean 
                   [gameId]="game.external_id" 
@@ -97,20 +97,20 @@
           @if (totalPaginas() > 1) {
             <nav class="d-flex justify-content-center mt-5 mb-2">
               <ul class="pagination pagination-premium">
-                <li class="page-item" [class.disabled]="paginaActual() === 1">
-                  <a class="page-link" (click)="paginaActual() > 1 && paginaActual.set(paginaActual() - 1)">
+                <li class="page-item" [class.disabled]="filtros().page === 1">
+                  <a class="page-link" (click)="filtros().page > 1 && actualizarPagina(filtros().page - 1)">
                     <i class="bi bi-chevron-left"></i> Anterior
                   </a>
                 </li>
                 
                 @for (pagina of paginasArray(); track pagina) {
-                  <li class="page-item" [class.active]="paginaActual() === pagina">
-                    <a class="page-link" (click)="paginaActual.set(pagina)">{{ pagina }}</a>
+                  <li class="page-item" [class.active]="filtros().page === pagina">
+                    <a class="page-link" (click)="actualizarPagina(pagina)">{{ pagina }}</a>
                   </li>
                 }
                 
-                <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
-                  <a class="page-link" (click)="paginaActual() < totalPaginas() && paginaActual.set(paginaActual() + 1)">
+                <li class="page-item" [class.disabled]="filtros().page === totalPaginas()">
+                  <a class="page-link" (click)="filtros().page < totalPaginas() && actualizarPagina(filtros().page + 1)">
                     Siguiente <i class="bi bi-chevron-right"></i>
                   </a>
                 </li>

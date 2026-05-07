@@ -1,12 +1,13 @@
 import { Component, Output, EventEmitter, signal, inject, input, effect } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 🚀 NECESARIO PARA EL TEXTAREA (ngModel)
+import { FormsModule } from '@angular/forms'; 
 import { SteamService } from '../../services/steam';
+import { JournalService, JournalEntry } from '../../services/journal'; // 🚀 AÑADIDO EL NUEVO SERVICIO
 
 @Component({
   selector: 'app-modal-v2',
   standalone: true,
-  imports: [DecimalPipe, CommonModule, FormsModule], // 🚀 Añadido FormsModule
+  imports: [DecimalPipe, CommonModule, FormsModule], 
   templateUrl: './modal-v2.html',
   styleUrls: ['./modal-v2.scss']
 })
@@ -24,31 +25,32 @@ export class ModalV2Component {
   public game = signal<any | null>(null); 
   public loading = signal<boolean>(true);
 
-  // 🚀 SEÑAL PARA LAS PESTAÑAS (TABS)
   public activeTab = signal<'tech' | 'experience'>('tech');
 
   private gameService = inject(SteamService);
+  private journalService = inject(JournalService); // 🚀 INYECTADO
 
   modalMode: 'read' | 'action' = 'read';
 
-  // 🚀 ACTUALIZADO: Añadimos personal_rating y notes
+  // 🚀 NOTA: Hemos eliminado 'notes' de aquí. Ya no forma parte de los datos generales del juego.
   detalleForm = { 
     platforms: [] as string[], 
     status: 'pendiente',
-    personal_rating: 0,
-    notes: ''
+    personal_rating: 0
   };
   originalForm = { 
     platforms: [] as string[], 
     status: 'pendiente',
-    personal_rating: 0,
-    notes: ''
+    personal_rating: 0
   };
   
-  // 🚀 FAVORITO: Lo manejamos fuera del formulario porque se guarda al instante
   isFavorite = signal<boolean>(false);
-  
   hasChanges: boolean = false;
+
+  // 📝 --- ESTADO DEL DIARIO (JOURNALING) ---
+  journalEntries = signal<JournalEntry[]>([]);
+  isCreatingNote = signal<boolean>(false);
+  newNoteContent = signal<string>('');
 
   ngOnInit() {
     this.cargarDatos(this.gameId(), this.source());
@@ -66,28 +68,143 @@ export class ModalV2Component {
         this.detalleForm = { 
           platforms: parsedPlatforms, 
           status: data.status || 'pendiente',
-          personal_rating: data.personal_rating || 0,
-          notes: data.notes || ''
+          personal_rating: data.personal_rating || 0
         };
         this.originalForm = { 
           platforms: [...parsedPlatforms], 
           status: data.status || 'pendiente',
-          personal_rating: data.personal_rating || 0,
-          notes: data.notes || ''
+          personal_rating: data.personal_rating || 0
         };
         
-        // Seteamos el favorito inicial
         this.isFavorite.set(data.is_favorite || false);
+
+        // 🚀 Cargar las notas si el juego existe en la BD
+        if (data.id) {
+          this.loadJournalEntries(data.id);
+        }
+
       } else {
-        // Valores por defecto si el juego es nuevo
-        this.detalleForm = { platforms: [], status: 'pendiente', personal_rating: 0, notes: '' };
-        this.originalForm = { platforms: [], status: 'pendiente', personal_rating: 0, notes: '' };
+        this.detalleForm = { platforms: [], status: 'pendiente', personal_rating: 0 };
+        this.originalForm = { platforms: [], status: 'pendiente', personal_rating: 0 };
       }
       this.evaluarCambios();
     });
   }
 
-  // --- LOGICA DE CAMBIOS EN FORMULARIO ---
+  // ==========================================
+  // 📖 LÓGICA DEL DIARIO (NUEVA)
+  // ==========================================
+
+  loadJournalEntries(internalGameId: number | string) {
+    this.journalService.getEntries(internalGameId).subscribe({
+      next: (entries) => {
+        // Mapeamos para añadir propiedades locales de UI
+        const mapped = entries.map(e => ({ ...e, isEditing: false, originalContent: e.content }));
+        this.journalEntries.set(mapped);
+      },
+      error: (err) => console.error("Error al cargar diario", err)
+    });
+  }
+
+  startCreatingNote() { this.isCreatingNote.set(true); }
+  
+  cancelCreatingNote() { 
+    this.isCreatingNote.set(false); 
+    this.newNoteContent.set(''); 
+  }
+
+  saveNewNote() {
+    const internalId = this.existingData()?.id;
+    if (!internalId || !this.newNoteContent().trim()) return;
+
+    this.journalService.createEntry(internalId, this.newNoteContent()).subscribe({
+      next: (newEntry) => {
+        // La añadimos al principio de la lista
+        this.journalEntries.update(entries => [{ ...newEntry, isEditing: false, originalContent: newEntry.content }, ...entries]);
+        this.cancelCreatingNote();
+        this.mostrarToastLocal('Nota añadida a tu diario.');
+      },
+      error: () => this.mostrarToastLocal('Error al guardar la nota.', true)
+    });
+  }
+
+  editNote(entry: JournalEntry) { 
+    // Actualizamos a través del Signal para que la UI reaccione al instante
+    this.journalEntries.update(entries => 
+      entries.map(e => e.id === entry.id ? { ...e, isEditing: true } : e)
+    );
+  }
+
+  cancelEdit(entry: JournalEntry) { 
+    this.journalEntries.update(entries => 
+      entries.map(e => e.id === entry.id ? { ...e, content: e.originalContent || '', isEditing: false } : e)
+    );
+  }
+
+  updateNote(entry: JournalEntry) {
+    if (!entry.id) return;
+    this.journalService.updateEntry(entry.id, { content: entry.content }).subscribe({
+      next: (updated) => {
+        // Al recibir el OK del servidor, actualizamos el Signal correctamente
+        this.journalEntries.update(entries => 
+          entries.map(e => e.id === entry.id ? { 
+            ...e, 
+            content: updated.content, 
+            originalContent: updated.content, 
+            isEditing: false 
+          } : e)
+        );
+        this.mostrarToastLocal('Nota actualizada.');
+      },
+      error: () => this.mostrarToastLocal('Error al actualizar.', true)
+    });
+  }
+
+  toggleFeatured(entry: JournalEntry) {
+    if (!entry.id) return;
+    const oldStatus = entry.is_featured;
+    entry.is_featured = !oldStatus; // Optimistic UI
+
+    this.journalService.updateEntry(entry.id, { is_featured: entry.is_featured }).subscribe({
+      error: () => {
+        entry.is_featured = oldStatus; // Revertir si falla
+        this.mostrarToastLocal('Error al destacar.', true);
+      }
+    });
+  }
+
+  deleteNote(entry: JournalEntry) {
+    if (!entry.id) return;
+    if (confirm('¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer.')) {
+      this.journalService.deleteEntry(entry.id).subscribe({
+        next: () => {
+          this.journalEntries.update(entries => entries.filter(e => e.id !== entry.id));
+          this.mostrarToastLocal('Nota eliminada.');
+        },
+        error: () => this.mostrarToastLocal('Error al eliminar.', true)
+      });
+    }
+  }
+
+  copyNote(entry: JournalEntry) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(entry.content).then(() => {
+        this.mostrarToastLocal('Copiado al portapapeles');
+      });
+    }
+  }
+
+  mostrarToastLocal(mensaje: string, isError = false) {
+    // Como el Toast principal pertenece a biblioteca.ts, usamos un alert nativo temporal 
+    // o un console log si no quieres interrumpir. En Angular 18 lo ideal es inyectar un ToastService global.
+    // Para no romper tu UI, usamos log. (Podemos conectarlo a tu notificación si pasas un evento global).
+    console.log(isError ? '❌ ' + mensaje : '✅ ' + mensaje);
+  }
+
+
+  // ==========================================
+  // 🎮 LÓGICA DEL JUEGO (MANTENIDA)
+  // ==========================================
 
   togglePlatform(plat: string) {
     if (this.modalMode !== 'action') return;
@@ -116,44 +233,30 @@ export class ModalV2Component {
     this.hasChanges = (
       p1 !== p2 || 
       this.detalleForm.status !== this.originalForm.status ||
-      this.detalleForm.personal_rating !== this.originalForm.personal_rating ||
-      this.detalleForm.notes !== this.originalForm.notes
+      this.detalleForm.personal_rating !== this.originalForm.personal_rating
     );
   }
-
-  // --- LOGICA DE DATOS Y API ---
 
   cargarDatos(id: string | number, source: 'igdb' | 'steam') {
     this.loading.set(true);
     this.gameService.getGameDetails(id, source).subscribe({
-      next: (res) => {
-        this.game.set(res);
-        this.loading.set(false);
-      },
-      error: (err) => { 
-        console.error('Error al cargar detalles:', err); 
-        this.loading.set(false); 
-      }
+      next: (res) => { this.game.set(res); this.loading.set(false); },
+      error: (err) => { console.error('Error al cargar', err); this.loading.set(false); }
     });
   }
 
-  activarEdicion() {
-    this.modalMode = 'action';
-  }
+  activarEdicion() { this.modalMode = 'action'; }
 
-  // 🚀 NUEVO: Guardado instantáneo del favorito
   toggleFavorite(event: Event) {
     event.stopPropagation();
-    if (!this.existingData()?.id) return; // Si no está en BD, no se puede hacer favorito
+    if (!this.existingData()?.id) return; 
 
     const currentVal = this.isFavorite();
-    // 1. Optimistic UI
     this.isFavorite.set(!currentVal);
     this.favoriteChanged.emit(!currentVal);
     
-    // 2. Petición al Backend (Asegúrate de que tu SteamService tenga esta función)
     this.gameService.toggleFavorite(this.existingData().id).subscribe({
-      error: () => this.isFavorite.set(currentVal) // Revertir si falla
+      error: () => this.isFavorite.set(currentVal) 
     });
   }
 
@@ -167,21 +270,15 @@ export class ModalV2Component {
       cover_url: this.game()?.coverUrl,
       platform: this.detalleForm.platforms.join(', '), 
       status: this.detalleForm.status,
-      // 🚀 AÑADIMOS ESTO PARA QUE LARAVEL LO ACTUALICE
-      personal_rating: this.detalleForm.personal_rating,
-      notes: this.detalleForm.notes
+      personal_rating: this.detalleForm.personal_rating
+      // 🚀 'notes' ya no se envía aquí
     };
 
-    console.log('Guardando juego en BD...', payload);
     this.saved.emit(payload);
-    
-    // Devolvemos al modo lectura visualmente
     this.modalMode = 'read';
     this.originalForm = { ...this.detalleForm, platforms: [...this.detalleForm.platforms] };
     this.hasChanges = false;
   }
-
-  // --- HELPERS VISUALES ---
 
   get availablePlatforms(): { id: string, name: string, icon: string }[] {
     const rawPlatforms = this.game()?.platforms || [];
@@ -212,7 +309,5 @@ export class ModalV2Component {
     return new Date(timestamp * 1000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
-  cerrar() {
-    this.close.emit();
-  }
+  cerrar() { this.close.emit(); }
 }
