@@ -19,6 +19,7 @@ export class CardCleanComponent {
   personalRating = input<number>(0);
   hasNotes = input<boolean | undefined>(false);
   hasFeaturedNotes = input<boolean | undefined>(false);
+  isReadOnly = input<boolean>(false); // 🚀 NUEVO
   
   @Output() clicked = new EventEmitter<string>();
   @Output() addClicked = new EventEmitter<string>();
@@ -30,6 +31,7 @@ export class CardCleanComponent {
   // 🚀 SIGNALS PARA LA COREOGRAFÍA VISUAL
   isPopping = signal<boolean>(false);
   isLeaving = signal<boolean>(false);
+
 
   verDetalle() {
     this.clicked.emit(this.gameId());

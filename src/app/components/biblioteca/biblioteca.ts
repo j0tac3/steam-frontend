@@ -5,6 +5,7 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { toObservable } from '@angular/core/rxjs-interop'; 
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators'; 
+import { ActivatedRoute } from '@angular/router';
 
 import { SteamService } from '../../services/steam';
 import { AuthService } from '../../services/auth';
@@ -33,6 +34,10 @@ import confetti from 'canvas-confetti';
 export class BibliotecaComponent implements OnInit {
   public myLibrary = signal<SavedGame[]>([]);
   public cargandoBiblioteca = signal<boolean>(true);
+
+  private route = inject(ActivatedRoute);
+  public isReadOnly = signal<boolean>(false);
+  public profileOwner = signal<any>(null);
 
   // 🧠 CEREBRO CENTRAL: Aquí vive todo el estado de la vista
   filtros = signal({
@@ -69,36 +74,86 @@ export class BibliotecaComponent implements OnInit {
   juegoMenuRapido = signal<any>(null);
 
   constructor() {
+    // 1. Detectamos si hay un username en la URL al instanciar el componente
+    const usernameParam = this.route.snapshot.paramMap.get('username');
+    this.isReadOnly.set(!!usernameParam);
+
     effect(() => {
       const nuevaVista = this.vistaActual();
       localStorage.setItem('vistaBiblioteca', nuevaVista);
-      this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe({
-        error: (err) => console.error('No se pudo guardar la preferencia en BD', err)
-      });
+      // Solo guardamos la preferencia si es nuestra propia biblioteca
+      if (!this.isReadOnly()) {
+        this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe({
+          error: (err) => console.error('No se pudo guardar la preferencia en BD', err)
+        });
+      }
     });
 
-    // 🚀 TUBERÍA REACTIVA: Escucha los filtros y pide los datos a Laravel
+    // 🚀 2. TUBERÍA REACTIVA MULTIUSO (Pública y Privada)
     toObservable(this.filtros).pipe(
       debounceTime(300),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       tap(() => this.cargandoBiblioteca.set(true)),
-      switchMap(f => this.gameService.getMyGames(f.status, f.platform, f.search, f.page))
+      switchMap(f => {
+        // Si estamos viendo el perfil de alguien, llamamos al nuevo endpoint
+        if (this.isReadOnly() && usernameParam) {
+          // 🚀 AHORA SÍ PASAMOS LOS FILTROS
+          return this.gameService.getPublicGames(usernameParam, f.status, f.platform, f.search);
+        }
+        // Si no, llamamos a tu colección personal con sus filtros
+        return this.gameService.getMyGames(f.status, f.platform, f.search, f.page);
+      })
     ).subscribe({
       next: (res: any) => {
-        this.myLibrary.set(res.data ? res.data : res);
-        this.totalPaginas.set(res.last_page || 1);
-        this.totalEncontrados.set(res.total || (res.data ? res.data.length : res.length));
+        if (this.isReadOnly()) {
+          const juegosPublicos = res.games || [];
+          this.myLibrary.set(juegosPublicos);
+          this.profileOwner.set(res.owner || null);
+          this.totalPaginas.set(1); 
+          this.totalEncontrados.set(juegosPublicos.length);
+
+          // 🚀 Usamos las estadísticas blindadas del Backend
+          if (res.stats) {
+            this.estadisticas.set({
+              total: res.stats.total || 0,
+              pendientes: res.stats.pendiente || 0,  // Traducimos el singular al plural
+              jugando: res.stats.jugando || 0,
+              completados: res.stats.completado || 0, // Traducimos el singular al plural
+              abandonado: res.stats.abandonado || 0
+            });
+          }
+        } else {
+          // ✏️ MODO EDICIÓN: El backend devuelve la paginación estándar
+          this.myLibrary.set(res.data ? res.data : res);
+          this.totalPaginas.set(res.last_page || 1);
+          this.totalEncontrados.set(res.total || (res.data ? res.data.length : res.length));
+        }
         this.cargandoBiblioteca.set(false);
       },
       error: (err) => {
         console.error('Error al cargar biblioteca:', err);
         this.cargandoBiblioteca.set(false);
+        
+        if (this.isReadOnly()) {
+          // Si el perfil es privado (403) o no existe (404), mostramos mensaje
+          this.mostrarNotificacion('El perfil es privado o no existe', 'error');
+          // En lugar de enviarlo al limbo, vaciamos la librería para que vea el estado vacío
+          this.myLibrary.set([]);
+          this.profileOwner.set({ name: 'Usuario Privado' });
+        }
       }
     });
   }
 
   ngOnInit() {
-    this.cargarEstadisticas();
+    if (!this.isReadOnly()) {
+      this.cargarEstadisticas();
+      
+      this.authService.getUser().subscribe({
+        next: (userData) => this.profileOwner.set(userData),
+        error: (err) => console.error('Error al cargar datos del usuario', err)
+      });
+    }
   }
 
   cargarEstadisticas() {
@@ -184,6 +239,7 @@ export class BibliotecaComponent implements OnInit {
   }
 
   abrirModoLectura(game: any) {
+    if (this.isReadOnly()) return;
     this.selectedGameId.set(game.external_id);
     this.selectedGameSource.set(game.source || 'igdb');
     this.modoModal.set('read');
@@ -354,5 +410,29 @@ export class BibliotecaComponent implements OnInit {
         : g
       )
     );
+  }
+
+  compartirPerfil() {
+    let urlCompartir = '';
+
+    if (this.isReadOnly()) {
+      // 👁️ MODO VISITANTE
+      urlCompartir = window.location.href;
+    } else {
+      // ✏️ MODO DUEÑO: Usamos los datos que trajimos en el ngOnInit
+      const miUsername = this.profileOwner()?.username || 'mi_perfil'; 
+      urlCompartir = `${window.location.origin}/u/${miUsername}`;
+    }
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(urlCompartir).then(() => {
+        this.mostrarNotificacion('¡Enlace público copiado al portapapeles!', 'success');
+      }).catch(err => {
+        console.error('Error al copiar:', err);
+        this.mostrarNotificacion('No se pudo copiar el enlace', 'error');
+      });
+    } else {
+      this.mostrarNotificacion('Tu navegador no soporta copiar automáticamente', 'warning');
+    }
   }
 }

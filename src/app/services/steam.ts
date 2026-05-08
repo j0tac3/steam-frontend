@@ -91,4 +91,16 @@ export class SteamService {
       headers: this.getHeaders()
     });
   }
+
+  getPublicGames(username: string, status: string = 'todos', platform: string = 'todas', search: string = ''): Observable<any> {
+    let params = new HttpParams()
+      .set('status', status)
+      .set('platform', platform);
+    
+    if (search) {
+      params = params.set('search', search);
+    }
+    
+    return this.http.get(`${this.apiUrl}/public/profile/${username}`, { params });
+  }
 }

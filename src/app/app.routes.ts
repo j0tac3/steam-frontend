@@ -12,6 +12,9 @@ export const routes: Routes = [
     canActivate: [authGuard] 
   },
   
+  // En el navegador se verá: misitio.com/u/alex_gamer
+  { path: 'u/:username', component: BibliotecaComponent },
+
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   
   { path: '**', redirectTo: '/login' } 

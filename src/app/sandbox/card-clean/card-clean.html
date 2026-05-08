@@ -13,11 +13,13 @@
         <div class="fab-added-badge"><i class="bi bi-check2"></i></div>
       }
     } @else if (context() === 'library') {
-      <button class="fab-options-btn" (click)="onOptionsClick($event)"><i class="bi bi-three-dots-vertical"></i></button>
-      @if (status() === 'jugando') {
-        <button class="fab-complete-btn" [class.pop-anim]="isPopping()" (click)="onCompleteClick($event)">
-          <i class="bi bi-trophy-fill"></i>
-        </button>
+      @if (!isReadOnly()) {
+        <button class="fab-options-btn" (click)="onOptionsClick($event)"><i class="bi bi-three-dots-vertical"></i></button>
+        @if (status() === 'jugando') {
+          <button class="fab-complete-btn" [class.pop-anim]="isPopping()" (click)="onCompleteClick($event)">
+            <i class="bi bi-trophy-fill"></i>
+          </button>
+        }
       }
     }
 
@@ -44,10 +46,12 @@
             <i class="bi bi-heart-fill text-danger fav-icon-mini"></i>
           }
 
-          @if (hasFeaturedNotes()) {
-            <i class="bi bi-journal-bookmark-fill text-warning" title="Notas destacadas"></i>
-          } @else if (hasNotes()) {
-            <i class="bi bi-journal-text text-white-50" title="Tiene notas"></i>
+          @if (!isReadOnly()) {
+            @if (hasFeaturedNotes()) {
+              <i class="bi bi-journal-bookmark-fill text-warning" title="Notas destacadas"></i>
+            } @else if (hasNotes()) {
+              <i class="bi bi-journal-text text-white-50" title="Tiene notas"></i>
+            }
           }
         </div>
 

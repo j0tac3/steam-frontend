@@ -26,6 +26,10 @@ export class AuthService {
     return this.http.post(`${this.myAppUrl}/register`, userData);
   }
 
+  getUser(): Observable<any> {
+    return this.http.get(`${this.myAppUrl}/user`);
+  }
+
   logout(): void {
     // 1. Llamamos al backend para invalidar el Token
     this.http.post(`${this.myAppUrl}/logout`, {}).subscribe({

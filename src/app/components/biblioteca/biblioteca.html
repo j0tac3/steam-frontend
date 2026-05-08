@@ -5,7 +5,20 @@
         <span class="fs-2 me-2 brand-icon text-primary"><app-icon name="icon-gamepad"></app-icon></span>
         <h2 class="text-white m-0 fs-4 fw-black tracking-wide brand-text">Mi Biblioteca</h2>
       </div>
-      <button class="btn-logout-icon" (click)="cerrarSesion()"><app-icon name="icon-logout"></app-icon></button>
+      <div class="d-flex align-items-center gap-3">
+        
+        <button class="btn btn-sm btn-outline-light rounded-pill px-3 d-flex align-items-center gap-2" 
+                style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);"
+                (click)="compartirPerfil()">
+          <i class="bi bi-share-fill text-primary"></i> <span class="d-none d-sm-inline fw-bold text-white-50">Compartir</span>
+        </button>
+
+        @if (!isReadOnly()) {
+          <button class="btn-logout-icon" (click)="cerrarSesion()" title="Cerrar sesión">
+            <app-icon name="icon-logout"></app-icon>
+          </button>
+        }
+      </div>
     </div>
   </nav>
 
@@ -31,12 +44,21 @@
 
   <section class="container mb-5">
     <div class="glass-panel p-4 rounded-4">
-      <app-game-search 
-        [misJuegos]="myLibrary()"
-        (viewDetails)="abrirModoLectura($event)"
-        (addGame)="abrirModoAccion($event)"
-        (notificar)="mostrarNotificacion($event.mensaje, $event.tipo)">
-      </app-game-search>
+      @if (!isReadOnly()) {
+        <app-game-search 
+          [misJuegos]="myLibrary()"
+          (viewDetails)="abrirModoLectura($event)"
+          (addGame)="abrirModoAccion($event)"
+          (notificar)="mostrarNotificacion($event.mensaje, $event.tipo)">
+        </app-game-search>
+      } @else {
+        <div class="text-center py-3">
+          <h1 class="text-white fw-black m-0">Colección de {{ profileOwner()?.name }}</h1>
+          <p class="text-white-50 m-0 mt-2">
+            Explorando su biblioteca pública <span class="badge bg-primary rounded-pill">@{{ profileOwner()?.username }}</span>
+          </p>
+        </div>
+      }
     </div>
   </section>
 
@@ -79,6 +101,7 @@
             @for (game of myLibrary(); track game.external_id) {
               <div class="col">
                 <app-card-clean 
+                  [isReadOnly]="isReadOnly()"
                   [gameId]="game.external_id" 
                   [title]="game.title" 
                   [imageUrl]="game.cover_url || '/no-image.svg'"
@@ -132,17 +155,21 @@
                   </span>
                 </h6>
                 <div class="kanban-list" cdkDropList 
+                      [cdkDropListDisabled]="isReadOnly()"
                       [cdkDropListData]="getJuegosPorEstado(estado)" 
                       (cdkDropListDropped)="onJuegoSoltado($event, estado)"
                       (cdkDragStarted)="vibrarAlArrastrar()">
                   @for (game of getJuegosPorEstado(estado); track game.external_id) {
-                    <div class="kanban-item mb-3" cdkDrag>
-                      @if (isMobile) {
-                      <div class="mobile-drag-handle" cdkDragHandle>
-                        <i class="bi bi-grip-horizontal"></i>
-                      </div>
+                    <div class="kanban-item mb-3" cdkDrag>0
+                      @if (!isReadOnly()){
+                        @if (isMobile) {
+                        <div class="mobile-drag-handle" cdkDragHandle>
+                          <i class="bi bi-grip-horizontal"></i>
+                        </div>
+                      }
                     }
                       <app-card-clean 
+                        [isReadOnly]="isReadOnly()"
                         [gameId]="game.external_id" 
                         [title]="game.title" 
                         [imageUrl]="game.cover_url || '/no-image.svg'" 
