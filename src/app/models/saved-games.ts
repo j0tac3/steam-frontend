@@ -10,4 +10,7 @@ export interface SavedGame extends Game {
   is_favorite: boolean;
   created_at?: string;
   updated_at?: string;
+
+  has_notes?: boolean;
+  has_featured_notes?: boolean;
 }

@@ -84,11 +84,13 @@
                   [imageUrl]="game.cover_url || '/no-image.svg'"
                   [context]="'library'"
                   [status]="game.status" 
-                  (completeClicked)="marcarComoCompletado(game, $event)"
-                  (optionsClicked)="abrirMenuRapido(game)"
                   [isFavorite]="game.is_favorite" 
                   [personalRating]="game.personal_rating"
-                  (clicked)="abrirModoLectura(game)">
+                  [hasNotes]="game.has_notes"
+                  [hasFeaturedNotes]="game.has_featured_notes"
+                  (clicked)="abrirModoLectura(game)"
+                  (optionsClicked)="abrirMenuRapido(game)"
+                  (completeClicked)="marcarComoCompletado(game, $event)">
                 </app-card-clean>
               </div>
             }
@@ -146,11 +148,13 @@
                         [imageUrl]="game.cover_url || '/no-image.svg'" 
                         [context]="'library'"
                         [status]="game.status" 
-                        (completeClicked)="marcarComoCompletado(game, $event)"
-                        (optionsClicked)="abrirMenuRapido(game)"
                         [isFavorite]="game.is_favorite" 
                         [personalRating]="game.personal_rating"
-                        (clicked)="abrirModoLectura(game)">
+                        [hasNotes]="game.has_notes"
+                        [hasFeaturedNotes]="game.has_featured_notes"
+                        (clicked)="abrirModoLectura(game)"
+                        (optionsClicked)="abrirMenuRapido(game)"
+                        (completeClicked)="marcarComoCompletado(game, $event)">
                       </app-card-clean>
                     </div>
                   }
@@ -172,6 +176,7 @@
       [existingData]="juegoSeleccionadoData()"
       (saved)="guardarJuegoDesdeModal($event)"
       (favoriteChanged)="actualizarFavoritoLocal($event)"
+      (journalStatusChanged)="actualizarEstadoDiarioEnLista($event)"
       (close)="cerrarModal()">
     </app-modal-v2>
   }

@@ -343,4 +343,16 @@ export class BibliotecaComponent implements OnInit {
       this.juegoSeleccionadoData.update(data => ({ ...data, is_favorite: isFav }));
     }
   }
+
+  actualizarEstadoDiarioEnLista(event: {hasNotes: boolean, hasFeaturedNotes: boolean}) {
+    const gameId = this.selectedGameId(); 
+    if (!gameId) return;
+
+    this.myLibrary.update(lista => 
+      lista.map(g => String(g.external_id) === String(gameId) 
+        ? { ...g, has_notes: event.hasNotes, has_featured_notes: event.hasFeaturedNotes } 
+        : g
+      )
+    );
+  }
 }

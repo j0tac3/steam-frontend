@@ -17,6 +17,8 @@ export class CardCleanComponent {
   context = input<'search' | 'library'>('search'); 
   isFavorite = input<boolean>(false);
   personalRating = input<number>(0);
+  hasNotes = input<boolean | undefined>(false);
+  hasFeaturedNotes = input<boolean | undefined>(false);
   
   @Output() clicked = new EventEmitter<string>();
   @Output() addClicked = new EventEmitter<string>();

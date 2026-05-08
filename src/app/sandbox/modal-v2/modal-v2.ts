@@ -21,6 +21,7 @@ export class ModalV2Component {
   @Output() close = new EventEmitter<void>();
   @Output() saved = new EventEmitter<any>(); 
   @Output() favoriteChanged = new EventEmitter<boolean>();
+  @Output() journalStatusChanged = new EventEmitter<{hasNotes: boolean, hasFeaturedNotes: boolean}>();
   
   public game = signal<any | null>(null); 
   public loading = signal<boolean>(true);
@@ -113,21 +114,6 @@ export class ModalV2Component {
     this.newNoteContent.set(''); 
   }
 
-  saveNewNote() {
-    const internalId = this.existingData()?.id;
-    if (!internalId || !this.newNoteContent().trim()) return;
-
-    this.journalService.createEntry(internalId, this.newNoteContent()).subscribe({
-      next: (newEntry) => {
-        // La añadimos al principio de la lista
-        this.journalEntries.update(entries => [{ ...newEntry, isEditing: false, originalContent: newEntry.content }, ...entries]);
-        this.cancelCreatingNote();
-        this.mostrarToastLocal('Nota añadida a tu diario.');
-      },
-      error: () => this.mostrarToastLocal('Error al guardar la nota.', true)
-    });
-  }
-
   editNote(entry: JournalEntry) { 
     // Actualizamos a través del Signal para que la UI reaccione al instante
     this.journalEntries.update(entries => 
@@ -139,6 +125,22 @@ export class ModalV2Component {
     this.journalEntries.update(entries => 
       entries.map(e => e.id === entry.id ? { ...e, content: e.originalContent || '', isEditing: false } : e)
     );
+  }
+
+  saveNewNote() {
+    const internalId = this.existingData()?.id;
+    if (!internalId || !this.newNoteContent().trim()) return;
+
+    this.journalService.createEntry(internalId, this.newNoteContent()).subscribe({
+      next: (newEntry) => {
+        // La añadimos al principio de la lista
+        this.journalEntries.update(entries => [{ ...newEntry, isEditing: false, originalContent: newEntry.content }, ...entries]);
+        this.cancelCreatingNote();
+        this.mostrarToastLocal('Nota añadida a tu diario.');
+        this.emitJournalStatus()
+      },
+      error: () => this.mostrarToastLocal('Error al guardar la nota.', true)
+    });
   }
 
   updateNote(entry: JournalEntry) {
@@ -155,21 +157,9 @@ export class ModalV2Component {
           } : e)
         );
         this.mostrarToastLocal('Nota actualizada.');
+        this.emitJournalStatus()
       },
       error: () => this.mostrarToastLocal('Error al actualizar.', true)
-    });
-  }
-
-  toggleFeatured(entry: JournalEntry) {
-    if (!entry.id) return;
-    const oldStatus = entry.is_featured;
-    entry.is_featured = !oldStatus; // Optimistic UI
-
-    this.journalService.updateEntry(entry.id, { is_featured: entry.is_featured }).subscribe({
-      error: () => {
-        entry.is_featured = oldStatus; // Revertir si falla
-        this.mostrarToastLocal('Error al destacar.', true);
-      }
     });
   }
 
@@ -180,6 +170,7 @@ export class ModalV2Component {
         next: () => {
           this.journalEntries.update(entries => entries.filter(e => e.id !== entry.id));
           this.mostrarToastLocal('Nota eliminada.');
+        this.emitJournalStatus()
         },
         error: () => this.mostrarToastLocal('Error al eliminar.', true)
       });
@@ -192,6 +183,24 @@ export class ModalV2Component {
         this.mostrarToastLocal('Copiado al portapapeles');
       });
     }
+  }
+
+  toggleFeatured(entry: JournalEntry) {
+    if (!entry.id) return;
+    const oldStatus = entry.is_featured;
+    entry.is_featured = !oldStatus; // Optimistic UI
+
+    // 🚀 1. AVISAMOS AL PADRE DEL CAMBIO AL INSTANTE
+    this.emitJournalStatus();
+
+    this.journalService.updateEntry(entry.id, { is_featured: entry.is_featured }).subscribe({
+      error: () => {
+        entry.is_featured = oldStatus; // Revertir si falla
+        // 🚀 2. AVISAMOS SI HA HABIDO QUE REVERTIR POR ERROR DE RED
+        this.emitJournalStatus();
+        this.mostrarToastLocal('Error al destacar.', true);
+      }
+    });
   }
 
   mostrarToastLocal(mensaje: string, isError = false) {
@@ -308,6 +317,14 @@ export class ModalV2Component {
     if (!timestamp) return 'Fecha de salida sin confirmar';
     return new Date(timestamp * 1000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
   }
+
+  private emitJournalStatus() {
+  const entries = this.journalEntries();
+  this.journalStatusChanged.emit({
+    hasNotes: entries.length > 0,
+    hasFeaturedNotes: entries.some(e => e.is_featured)
+  });
+}
 
   cerrar() { this.close.emit(); }
 }

@@ -28,28 +28,37 @@
       }
     }
 
-    <!-- Sustituye el <div class="game-info"> actual por este: -->
     <div class="game-info">
       <div class="d-flex justify-content-between align-items-start">
         <h3 class="title mb-0">{{ title() }}</h3>
         
-        <!-- ❤️ FASE 4: Corazón de favorito -->
         @if (isFavorite()) {
           <i class="bi bi-heart-fill text-danger ms-1" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));"></i>
         }
       </div>
 
-      <!-- ⭐ FASE 4: Estrellas de puntuación personal -->
-      @if (personalRating() > 0) {
-        <div class="text-warning mt-1" style="font-size: 0.75rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">
-          @for (star of [2,4,6,8,10]; track star) {
-            <i class="bi" 
-               [class.bi-star]="personalRating() < star - 1"
-               [class.bi-star-half]="personalRating() === star - 1"
-               [class.bi-star-fill]="personalRating() >= star"></i>
+      <div class="d-flex justify-content-between align-items-center mt-1">
+        
+        <div class="text-warning" style="font-size: 0.75rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); min-height: 18px;">
+          @if (personalRating() > 0) {
+            @for (star of [2,4,6,8,10]; track star) {
+              <i class="bi" 
+                 [class.bi-star]="personalRating() < star - 1"
+                 [class.bi-star-half]="personalRating() === star - 1"
+                 [class.bi-star-fill]="personalRating() >= star"></i>
+            }
           }
         </div>
-      }
+
+        <div style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">
+          @if (hasFeaturedNotes()) {
+            <i class="bi bi-journal-bookmark-fill text-warning" style="font-size: 0.9rem;" title="Tienes notas destacadas"></i>
+          } @else if (hasNotes()) {
+            <i class="bi bi-journal-text text-white-50" style="font-size: 0.9rem;" title="Tienes notas en el diario"></i>
+          }
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
