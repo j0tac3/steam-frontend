@@ -81,8 +81,9 @@ export class BibliotecaComponent implements OnInit {
     effect(() => {
       const nuevaVista = this.vistaActual();
       localStorage.setItem('vistaBiblioteca', nuevaVista);
-      // Solo guardamos la preferencia si es nuestra propia biblioteca
-      if (!this.isReadOnly()) {
+      
+      // 🚀 MEJORA: Solo disparamos la petición si no es solo lectura Y si tenemos token
+      if (!this.isReadOnly() && localStorage.getItem('token')) {
         this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe({
           error: (err) => console.error('No se pudo guardar la preferencia en BD', err)
         });
@@ -434,5 +435,27 @@ export class BibliotecaComponent implements OnInit {
     } else {
       this.mostrarNotificacion('Tu navegador no soporta copiar automáticamente', 'warning');
     }
+  }
+
+  togglePrivacidad(event: any) {
+    const nuevoEstado = event.target.checked;
+    
+    // 1. Actualizamos localmente para feedback instantáneo
+    this.profileOwner.update(user => user ? { ...user, is_public: nuevoEstado } : null);
+
+    // 2. Guardamos en el servidor
+    this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe({
+      next: () => {
+        this.mostrarNotificacion(
+          nuevoEstado ? 'Tu perfil ahora es público' : 'Tu perfil ahora es privado', 
+          'success'
+        );
+      },
+      error: (err) => {
+        // Si falla, revertimos el cambio en la UI
+        this.profileOwner.update(user => user ? { ...user, is_public: !nuevoEstado } : null);
+        this.mostrarNotificacion('No se pudo cambiar la privacidad', 'error');
+      }
+    });
   }
 }
