@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, signal, inject, input, effect } from '@angular/core';
+import { Component, Output, EventEmitter, signal, inject, input, effect, computed } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { SteamService } from '../../services/steam';
@@ -27,6 +27,21 @@ export class ModalV2Component {
   public loading = signal<boolean>(true);
 
   public activeTab = signal<'tech' | 'experience'>('tech');
+
+  public showOnlyFeatured = signal<boolean>(false);
+  
+  // Lista filtrada reactiva
+  public filteredEntries = computed(() => {
+    const entries = this.journalEntries();
+    return this.showOnlyFeatured() 
+      ? entries.filter(e => e.is_featured) 
+      : entries;
+  });
+
+  // Método para alternar el filtro
+  toggleFilter() {
+    this.showOnlyFeatured.update(v => !v);
+  }
 
   private gameService = inject(SteamService);
   private journalService = inject(JournalService); // 🚀 INYECTADO

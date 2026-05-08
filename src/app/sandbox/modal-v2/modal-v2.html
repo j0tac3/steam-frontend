@@ -214,14 +214,22 @@
 
             @if (activeTab() === 'experience') {
               <div class="tab-pane-anim diary-section">
-                
                 <div class="d-flex justify-content-between align-items-center mb-4">
                   <h3 class="text-white-50 m-0 fs-5">Diario de Aventura</h3>
-                  @if (!isCreatingNote() && journalEntries().length > 0) {
-                    <button class="btn btn-sm btn-outline-light rounded-pill px-3" (click)="startCreatingNote()">
-                      <i class="bi bi-plus-lg"></i> Nueva Nota
-                    </button>
-                  }
+                  <div class="d-flex gap-2">
+                    @if (journalEntries().length > 0) {
+                      <button class="btn btn-sm rounded-pill px-3 filter-star-btn" 
+                              [class.active] star]="showOnlyFeatured()"
+                              (click)="toggleFilter()">
+                        <i class="bi" [class.bi-star-fill]="showOnlyFeatured()" [class.bi-star]="!showOnlyFeatured()"></i>
+                      </button>
+                    }
+                    @if (!isCreatingNote() && journalEntries().length > 0) {
+                      <button class="btn btn-sm btn-outline-light rounded-pill px-3" (click)="startCreatingNote()">
+                        <i class="bi bi-plus-lg"></i> Nueva Nota
+                      </button>
+                    }
+                  </div>
                 </div>
 
                 @if (isCreatingNote()) {
@@ -253,8 +261,17 @@
 
                 @else {
                   <div class="d-flex flex-column gap-3 pb-4">
-                    @for (entry of journalEntries(); track entry.id) {
-                      <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s;">
+                    @if (showOnlyFeatured() && filteredEntries().length === 0) {
+                      <div class="empty-featured-state tab-pane-anim">
+                        <i class="bi bi-star text-warning opacity-25 mb-3"></i>
+                        <p class="text-white-50">No hay notas destacadas en esta aventura.</p>
+                        <small class="text-white-25">Usa la estrella en tus notas para pinearlas aquí.</small>
+                      </div>
+                    }
+
+                    @for (entry of filteredEntries(); track entry.id) {
+                      <div class="note-bubble p-3 rounded-4 mb-3" 
+                        [class.is-featured-entry]="entry.is_featured">
                         
                         @if (!entry.isEditing) {
                           <div class="d-flex justify-content-between align-items-center mb-2">

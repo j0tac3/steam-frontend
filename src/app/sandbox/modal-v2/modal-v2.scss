@@ -608,3 +608,47 @@
     }
   }
 }
+
+/* 📝 ESTILO BASE DE LA NOTA */
+.note-bubble {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* 💎 ESTILO NOTA DESTACADA (Dorado Premium) */
+.is-featured-entry {
+  border-color: rgba(255, 215, 0, 0.4) !important;
+  background: linear-gradient(to bottom right, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.02)) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.05) !important;
+}
+
+/* 🚀 BOTÓN FILTRO */
+.filter-star-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffc107;
+  transition: all 0.3s ease;
+  &.active {
+    background: rgba(255, 193, 7, 0.2);
+    border-color: rgba(255, 193, 7, 0.4);
+  }
+}
+
+/* ⚡ TRANSICIÓN SUAVE (Prevención de saltos bruscos) */
+.diary-list-container {
+  min-height: 100px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🛡️ ESTADO VACÍO DEL FILTRO */
+.empty-featured-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+
+  i { font-size: 2.5rem; display: block; }
+  p { margin: 0; font-weight: 500; }
+}
