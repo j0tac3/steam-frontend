@@ -170,6 +170,8 @@
 /* =========================================
    4. TIPOGRAFÍA EN LA BASE
    ========================================= */
+// ... resto del archivo SCSS ...
+
 .game-info {
   position: absolute;
   bottom: 15px; 
@@ -180,17 +182,54 @@
 
   .title {
     color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600; 
-    margin: 0;
+    font-size: 0.95rem; 
+    font-weight: 700; 
+    margin: 0 0 6px 0;
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    width: 100%;
+    display: block;
 
+    // Truncado elegante de texto (máximo 2 líneas)
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Máximo 2 líneas */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
+
+  .metadata-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    width: 100%;
+
+    .stars-row {
+      color: #ffc107; // text-warning
+      font-size: 0.75rem; // Un pelín más grandes ya que están solas
+      display: flex;
+      gap: 1px;
+    }
+
+    .journal-icons {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      // El gap-2 del HTML gestiona la separación entre corazón y diario
+    }
+
+    .fav-icon-mini {
+      font-size: 0.8rem;
+      animation: heartAppear 0.3s ease-out;
+    }
+  }
+}
+
+@keyframes heartAppear {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* =========================================

@@ -1,60 +1,53 @@
-<!-- 🚀 AÑADIMOS LA CLASE DE DESPEDIDA AL CONTENEDOR PRINCIPAL -->
 <div class="card-wrapper" (click)="verDetalle()" [class.is-leaving]="isLeaving()">
   <div class="game-card">
     <img class="bg-image" [src]="imageUrl()" [alt]="title()" loading="lazy">
     
     <div class="gradient-overlay"></div>
-    
+
     @if (context() === 'search') {
       @if (showAddButton()) {
-        <button class="fab-add-btn" (click)="onAddClick($event)" aria-label="Añadir a biblioteca">
+        <button class="fab-add-btn" (click)="onAddClick($event)" aria-label="Añadir">
           <i class="bi bi-plus"></i>
         </button>
       } @else {
-        <div class="fab-added-badge" title="Ya en tu colección">
-          <i class="bi bi-check2"></i>
-        </div>
+        <div class="fab-added-badge"><i class="bi bi-check2"></i></div>
       }
     } @else if (context() === 'library') {
-      <button class="fab-options-btn" (click)="onOptionsClick($event)" aria-label="Opciones del juego">
-        <i class="bi bi-three-dots-vertical"></i>
-      </button>
-      
+      <button class="fab-options-btn" (click)="onOptionsClick($event)"><i class="bi bi-three-dots-vertical"></i></button>
       @if (status() === 'jugando') {
-        <!-- 🚀 AÑADIMOS LA CLASE DEL LATIDO AL TROFEO -->
-        <button class="fab-complete-btn" [class.pop-anim]="isPopping()" (click)="onCompleteClick($event)" title="¡Me lo he pasado!">
+        <button class="fab-complete-btn" [class.pop-anim]="isPopping()" (click)="onCompleteClick($event)">
           <i class="bi bi-trophy-fill"></i>
         </button>
       }
     }
 
     <div class="game-info">
-      <div class="d-flex justify-content-between align-items-start">
-        <h3 class="title mb-0">{{ title() }}</h3>
-        
-        @if (isFavorite()) {
-          <i class="bi bi-heart-fill text-danger ms-1" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));"></i>
-        }
-      </div>
+      <h3 class="title">{{ title() }}</h3>
 
-      <div class="d-flex justify-content-between align-items-center mt-1">
+      <div class="metadata-footer">
         
-        <div class="text-warning" style="font-size: 0.75rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); min-height: 18px;">
-          @if (personalRating() > 0) {
-            @for (star of [2,4,6,8,10]; track star) {
-              <i class="bi" 
-                 [class.bi-star]="personalRating() < star - 1"
-                 [class.bi-star-half]="personalRating() === star - 1"
-                 [class.bi-star-fill]="personalRating() >= star"></i>
+        <div class="d-flex align-items-center">
+          <div class="stars-row">
+            @if (personalRating() > 0) {
+              @for (star of [2,4,6,8,10]; track star) {
+                <i class="bi" 
+                  [class.bi-star]="personalRating() < star - 1"
+                  [class.bi-star-half]="personalRating() === star - 1"
+                  [class.bi-star-fill]="personalRating() >= star"></i>
+              }
             }
-          }
+          </div>
         </div>
 
-        <div style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">
+        <div class="d-flex align-items-center gap-2 journal-icons">
+          @if (isFavorite()) {
+            <i class="bi bi-heart-fill text-danger fav-icon-mini"></i>
+          }
+
           @if (hasFeaturedNotes()) {
-            <i class="bi bi-journal-bookmark-fill text-warning" style="font-size: 0.9rem;" title="Tienes notas destacadas"></i>
+            <i class="bi bi-journal-bookmark-fill text-warning" title="Notas destacadas"></i>
           } @else if (hasNotes()) {
-            <i class="bi bi-journal-text text-white-50" style="font-size: 0.9rem;" title="Tienes notas en el diario"></i>
+            <i class="bi bi-journal-text text-white-50" title="Tiene notas"></i>
           }
         </div>
 
