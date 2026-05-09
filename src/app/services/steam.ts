@@ -87,8 +87,10 @@ export class SteamService {
   }
 
   updateUserPreferences(prefs: any): Observable<any> {
-  return this.http.patch(`${this.apiUrl}/user/preferences`, prefs);
-}
+    return this.http.patch(`${this.apiUrl}/user/preferences`, prefs, {
+      headers: this.getHeaders() // 🚀 ¡ESTA ES LA LLAVE QUE FALTABA!
+    });
+  }
 
   getPublicGames(username: string, status: string = 'todos', platform: string = 'todas', search: string = ''): Observable<any> {
     let params = new HttpParams()
