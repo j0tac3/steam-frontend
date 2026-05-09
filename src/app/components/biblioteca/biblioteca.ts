@@ -16,6 +16,8 @@ import { GameFiltersComponent } from '../game-filters/game-filters';
 import { IconComponent } from '../icon/icon';
 import { ModalV2Component } from '../../sandbox/modal-v2/modal-v2';
 import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
+import { environment } from '../../../environments/environment';
+
 
 import { SavedGame } from '../../models/saved-games';
 import confetti from 'canvas-confetti';
@@ -415,14 +417,18 @@ export class BibliotecaComponent implements OnInit {
 
   compartirPerfil() {
     let urlCompartir = '';
+    
+    // 🚀 La variable de entorno hace la magia: pondrá localhost o Render automáticamente
+    // Quitamos el '/api' repetido si ya está en la variable de entorno, ajustamos la ruta:
+    // Tu environment.apiUrl ya termina en '/api', así que solo añadimos '/share/...'
+    
+    const apiUrlBase = environment.apiUrl.replace(/\/api$/, ''); // Limpiamos por si acaso
 
-    if (this.isReadOnly()) {
-      // 👁️ MODO VISITANTE
-      urlCompartir = window.location.href;
+    if (this.isReadOnly() && this.profileOwner()) {
+      urlCompartir = `${apiUrlBase}/api/share/${this.profileOwner()!.username}`;
     } else {
-      // ✏️ MODO DUEÑO: Usamos los datos que trajimos en el ngOnInit
       const miUsername = this.profileOwner()?.username || 'mi_perfil'; 
-      urlCompartir = `${window.location.origin}/u/${miUsername}`;
+      urlCompartir = `${apiUrlBase}/api/share/${miUsername}`;
     }
 
     if (navigator.clipboard) {
