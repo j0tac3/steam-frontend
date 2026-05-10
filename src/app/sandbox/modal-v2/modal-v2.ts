@@ -28,6 +28,7 @@ export class ModalV2Component {
   public activeTab = signal<'tech' | 'experience'>('tech');
   public showOnlyFeatured = signal<boolean>(false);
   public isDropdownOpen = false;
+  public currentImageIndex = signal<number>(0);
   
   // Lista filtrada reactiva
   public filteredEntries = computed(() => {
@@ -376,6 +377,17 @@ evaluarCambios() {
 
   scroll(container: HTMLElement, direction: 'left' | 'right') {
     container.scrollBy({ left: direction === 'left' ? -320 : 320, behavior: 'smooth' });
+  }
+
+  onCarouselScroll(event: Event) {
+    const container = event.target as HTMLElement;
+    if (!container.firstElementChild) return;
+    
+    // 🎯 Calculamos el ancho real de la foto en esta pantalla + los 15px de separación (gap)
+    const itemWidth = (container.firstElementChild as HTMLElement).offsetWidth + 15; 
+    const newIndex = Math.round(container.scrollLeft / itemWidth);
+    
+    this.currentImageIndex.set(newIndex);
   }
 
   getFormattedDate(timestamp?: number): string {

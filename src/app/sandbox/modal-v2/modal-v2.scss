@@ -1013,15 +1013,103 @@
 }
 
 /* =========================================
-   AJUSTES ESPECÍFICOS PARA MODO ESCRITORIO (PC)
+   REFINAMIENTO DE ESCRITORIO (DESKTOP POLISH)
    ========================================= */
-@media (min-width: 768px) {
-  .desktop-header .status-dropdown-container {
-    margin-left: 1rem;
-  }
-  
-  .desktop-header .status-dropdown-menu {
-    left: auto;
-    right: 0;
+
+/* 🎯 1. Tags de Plataforma */
+.platform-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
   }
 }
+
+/* 🎯 Estilo para la píldora de la Fecha de Salida */
+.metadata-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  width: fit-content;
+
+  i {
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  /* Si el juego no tiene fecha confirmada, se pone naranja/aviso */
+  &.unconfirmed {
+    color: #fbbf24; 
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.2);
+    
+    i { 
+      color: #fbbf24; 
+      opacity: 1;
+    }
+  }
+}
+
+/* 🎯 Puntos del Carrusel (Dots) - Sin interferencia de Bootstrap */
+.custom-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  width: 100%;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+
+    &.active {
+      background: var(--text-main, #ffffff);
+      width: 18px; 
+      border-radius: 10px;
+    }
+  }
+}
+
+/* 🎯 3. Ajustes de la Pastilla junto al título */
+@media (min-width: 768px) {
+  .desktop-header {
+    .status-dropdown-container {
+      margin-left: 0;
+    }
+    /* Como la pastilla ahora está a la izquierda, el menú debe abrir hacia la izquierda (left: 0) */
+    .status-dropdown-menu {
+      left: 0;
+      right: auto;
+      min-width: 250px; 
+    }
+    
+    .status-pill-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .desktop-meta {
+    padding-right: 1.5rem;
+  }
+}
+
