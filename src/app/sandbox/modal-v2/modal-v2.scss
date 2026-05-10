@@ -1011,3 +1011,17 @@
     }
   }
 }
+
+/* =========================================
+   AJUSTES ESPECÍFICOS PARA MODO ESCRITORIO (PC)
+   ========================================= */
+@media (min-width: 768px) {
+  .desktop-header .status-dropdown-container {
+    margin-left: 1rem;
+  }
+  
+  .desktop-header .status-dropdown-menu {
+    left: auto;
+    right: 0;
+  }
+}
