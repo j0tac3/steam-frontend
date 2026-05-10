@@ -25,10 +25,9 @@ export class ModalV2Component {
   
   public game = signal<any | null>(null); 
   public loading = signal<boolean>(true);
-
   public activeTab = signal<'tech' | 'experience'>('tech');
-
   public showOnlyFeatured = signal<boolean>(false);
+  public isDropdownOpen = false;
   
   // Lista filtrada reactiva
   public filteredEntries = computed(() => {
@@ -52,12 +51,14 @@ export class ModalV2Component {
   detalleForm = { 
     platforms: [] as string[], 
     status: 'pendiente',
-    personal_rating: 0
+    personal_rating: 0,
+    activePlatforms: [] as string[]
   };
   originalForm = { 
     platforms: [] as string[], 
     status: 'pendiente',
-    personal_rating: 0
+    personal_rating: 0,
+    activePlatforms: [] as string[]
   };
   
   isFavorite = signal<boolean>(false);
@@ -77,19 +78,34 @@ export class ModalV2Component {
     effect(() => {
       const data = this.existingData();
       if (data) {
+        // 1. Parsear Inventario (Dónde lo tengo)
         let parsedPlatforms: string[] = [];
         if (Array.isArray(data.platform)) parsedPlatforms = [...data.platform];
-        else if (typeof data.platform === 'string') parsedPlatforms = data.platform.split(',').map((p:string) => p.trim());
+        else if (typeof data.platform === 'string') {
+          // El filter evita que si está vacío ("") se cree un array con un string vacío [""]
+          parsedPlatforms = data.platform.split(',').map((p:string) => p.trim()).filter((p:string) => p);
+        }
 
+        // 2. 🎯 NUEVO: Parsear Plataformas Activas (Dónde lo juego)
+        let parsedActivePlatforms: string[] = [];
+        if (Array.isArray(data.active_platforms)) parsedActivePlatforms = [...data.active_platforms];
+        else if (typeof data.active_platforms === 'string') {
+          parsedActivePlatforms = data.active_platforms.split(',').map((p:string) => p.trim()).filter((p:string) => p);
+        }
+
+        // 3. Asignar al formulario
         this.detalleForm = { 
           platforms: parsedPlatforms, 
           status: data.status || 'pendiente',
-          personal_rating: data.personal_rating || 0
+          personal_rating: data.personal_rating || 0,
+          activePlatforms: parsedActivePlatforms // 🎯 Carga desde la BD
         };
+        
         this.originalForm = { 
           platforms: [...parsedPlatforms], 
           status: data.status || 'pendiente',
-          personal_rating: data.personal_rating || 0
+          personal_rating: data.personal_rating || 0,
+          activePlatforms: [...parsedActivePlatforms] // 🎯 Carga desde la BD para evaluar cambios
         };
         
         this.isFavorite.set(data.is_favorite || false);
@@ -100,8 +116,9 @@ export class ModalV2Component {
         }
 
       } else {
-        this.detalleForm = { platforms: [], status: 'pendiente', personal_rating: 0 };
-        this.originalForm = { platforms: [], status: 'pendiente', personal_rating: 0 };
+        // Inicialización para juegos nuevos (Añadir a mi lista)
+        this.detalleForm = { platforms: [], status: 'pendiente', personal_rating: 0, activePlatforms: [] };
+        this.originalForm = { platforms: [], status: 'pendiente', personal_rating: 0, activePlatforms: [] };
       }
       this.evaluarCambios();
     });
@@ -231,33 +248,64 @@ export class ModalV2Component {
   // ==========================================
 
   togglePlatform(plat: string) {
-    if (this.modalMode !== 'action') return;
     const idx = this.detalleForm.platforms.indexOf(plat);
     if (idx > -1) this.detalleForm.platforms.splice(idx, 1); 
     else this.detalleForm.platforms.push(plat); 
+    
+    this.evaluarCambios();
+    
+    // Dispara el guardado a la base de datos al instante
+    if (this.hasChanges) {
+      this.guardarJuego();
+    }
+  }
+
+  toggleActivePlatform(platName: string) {
+    const idx = this.detalleForm.activePlatforms.indexOf(platName);
+    if (idx > -1) {
+      this.detalleForm.activePlatforms.splice(idx, 1); // Lo quita si ya estaba
+    } else {
+      this.detalleForm.activePlatforms.push(platName); // Lo añade
+    }
     this.evaluarCambios();
   }
 
   setStatus(newStatus: string) {
-    if (this.modalMode !== 'action') return;
+    // 🗑️ Eliminado el freno
     this.detalleForm.status = newStatus;
     this.evaluarCambios();
   }
 
   setRating(rating: number) {
-    if (this.modalMode !== 'action') return;
+    // 🗑️ Eliminado el freno
     this.detalleForm.personal_rating = rating;
     this.evaluarCambios();
+    
+    // 🚀 Guardado automático silencioso e instantáneo al tocar la estrella
+    if (this.hasChanges) {
+      this.guardarJuego(); 
+    }
   }
 
-  evaluarCambios() {
+  cerrarDropdown() {
+    this.isDropdownOpen = false;
+    if (this.hasChanges) {
+      this.guardarJuego();
+    }
+  }
+
+evaluarCambios() {
     const p1 = this.detalleForm.platforms.slice().sort().join(',');
     const p2 = this.originalForm.platforms.slice().sort().join(',');
     
+    const ap1 = this.detalleForm.activePlatforms.slice().sort().join(',');
+    const ap2 = this.originalForm.activePlatforms.slice().sort().join(',');
+
     this.hasChanges = (
       p1 !== p2 || 
       this.detalleForm.status !== this.originalForm.status ||
-      this.detalleForm.personal_rating !== this.originalForm.personal_rating
+      this.detalleForm.personal_rating !== this.originalForm.personal_rating ||
+      ap1 !== ap2 // 🎯 Evalúa cambios en las plataformas activas
     );
   }
 
@@ -268,8 +316,6 @@ export class ModalV2Component {
       error: (err) => { console.error('Error al cargar', err); this.loading.set(false); }
     });
   }
-
-  activarEdicion() { this.modalMode = 'action'; }
 
   toggleFavorite(event: Event) {
     event.stopPropagation();
@@ -294,8 +340,8 @@ export class ModalV2Component {
       cover_url: this.game()?.coverUrl,
       platform: this.detalleForm.platforms.join(', '), 
       status: this.detalleForm.status,
-      personal_rating: this.detalleForm.personal_rating
-      // 🚀 'notes' ya no se envía aquí
+      personal_rating: this.detalleForm.personal_rating,
+      active_platforms: this.detalleForm.activePlatforms.join(', ') // 🎯 ENVÍA EL ARRAY COMO TEXTO A LA BBDD
     };
 
     this.saved.emit(payload);
@@ -334,12 +380,12 @@ export class ModalV2Component {
   }
 
   private emitJournalStatus() {
-  const entries = this.journalEntries();
-  this.journalStatusChanged.emit({
-    hasNotes: entries.length > 0,
-    hasFeaturedNotes: entries.some(e => e.is_featured)
-  });
-}
+    const entries = this.journalEntries();
+    this.journalStatusChanged.emit({
+      hasNotes: entries.length > 0,
+      hasFeaturedNotes: entries.some(e => e.is_featured)
+    });
+  }
 
   cerrar() { this.close.emit(); }
 }

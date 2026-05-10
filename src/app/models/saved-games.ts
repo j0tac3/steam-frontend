@@ -7,6 +7,7 @@ export interface SavedGame extends Game {
   personal_rating: number;
   start_date?: string | null;
   platform?: string | null;
+  active_platforms?: string | null;
   is_favorite: boolean;
   created_at?: string;
   updated_at?: string;

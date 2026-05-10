@@ -425,6 +425,39 @@
       font-weight: 800;
     }
   }
+  .sidebar .stats {
+    gap: 8px; /* Reducimos el aire entre las propias tarjetas */
+    
+    .stat-item {
+      padding: 10px 14px; /* 1. Dieta de márgenes: menos padding vertical (antes 15px) */
+      
+      .stat-info {
+        gap: 0px; /* 2. Reducimos separación interna entre título y subtítulo */
+        line-height: 1.1; /* 1. Comprimimos la caja invisible del texto */
+        
+        .label {
+          font-size: 0.85rem; /* 2. Compactamos títulos (Prensa, Usuarios) */
+        }
+        
+        .sub-label {
+          font-size: 0.7rem; /* 2. Compactamos subtítulos */
+          margin-top: 2px; /* Pequeño respiro para que no se pegue del todo */
+        }
+      }
+      
+      .value {
+        font-size: 1.15rem; /* 2. Bajamos los porcentajes (antes 1.4rem) */
+      }
+    }
+    
+    /* 3. Preservación de la Jerarquía Visual (El Toque Híbrido) */
+    .user-rating-box {
+      /* El fondo y borde dorados ya los hereda intactos del SCSS base */
+      .stars-container {
+        font-size: 1.5rem; /* Forzamos que las estrellas sigan siendo igual de grandes y fáciles de tocar */
+      }
+    }
+  }
 }
 
 
@@ -434,31 +467,80 @@
 
 /* Navegación de Pestañas */
 .custom-tabs {
-  display: flex;
-  gap: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  display: flex;             /* 1. Para que vivan juntos horizontalmente */
+  background: rgba(255, 255, 255, 0.05); /* 1. El Contenedor "Carril" gris sutil */
+  padding: 4px;              /* Espacio interno para que la pastilla no toque los bordes */
+  border-radius: 100px;      /* 1. Estilo píldora gigante */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+  gap: 4px;
 
   .tab-btn {
-    background: transparent;
-    border: none;
-    color: #888;
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    flex: 1;                 /* 2. Se reparten el espacio al 50% */
     display: flex;
+    flex-direction: row;     /* 2. Icono y Texto en la misma línea */
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    padding: 10px 16px;
+    background: transparent; /* 3. Inactivo por defecto (sin fondo) */
+    border: none;            /* Sin bordes individuales */
+    border-radius: 100px;    /* 3. Forma de pastilla */
+    color: rgba(255, 255, 255, 0.6); /* 3. Gris claro para invitar al toque */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* 4. Transición fluida */
+    cursor: pointer;
+    white-space: nowrap;     /* 2. Evita saltos de línea molestos */
 
-    &:hover { color: #ccc; background: rgba(255, 255, 255, 0.05); }
-
-    &.active {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      box-shadow: inset 0 -3px 0 #5865F2; /* Subrayado azul Discord */
+    i { 
+      font-size: 1.1rem; 
+      transition: transform 0.2s ease;
     }
+    
+    span { 
+      font-size: 0.9rem; 
+      font-weight: 500; 
+    }
+
+    /* 3. El estado Activo (La Pastilla Seleccionada) */
+    &.active {
+      background: linear-gradient(135deg, rgba(100, 65, 165, 0.4), rgba(100, 65, 165, 0.15));
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      position: relative;
+      
+      /* Microinteracción: El resplandor morado inferior */
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        left: 30%;
+        right: 30%;
+        height: 2px;
+        background: #9d7dfa;
+        box-shadow: 0 0 8px #6441a5;
+        border-radius: 10px;
+      }
+
+      i { transform: scale(1.1); } /* 4. El icono crece un poquito al activarse */
+    }
+
+    /* Efecto Hover para PC */
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+/* 📱 Ajuste tipográfico solo para móviles muy pequeños */
+@media (max-width: 400px) {
+  .custom-tabs .tab-btn {
+    padding: 10px 8px;
+    gap: 6px;
+    
+    i { font-size: 1rem; }
+    /* Ajustamos el tamaño de fuente si usas <span> o el texto suelto */
+    font-size: 0.8rem; 
   }
 }
 
@@ -651,4 +733,224 @@
 
   i { font-size: 2.5rem; display: block; }
   p { margin: 0; font-weight: 500; }
+}
+
+/* =========================================
+   NUEVO: PASTILLA DE ESTADO IN-PLACE
+   ========================================= */
+/* =========================================
+   PASTILLA DE ESTADO IN-PLACE Y DROPDOWN
+   ========================================= */
+.status-dropdown-container {
+  position: relative;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+/* =========================================
+   PASTILLA DE ESTADO IN-PLACE (FIX DESCUADRE)
+   ========================================= */
+.status-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 6px 12px; // Un pelín más estrecho el padding lateral
+  color: white;
+  font-size: 0.8rem; // Bajamos un punto para ganar espacio (era 0.85)
+  font-weight: 500;
+  display: inline-flex; // Cambiado a inline-flex para que no ocupe todo el ancho
+  align-items: center;
+  gap: 4px; // Reducimos el hueco entre elementos
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 100%; // No permite que se salga del padre
+  white-space: nowrap; // Evita que el texto salte a otra línea dentro de la pastilla
+font-size: 0.8rem; // Bajamos un poco el tamaño
+  display: inline-flex; 
+  gap: 4px; // Menos espacio entre texto y punto
+  
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .plat-text { 
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+    max-width: 110px; // Límite para que no empuje el diseño
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Ajuste para el contenedor padre en el mobile-header */
+.status-dropdown-container {
+  display: block; // Asegura que se comporte como un bloque propio
+  width: fit-content; // Se ajusta a lo que mida la pastilla
+  margin-top: 4px;
+}
+
+/* 🔲 2. Definición de Contenedores */
+.status-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #1a1a24;
+  border: 1px solid #3F3F46; 
+  border-radius: 16px;
+  width: 280px;
+  z-index: 1050;
+  animation: slideDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  /* 🛠️ FIX: Evitar que se corte en móviles pequeños */
+  @media (max-width: 450px) {
+    width: 245px;  /* Hacemos el menú un poco más compacto */
+    left: -15px;   /* Lo desplazamos a la izquierda para que respire por la derecha */
+  }
+
+  /* Aumentamos la especificidad encadenando "button.btn.chip-btn" 
+     para vencer a Bootstrap sin usar !important */
+  button.btn.chip-btn {
+    background-color: rgba(0, 0, 0, 0.3); 
+    border: 1px solid transparent;
+    color: #9CA3AF; 
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+
+    &:focus, &:active {
+      outline: 0;
+      box-shadow: none;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #D1D5DB;
+    }
+
+    &.is-selected {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.4);
+      
+      /* Al usar .is-selected:focus pisamos el focus base sin !important */
+      &:focus, &:active {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
+      }
+    }
+    
+    /* ✅ ACTUALIZADO: Pendiente (Naranja/Ámbar) */
+    &.is-warning {
+      background-color: rgba(251, 191, 36, 0.15); /* Color ámbar */
+      color: #FBBF24; /* Texto Ámbar 100% opacidad */
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    /* ✅ NUEVO: Abandonado (Rojo/Danger) */
+    &.is-danger {
+      background-color: rgba(248, 113, 113, 0.15); /* Color rojo suave */
+      color: #F87171; /* Texto Rojo 100% opacidad */
+      border-color: rgba(248, 113, 113, 0.3);
+    }
+
+    &.is-primary { /* Jugando - Azul */
+      background-color: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    &.is-success { /* Completado - Verde */
+      background-color: rgba(52, 211, 153, 0.15);
+      color: #34D399;
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+  }
+
+  /* Lo mismo para el botón de "Hecho": button.btn.btn-light */
+  button.btn.btn-light {
+    background-color: #FFFFFF;
+    color: #000000;
+    border-radius: 9999px; 
+    font-weight: 800;
+    border: none;
+    margin-top: 8px;
+    padding: 10px 0;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #e5e5e5;
+    }
+    
+    &:active {
+      transform: scale(0.97); 
+    }
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Modificación para las Estrellas (Siempre activas) */
+.user-rating-box.is-editing .stars-container i {
+  cursor: pointer;
+  transition: transform 0.1s ease, color 0.2s ease;
+  
+  &:active {
+    transform: scale(0.8); /* Feedback de pulsación (tap) */
+  }
+}
+
+/* =========================================
+   ESTILOS DE INVENTARIO (FICHA TÉCNICA)
+   ========================================= */
+.inventory-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+
+  .card-header-simple {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .tiny { font-size: 0.7rem; }
+  }
+}
+
+.inventory-chip {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.4);
+  padding: 8px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+
+  .plat-icon { filter: grayscale(1) opacity(0.5); transition: all 0.2s; }
+
+  /* Estado: Lo tengo (Owned) */
+  &.owned {
+    background: rgba(100, 65, 165, 0.15); // Un toque lila para indicar posesión
+    border-color: rgba(100, 65, 165, 0.4);
+    color: white;
+    font-weight: 600;
+
+    .plat-icon { filter: grayscale(0) opacity(1); }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
