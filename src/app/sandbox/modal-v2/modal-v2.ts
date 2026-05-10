@@ -355,12 +355,16 @@ evaluarCambios() {
     const mapped = new Map<string, { id: string, name: string, icon: string }>();
 
     rawPlatforms.forEach((p: string) => {
-      const lower = p.toLowerCase();
-      if (lower.includes('pc') || lower.includes('windows') || lower.includes('mac')) mapped.set('PC', { id: 'PC', name: 'PC', icon: '💻' });
-      if (lower.includes('playstation') || lower.includes('ps4') || lower.includes('ps5')) mapped.set('PlayStation', { id: 'PlayStation', name: 'PlayStation', icon: '🎮' });
-      if (lower.includes('xbox')) mapped.set('Xbox', { id: 'Xbox', name: 'Xbox', icon: '🟢' });
-      if (lower.includes('switch') || lower.includes('nintendo')) mapped.set('Nintendo', { id: 'Nintendo', name: 'Nintendo', icon: '🔴' });
-    });
+  const lower = p.toLowerCase();
+    if (lower.includes('pc') || lower.includes('windows') || lower.includes('mac')) 
+      mapped.set('PC', { id: 'PC', name: 'PC', icon: '⚪' }); // Punto blanco/gris para PC
+    if (lower.includes('playstation') || lower.includes('ps4') || lower.includes('ps5')) 
+      mapped.set('PlayStation', { id: 'PlayStation', name: 'PlayStation', icon: '🔵' }); // Punto azul para PS
+    if (lower.includes('xbox')) 
+      mapped.set('Xbox', { id: 'Xbox', name: 'Xbox', icon: '🟢' }); // Punto verde para Xbox
+    if (lower.includes('switch') || lower.includes('nintendo')) 
+      mapped.set('Nintendo', { id: 'Nintendo', name: 'Nintendo', icon: '🔴' }); // Punto rojo para Switch
+  });
 
     return Array.from(mapped.values());
   }

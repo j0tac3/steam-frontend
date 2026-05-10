@@ -743,8 +743,7 @@
    ========================================= */
 .status-dropdown-container {
   position: relative;
-  display: inline-block;
-  margin-top: 8px;
+  width: fit-content;
 }
 
 /* =========================================
@@ -765,9 +764,9 @@
   transition: all 0.2s ease;
   max-width: 100%; // No permite que se salga del padre
   white-space: nowrap; // Evita que el texto salte a otra línea dentro de la pastilla
-font-size: 0.8rem; // Bajamos un poco el tamaño
+  font-size: 0.8rem; // Bajamos un poco el tamaño
   display: inline-flex; 
-  gap: 4px; // Menos espacio entre texto y punto
+  gap: 8px;
   
   span {
     overflow: hidden;
@@ -775,11 +774,24 @@ font-size: 0.8rem; // Bajamos un poco el tamaño
   }
 
   .plat-text { 
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 400;
-    max-width: 110px; // Límite para que no empuje el diseño
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: rgba(255, 255, 255, 0.7); /* Ligeramente más visible */
+    font-weight: 500;
+    max-width: none; /* Quitamos el max-width porque ya no usamos ellipsis */
+    white-space: nowrap;
+    
+    .badge-plus {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      margin-left: 4px;
+      color: #fff;
+    }
+  }
+
+  .icon-chevron {
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 6px; /* Separación forzada del texto */
   }
 
   &:hover {
@@ -795,100 +807,125 @@ font-size: 0.8rem; // Bajamos un poco el tamaño
 }
 
 /* 🔲 2. Definición de Contenedores */
+/* 🔲 2. Definición del Contenedor (Popover) */
 .status-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  background: #1a1a24;
-  border: 1px solid #3F3F46; 
-  border-radius: 16px;
-  width: 280px;
+  top: calc(100% + 4px); // Más pegado a la pastilla
+  left: -10px; // Ligeramente ajustado
+  width: 240px; // Reducimos ancho (era 280px)
   z-index: 1050;
   animation: slideDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 10px; // Menos padding interior general
 
-  /* 🛠️ FIX: Evitar que se corte en móviles pequeños */
+  /* Estilo Glass compactado */
+  background: rgba(26, 26, 36, 0.95); // Ligeramente traslúcido
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 12px; // Más sutil, en sintonía con la app
+
   @media (max-width: 450px) {
-    width: 245px;  /* Hacemos el menú un poco más compacto */
-    left: -15px;   /* Lo desplazamos a la izquierda para que respire por la derecha */
+    width: 220px;
+    left: -20px;
   }
 
-  /* Aumentamos la especificidad encadenando "button.btn.chip-btn" 
-     para vencer a Bootstrap sin usar !important */
+  /* Títulos de sección compactos */
+  h6 {
+    font-size: 0.7rem !important; // Más pequeño
+    letter-spacing: 0.5px;
+    margin-bottom: 6px !important;
+  }
+
+  /* Chips de selección COMPACTOS */
   button.btn.chip-btn {
-    background-color: rgba(0, 0, 0, 0.3); 
-    border: 1px solid transparent;
-    color: #9CA3AF; 
+    background: rgba(255, 255, 255, 0.03); // Fondo más sutil
+    color: var(--text-main, #ffffff);
+    opacity: 0.5; // Menos intrusivo cuando está inactivo
+    font-size: 0.75rem; // Letra más pequeña
     font-weight: 500;
     transition: all 0.2s ease;
-    border-radius: 8px;
+    border: 1px solid transparent;
+    border-radius: 6px; // Esquinas más sutiles
+    padding: 6px 10px; // REDUCIDO DRÁSTICAMENTE (era 10px 16px)
 
     &:focus, &:active {
-      outline: 0;
-      box-shadow: none;
+      outline: 0 !important;
+      box-shadow: none !important;
     }
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-      color: #D1D5DB;
+    /* Hover genérico */
+    &:hover:not([class*="is-"]) {
+      opacity: 0.8;
+      background: rgba(255, 255, 255, 0.06);
     }
 
-    &.is-selected {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #FFFFFF;
-      border-color: rgba(255, 255, 255, 0.4);
-      
-      /* Al usar .is-selected:focus pisamos el focus base sin !important */
-      &:focus, &:active {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
-      }
-    }
+    /* 👁️ REDISEÑO DE ESTADOS: Resplandor sutil (sin !important) */
     
-    /* ✅ ACTUALIZADO: Pendiente (Naranja/Ámbar) */
+    // PENDIENTE (Amarillo)
     &.is-warning {
-      background-color: rgba(251, 191, 36, 0.15); /* Color ámbar */
-      color: #FBBF24; /* Texto Ámbar 100% opacidad */
-      border-color: rgba(251, 191, 36, 0.3);
+      background-color: rgba(251, 191, 36, 0.05);
+      color: #FBBF24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 6px rgba(251, 191, 36, 0.1);
     }
 
-    /* ✅ NUEVO: Abandonado (Rojo/Danger) */
-    &.is-danger {
-      background-color: rgba(248, 113, 113, 0.15); /* Color rojo suave */
-      color: #F87171; /* Texto Rojo 100% opacidad */
-      border-color: rgba(248, 113, 113, 0.3);
-    }
-
-    &.is-primary { /* Jugando - Azul */
-      background-color: rgba(59, 130, 246, 0.15);
+    // JUGANDO (Azul)
+    &.is-primary {
+      background-color: rgba(59, 130, 246, 0.05);
       color: #60A5FA;
-      border-color: rgba(59, 130, 246, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 6px rgba(59, 130, 246, 0.1);
     }
 
-    &.is-success { /* Completado - Verde */
-      background-color: rgba(52, 211, 153, 0.15);
+    // COMPLETADO (Verde)
+    &.is-success {
+      background-color: rgba(52, 211, 153, 0.05);
       color: #34D399;
-      border-color: rgba(52, 211, 153, 0.3);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.1);
+    }
+
+    // ABANDONADO (Rojo)
+    &.is-danger {
+      background-color: rgba(248, 113, 113, 0.05);
+      color: #F87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 6px rgba(248, 113, 113, 0.1);
+    }
+
+    /* Estado seleccionado genérico (si usas 'is-selected' para plataformas) */
+    &.is-selected {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      opacity: 1;
+      font-weight: 600;
     }
   }
 
-  /* Lo mismo para el botón de "Hecho": button.btn.btn-light */
+  /* 🎨 Botón "Hecho" (o cerrar) Compactado */
   button.btn.btn-light {
     background-color: #FFFFFF;
     color: #000000;
-    border-radius: 9999px; 
-    font-weight: 800;
+    border-radius: 100px;
+    font-size: 0.75rem; // Letra pequeña
+    font-weight: 700;
+    text-transform: uppercase; // Volvemos a mayúsculas para que se vea más CTA, pero pequeño
+    letter-spacing: 0.5px;
     border: none;
-    margin-top: 8px;
-    padding: 10px 0;
-    transition: transform 0.1s ease, background-color 0.2s ease;
+    margin-top: 10px; // Menos separación
+    padding: 8px 0; // Mucho menos padding (era 12px 0)
+    width: 100%;
     
-    &:hover {
-      background-color: #e5e5e5;
-    }
-    
-    &:active {
-      transform: scale(0.97); 
-    }
+    &:hover { opacity: 0.9; }
   }
 }
 
@@ -915,42 +952,62 @@ font-size: 0.8rem; // Bajamos un poco el tamaño
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 16px;
+  
+  
 
   .card-header-simple {
     display: flex;
     justify-content: space-between;
     align-items: center;
     
-    .tiny { font-size: 0.7rem; }
+    .tiny { 
+      font-size: 0.75rem; 
+      opacity: 0.7;
+    }
   }
 }
 
 .inventory-chip {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04); /* Fondo muy sutil */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Borde visible pero tenue */
+  color: #9CA3AF; /* 👁️ 2. Gris más claro para mejorar la legibilidad inactiva */
   padding: 8px 14px;
   border-radius: 12px;
-  display: flex;
+  display: inline-flex; /* Comportamiento de etiqueta/tag */
+  width: fit-content; /* Ocupa solo lo que necesita, rompiendo la cuadrícula */
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
   font-size: 0.85rem;
 
-  .plat-icon { filter: grayscale(1) opacity(0.5); transition: all 0.2s; }
-
-  /* Estado: Lo tengo (Owned) */
-  &.owned {
-    background: rgba(100, 65, 165, 0.15); // Un toque lila para indicar posesión
-    border-color: rgba(100, 65, 165, 0.4);
-    color: white;
-    font-weight: 600;
-
-    .plat-icon { filter: grayscale(0) opacity(1); }
+  .plat-icon { 
+    opacity: 0.5; /* Icono inactivo más visible que antes */
+    filter: grayscale(1); 
+    transition: all 0.2s ease; 
   }
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+  /* Eliminar focus nativo de bootstrap */
+  &:focus, &:active {
+    outline: 0;
+    box-shadow: none;
+  }
+
+  &:hover:not(.owned) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #D1D5DB;
+  }
+
+  /* ✨ 3. Estado: Lo tengo (Owned) - Minimalista y Premium */
+  &.owned {
+    background: rgba(100, 65, 165, 0.15); /* Tu tono morado suave de fondo */
+    border-color: rgba(100, 65, 165, 0.6); /* Borde morado más definido */
+    color: #ffffff; /* Blanco puro para contraste máximo */
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(100, 65, 165, 0.1); /* Resplandor morado muy sutil */
+
+    .plat-icon { 
+      filter: grayscale(0); 
+      opacity: 1; /* Círculo a todo color */
+    }
   }
 }

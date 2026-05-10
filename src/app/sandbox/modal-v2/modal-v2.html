@@ -39,27 +39,30 @@
                   @else if (detalleForm.status === 'abandonado') { <span class="text-danger">❌ Abandonado</span> }
                   @else { <span class="text-warning">⏳ Pendiente</span> }
                   
-                  @if (detalleForm.activePlatforms.length > 0) { 
-                    <span class="plat-text">• {{ detalleForm.activePlatforms.join(', ') }}</span> 
+                  @if (detalleForm.activePlatforms && detalleForm.activePlatforms.length > 0) { 
+                    <span class="plat-text d-flex align-items-center gap-1">
+                      <span class="text-white-50">•</span>
+                      {{ detalleForm.activePlatforms[0] }} 
+                      @if (detalleForm.activePlatforms.length > 1) {
+                        <span class="badge-plus">+{{ detalleForm.activePlatforms.length - 1 }}</span>
+                      }
+                    </span> 
                   }
-                  <i class="bi bi-chevron-down ms-1 text-white-50"></i>
-                  <i class="bi bi-chevron-down ms-1 text-white-50"></i>
+                  
+                  <i class="bi bi-chevron-down ms-1 icon-chevron"></i>
                 </button>
 
                 @if (isDropdownOpen) {
                   <div class="status-dropdown-menu shadow-lg">
-                    <div class="p-3">
-                      <h6 class="text-white-50 small mb-2"><i class="bi bi-kanban"></i> ESTADO</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button class="btn btn-sm chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">Pendiente</button>
+                    <div class="p-1"> <h6 class="text-white-50 small mb-2"><i class="bi bi-kanban"></i> ESTADO</h6>
+                      <div class="d-flex flex-wrap gap-2 mb-2"> <button class="btn btn-sm chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">Pendiente</button>
                         <button class="btn btn-sm chip-btn" [class.is-primary]="detalleForm.status === 'jugando'" (click)="setStatus('jugando')">Jugando</button>
                         <button class="btn btn-sm chip-btn" [class.is-success]="detalleForm.status === 'completado'" (click)="setStatus('completado')">Completado</button>
                         <button class="btn btn-sm chip-btn" [class.is-danger]="detalleForm.status === 'abandonado'" (click)="setStatus('abandonado')">Abandonado</button>
                       </div>
 
-                      <h6 class="text-white-50 small mb-2"><i class="bi bi-controller"></i> EXPERIENCIA EN</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-3">
-                        @for (plat of availablePlatforms; track plat.id) {
+                      <h6 class="text-white-50 small mb-2"><i class="bi bi-controller"></i> JUGANDO EN</h6>
+                      <div class="d-flex flex-wrap gap-2 mb-2"> @for (plat of availablePlatforms; track plat.id) {
                           <button class="btn btn-sm chip-btn" 
                                   [class.is-selected]="detalleForm.activePlatforms.includes(plat.name)" 
                                   (click)="toggleActivePlatform(plat.name)">
@@ -67,7 +70,10 @@
                           </button>
                         }
                       </div>
-                      <button class="btn btn-light w-100 rounded-pill btn-sm fw-bold" (click)="cerrarDropdown()">Hecho</button>
+
+                      <button class="btn btn-sm btn-light py-2 mt-2" (click)="cerrarDropdown()">
+                        Hecho
+                      </button>
                     </div>
                   </div>
                 }
@@ -99,22 +105,19 @@
               @if (enBiblioteca()) {
 
                 <div class="inventory-card mb-4">
-                  <div class="card-header-simple">
-                    <h6 class="text-white-50 small mb-0"><i class="bi bi-box-seam me-2"></i>MI COLECCIÓN</h6>
-                    <span class="text-white-50 tiny">Marcas las plataformas donde lo tienes</span>
+                  <div class="d-flex flex-column align-items-start mb-3">
+                    <h6 class="text-white-50 small mb-1 fw-bold"><i class="bi bi-box-seam me-2"></i>MI COLECCIÓN</h6>
+                    <span class="text-white-50 tiny">Marca las plataformas donde lo tienes</span>
                   </div>
                   
-                  <div class="d-flex flex-wrap gap-2 mt-3">
+                  <div class="d-flex flex-wrap gap-2">
                     @for (plat of availablePlatforms; track plat.id) {
                       <button class="btn btn-sm inventory-chip" 
                               [class.owned]="detalleForm.platforms.includes(plat.id)"
                               (click)="togglePlatform(plat.id)">
                         <span class="plat-icon">{{ plat.icon }}</span>
                         <span class="plat-name">{{ plat.name }}</span>
-                        @if (detalleForm.platforms.includes(plat.id)) {
-                          <i class="bi bi-check-lg ms-1"></i>
-                        }
-                      </button>
+                        </button>
                     }
                   </div>
                 </div>
