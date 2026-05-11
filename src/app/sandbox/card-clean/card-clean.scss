@@ -9,17 +9,16 @@
 
   &:hover {
     .game-card {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+      transform: translateY(-4px); /* 📉 Salto más sutil */
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Sombra más concentrada */
     }
-    /* 🚀 AQUÍ ESTÁ LA MAGIA: Aparecen los botones al pasar el ratón en PC */
     .fab-add-btn, .fab-options-btn, .fab-complete-btn {
       opacity: 1; 
     }
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
   }
 }
 
@@ -29,13 +28,12 @@
 .game-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3; /* Proporción estándar de carátulas */
-  border-radius: 12px; /* Bordes modernos pero no excesivos */
+  aspect-ratio: 2 / 3;
+  border-radius: 8px; /* 📉 De 12px a 8px: Bordes más técnicos y menos "juguete" */
   overflow: hidden;
   background-color: #1a1a1a;
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
 
-  /* Imagen "Bleed effect" ocupando todo */
   .bg-image {
     position: absolute;
     inset: 0;
@@ -45,14 +43,13 @@
     z-index: 1;
   }
 
-  /* Degradado inferior progresivo (40%) */
   .gradient-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50%; /* Cubre un poco más para transición suave */
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 40%, transparent 100%);
+    height: 55%; 
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 35%, transparent 100%);
     z-index: 2;
   }
 }
@@ -61,42 +58,33 @@
    3. BOTÓN FAB Y BADGES (Esquina Superior)
    ========================================= */
 
-/* 1. ESTILOS BASE COMPARTIDOS POR LOS 4 BOTONES */
 .fab-add-btn, .fab-added-badge, .fab-options-btn, .fab-complete-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
+  top: 6px; /* 📉 Menos margen superior */
+  right: 6px;
+  width: 28px; /* 📉 De 36px a 28px */
+  height: 28px;
   border-radius: 50%;
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  font-size: 1rem; /* 📉 De 1.4rem a 1rem */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
 }
 
-/* 2. ESTILO ESPECÍFICO: Botón Añadir (Buscador) */
 .fab-add-btn {
   background: rgba(88, 101, 242, 0.85);
   backdrop-filter: blur(5px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  opacity: 0; /* Oculto en PC hasta hover */
+  opacity: 0; 
 
-  &:hover {
-    background: rgba(88, 101, 242, 1);
-    transform: scale(1.1);
-  }
-  
-  &:active {
-    transform: scale(0.9);
-  }
+  &:hover { background: rgba(88, 101, 242, 1); transform: scale(1.1); }
+  &:active { transform: scale(0.9); }
 }
 
-/* 3. ESTILO ESPECÍFICO: Check Verde (Buscador) */
 .fab-added-badge {
   background: rgba(25, 135, 84, 0.85); 
   backdrop-filter: blur(5px);
@@ -104,93 +92,69 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* 4. ESTILO ESPECÍFICO: Botón Opciones (Biblioteca) */
 .fab-options-btn {
-  background: rgba(255, 255, 255, 0.15); /* Gris/Blanco translúcido elegante */
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.4); /* 🚀 Fondo más oscuro para que no tape tanto la portada */
+  backdrop-filter: blur(4px);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  opacity: 0; /* Oculto en PC hasta hover */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  opacity: 0;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
-  }
-  
-  &:active {
-    transform: scale(0.9);
-  }
+  &:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+  &:active { transform: scale(0.9); }
 }
 
-/* 5. 🚀 ESTILO ESPECÍFICO: Botón ¡Me lo he pasado! */
-/* 5. 🚀 ESTILO ESPECÍFICO: Botón ¡Me lo he pasado! (Glassmorphism Fino) */
 .fab-complete-btn {
-  left: 10px;
+  left: 6px;
   right: auto;
-  background: rgba(30, 215, 96, 0.2); /* Verde translúcido elegante */
-  backdrop-filter: blur(5px);
-  color: #ffffff; /* Trofeo blanco brillante */
+  background: rgba(30, 215, 96, 0.3); 
+  backdrop-filter: blur(4px);
+  color: #ffffff; 
   border: 1px solid rgba(255, 255, 255, 0.2);
   opacity: 0; 
   transition: all 0.2s ease;
 
-  &:hover {
-    background: rgba(30, 215, 96, 0.4);
-    transform: scale(1.1);
-  }
-  
-  /* 🚀 EL LATIDO (0.0s) */
-  &.pop-anim {
-    animation: pop-heartbeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+  &:hover { background: rgba(30, 215, 96, 0.6); transform: scale(1.1); }
+  &.pop-anim { animation: pop-heartbeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 }
 
 @keyframes pop-heartbeat {
   0% { transform: scale(1.1); }
-  50% { transform: scale(1.4); } /* Sube a 140% y baja rápido */
+  50% { transform: scale(1.4); } 
   100% { transform: scale(1.1); }
 }
 
-/* =========================================
-   🚀 LA DESPEDIDA (0.8s)
-   ========================================= */
+/* Animación de salida */
 .card-wrapper.is-leaving {
   animation: card-leave 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-  pointer-events: none; /* Evita que el usuario pulse dos veces por error */
+  pointer-events: none;
 }
 
 @keyframes card-leave {
   0% { opacity: 1; transform: scale(1); }
-  100% { 
-    opacity: 0; 
-    transform: scale(0.8) translateY(30px); /* Se hace pequeña y cae suavemente */
-  }
+  100% { opacity: 0; transform: scale(0.8) translateY(30px); }
 }
 
 /* =========================================
-   4. TIPOGRAFÍA EN LA BASE
+   4. TIPOGRAFÍA EN LA BASE (Micro-ajustes)
    ========================================= */
-// ... resto del archivo SCSS ...
 
 .game-info {
   position: absolute;
-  bottom: 15px; 
+  bottom: 10px; /* 📉 Pegado un poco más al fondo */
   left: 0;
   width: 100%;
-  padding: 0 12px;
+  padding: 0 10px; /* 📉 Menos padding lateral */
   z-index: 3;
 
   .title {
     color: #ffffff;
-    font-size: 0.95rem; 
+    font-size: 0.8rem; /* 📉 De 0.95rem a 0.8rem */
     font-weight: 700; 
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     width: 100%;
-    display: block;
-
-    // Truncado elegante de texto (máximo 2 líneas)
+    
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -206,21 +170,20 @@
     width: 100%;
 
     .stars-row {
-      color: #ffc107; // text-warning
-      font-size: 0.75rem; // Un pelín más grandes ya que están solas
+      color: #ffc107; 
+      font-size: 0.65rem; /* 📉 Estrellas más pequeñas */
       display: flex;
       gap: 1px;
     }
 
     .journal-icons {
-      font-size: 0.85rem;
+      font-size: 0.75rem; /* 📉 Iconos de notas reducidos */
       display: flex;
       align-items: center;
-      // El gap-2 del HTML gestiona la separación entre corazón y diario
     }
 
     .fav-icon-mini {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       animation: heartAppear 0.3s ease-out;
     }
   }
@@ -236,16 +199,18 @@
    5. ADAPTACIÓN TÁCTIL (MÓVILES)
    ========================================= */
 @media (hover: none), (max-width: 768px) {
-  /* 🚀 En móviles los 3 botones siempre son visibles y más grandes */
+  /* En móviles los botones táctiles necesitan ser un poco más grandes para el dedo, 
+     pero los reducimos frente a tu versión anterior */
   .card-wrapper .fab-add-btn, 
   .card-wrapper .fab-options-btn, 
   .card-wrapper .fab-complete-btn {
     opacity: 1; 
-    width: 40px; 
-    height: 40px;
+    width: 32px; /* 📉 De 40px a 32px */
+    height: 32px;
+    font-size: 1.1rem;
   }
   
   .game-info .title {
-    font-size: 0.9rem; /* Un poco más pequeño en móvil */
+    font-size: 0.75rem; /* 📉 Texto aún más micro en móvil */
   }
 }

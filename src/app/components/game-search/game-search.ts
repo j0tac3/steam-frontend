@@ -15,6 +15,7 @@ import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 })
 export class GameSearchComponent {
   private gameService = inject(SteamService);
+  public searchCategory: string = 'main';
 
   searchResults = signal<Game[]>([]);
   cargando = signal<boolean>(false);
@@ -52,6 +53,8 @@ export class GameSearchComponent {
   paginasArray = computed(() => Array.from({ length: this.totalPaginas() }, (_, i) => i + 1));
 
   // 🚀 BÚSQUEDA ORQUESTADA
+
+  // 🎯 2. Modifica tu función buscar
   buscar(termino: string) {
     if (!termino.trim()) return;
 
@@ -60,10 +63,9 @@ export class GameSearchComponent {
     this.paginaActual.set(1); 
     this.busquedaRealizada.set(false);
 
-    // Solo llamamos a Laravel, él se encarga de todo
-    this.gameService.searchGames(termino).subscribe({
+    // 🚀 AQUÍ ESTÁ LA MAGIA: Le pasamos 'this.searchCategory' como segundo parámetro
+    this.gameService.searchGames(termino, this.searchCategory).subscribe({
       next: (res: Game[]) => {
-        // Laravel ya devuelve el objeto perfecto: {external_id, title, cover_url, source}
         this.searchResults.set(res || []);
         this.busquedaRealizada.set(true);
         this.cargando.set(false);

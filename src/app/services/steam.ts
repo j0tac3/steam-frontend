@@ -15,8 +15,18 @@ export class SteamService {
     });
   }
 
-  searchGames(termino: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/games/search?q=${termino}`, {
+/*   searchGames(term: string, category: string): Observable<any[]> {
+
+    const params = new HttpParams()
+      .set('q', term)
+      .set('category', category);
+
+    return this.http.get<any[]>(`${this.apiUrl}/games/search`, { params });
+  } */
+
+  searchGames(termino: string, category: string = 'main'): Observable<any[]> {
+    // Pasamos la categoría como parámetro de consulta
+    return this.http.get<any[]>(`${this.apiUrl}/games/search?q=${termino}&category=${category}`, {      
       headers: this.getHeaders()
     });
   }

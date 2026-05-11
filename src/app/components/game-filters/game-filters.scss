@@ -1,74 +1,153 @@
-.search-section {
-  width: 100%;
+/* 🎨 2. SELECTOR DE VISTAS (Segmented Control) */
+.view-switcher-container {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+.view-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  i { font-size: 0.9rem; }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.08); /* 🚀 Adiós al azul brillante */
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    
+    i { color: #a855f7; } /* Un toque sutil de tu color de marca */
+  }
+}
+
+/* 📏 3. AJUSTE DE DENSIDAD DE PASTILLAS */
+.chips-grid {
+  display: flex;
+  flex-wrap: wrap; /* 🚀 Permite múltiples pastillas por fila */
+  gap: 6px;       /* Espaciado reducido para ahorrar espacio */
+}
+
+.chip-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid transparent; 
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  transition: all 0.2s ease;
+
+  .chip-text {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  &.active {
+    background: #a855f7;
+    border-color: rgba(255, 255, 255, 0.1);
+    .chip-text { color: #fff; }
+    .color-dot { box-shadow: 0 0 6px rgba(255, 255, 255, 0.4); }
+  }
+}
+
+/* 📐 SEPARADOR SUTIL */
+.separator {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 1;
+}
+
+/* (Mantenemos el buscador y wrappers de iconos que ya teníamos refinados) */
+.icon-center-wrapper {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.color-dot { width: 6px; height: 6px; border-radius: 50%; }
 
 .search-wrapper {
   width: 100%;
-  max-width: 600px; 
+  max-width: 500px;
+  position: relative; /* 🚀 Super importante para que los iconos no se escapen */
   
   .search-icon {
     position: absolute;
-    left: 18px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 5;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+    pointer-events: none; /* Para que no moleste al hacer clic */
   }
 }
 
 .custom-search-input {
-  padding: 14px 135px 14px 45px; 
-  border-radius: 100px;
-  border: 1px solid var(--glass-border);
-  font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* CRISTALIZACIÓN */
-  background: var(--glass-bg-panel);
-  color: var(--text-main);
+  &.custom-search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    /* 🚀 Padding estricto: Arriba/Abajo 8px, Derecha 40px, Izquierda 36px */
+    padding: 8px 40px 8px 36px !important; 
+    color: #ffffff;
+    font-size: 0.85rem;
+    height: 38px; /* 🚀 Fijamos la altura para que la X no lo "engorde" */
+    transition: all 0.2s ease;
 
-  &::placeholder { color: var(--text-muted); opacity: 0.7; }
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
 
-  &:focus {
-    border-color: var(--color-info);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-    transform: translateY(-1px);
-    outline: none;
-    background: var(--glass-bg-nav); /* Un pelín más oscuro al hacer focus */
+    &:focus {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: #a855f7;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 
 .btn-clear {
   position: absolute;
-  right: 95px; 
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.5rem;
-  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.2rem;
+  padding: 0;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease, transform 0.2s ease;
-  z-index: 10;
-  outline: none;
-  background: none;
-  border: none;
-  padding: 0;
+  z-index: 6;
+  cursor: pointer;
 
-  &:hover {
-    color: var(--color-danger); 
-    transform: translateY(-50%) scale(1.1); 
-  }
-}
+  /* Reseteos extra para que Bootstrap no le añada márgenes invisibles */
+  margin: 0;
+  line-height: 1;
 
-.results-counter {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.85rem;
-  padding-left: 12px;
-  border-left: 1px solid var(--glass-border);
-  pointer-events: none; 
-  color: var(--text-muted);
+  &:hover { color: #ffffff; }
 }

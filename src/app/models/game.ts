@@ -3,4 +3,5 @@ export interface Game {
   source: string;
   title: string;
   cover_url: string | null;
+  category?: number;
 }

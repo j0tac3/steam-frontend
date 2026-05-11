@@ -1,38 +1,50 @@
-<div class="search-section d-flex flex-column gap-3 mb-2">
+<div class="search-section d-flex flex-column gap-3">
   
   <div class="search-wrapper position-relative">
-    <span class="search-icon d-flex align-items-center">
-      <app-icon name="icon-search"></app-icon>
-    </span>
-    
-    <input 
-      type="text" 
-      class="form-control custom-search-input shadow-sm" 
-      placeholder="Filtrar por nombre..."
-      [value]="filtroTexto()"
-      (input)="textoCambiado.emit($any($event.target).value)">
-    
+    <span class="search-icon"><app-icon name="icon-search"></app-icon></span>
+    <input type="text" class="custom-search-input w-100" placeholder="Filtrar por nombre..."
+           [value]="filtroTexto()" (input)="textoCambiado.emit($any($event.target).value)">
     @if (filtroTexto()) {
-      <button class="btn-clear" (click)="limpiarBusqueda()" title="Limpiar búsqueda">×</button>
+      <button class="btn-clear" (click)="limpiarBusqueda()">×</button>
     }
+  </div>
+
+  <div class="view-switcher-container">
+    <button class="view-btn" 
+            [class.active]="vistaActual() === 'cuadricula'" 
+            (click)="vistaCambiada.emit('cuadricula')">
+      <i class="bi bi-grid-fill"></i>
+      <span>Cuadrícula</span>
+    </button>
+    <button class="view-btn" 
+            [class.active]="vistaActual() === 'tablero'" 
+            (click)="vistaCambiada.emit('tablero')">
+      <i class="bi bi-view-list"></i>
+      <span>Tablero</span>
+    </button>
+  </div>
+
+  <hr class="separator my-1">
+
+  <div class="platforms-area">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <label class="section-label-header">PLATAFORMA</label>
+      <span class="results-badge">{{ totalMostrados() }} juegos</span>
+    </div>
     
-    <div class="results-counter">
-      <strong class="text-white">{{ totalMostrados() }}</strong> {{ totalMostrados() === 1 ? 'juego' : 'juegos' }}
+    <div class="chips-grid">
+      @for (plat of opcionesPlataforma; track plat.id) {
+        <button class="chip-pill" [class.active]="isActiva(plat.id)" (click)="onSelectPlataforma(plat.id)">
+          <div class="icon-center-wrapper">
+            @if (plat.tipo === 'icon') {
+              <i class="bi {{ plat.valor }}"></i>
+            } @else {
+              <span class="color-dot" [style.backgroundColor]="plat.color"></span>
+            }
+          </div>
+          <span class="chip-text">{{ plat.nombre }}</span>
+        </button>
+      }
     </div>
   </div>
-
-  <div class="mt-2">
-    <label class="text-white-50 small mb-2 fw-bold text-uppercase">Plataforma</label>
-    <select class="form-select bg-dark text-white border-secondary shadow-none"
-            [value]="filtroPlataforma()"
-            (change)="plataformaCambiada.emit($any($event.target).value)">
-      <option value="todas">🌌 Todas las plataformas</option>
-      <option value="PC">💻 PC (Steam/Epic)</option>
-      <option value="PS5">🎮 PlayStation</option>
-      <option value="Xbox">🟢 Xbox</option>
-      <option value="Switch">🔴 Nintendo Switch</option>
-      <option value="Mobile">📱 Móvil</option>
-    </select>
-  </div>
-
 </div>

@@ -422,31 +422,20 @@ header.container {
 .kanban-container {
   /* 1. Hacemos que las columnas sean más finas y se repartan el espacio */
   .kanban-column {
-    min-width: 220px !important; /* Bajamos de 280px a 220px */
-    flex: 1; /* Si hay espacio de sobra, crecen por igual */
+    min-width: 160px !important; /* 📉 Estrechamos mucho la columna base */
+    max-width: 200px !important; /* 📏 Límite estricto: la tarjeta nunca pasará de este ancho */
+    flex: 1; 
   }
 
   /* 2. Compactamos la tarjeta solo cuando está dentro del Kanban */
   .kanban-item {
     ::ng-deep .game-card {
-      /* Reducimos márgenes y textos */
-      .card-body {
-        padding: 12px !important;
-      }
-      h6 {
-        font-size: 0.85rem !important;
-        margin-bottom: 2px !important;
-      }
-      .text-warning {
-        font-size: 0.75rem !important;
-        margin-bottom: 0.5rem !important;
-      }
+      /* Reducimos márgenes y textos internos de la tarjeta */
+      .card-body { padding: 10px !important; }
+      h6 { font-size: 0.8rem !important; margin-bottom: 2px !important; }
+      .text-warning { font-size: 0.7rem !important; margin-bottom: 0.5rem !important; }
       
-      /* 🌟 MEJORA UX: Ocultamos el selector de estado (Pendiente/Jugando...) 
-         ¡Porque en este modo ya cambiamos el estado arrastrando la tarjeta! */
-      select.form-select {
-        display: none !important;
-      }
+      select.form-select { display: none !important; }
     }
   }
 }
@@ -456,14 +445,15 @@ header.container {
    ========================================================================== */
   /* NOTA: Asegúrate de que esta clase coincida con el div que envuelve tus columnas. 
      Si se llama diferente (ej: .tablero, .kanban-board), cámbiala aquí. */
+/* ==========================================================================
+   OPTIMIZACIÓN MÓVIL Y TÁCTIL (MOBILE-FIRST)
+   ========================================================================== */
 @media (max-width: 768px) {
-  /* Usamos .kanban-container que es la clase real en tu HTML */
   .kanban-container { 
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    //scroll-snap-type: x mandatory;
     padding-bottom: 1.5rem;
     -webkit-overflow-scrolling: touch;
     
@@ -473,28 +463,27 @@ header.container {
   }
 
   .kanban-column {
-    min-width: 75vw;
-    //scroll-snap-align: center;
-    margin-right: 1rem;
+    /* 📉 Adiós al 75vw. Le damos un tamaño fijo de móvil profesional */
+    min-width: 130px !important; 
+    max-width: 140px !important;
+    margin-right: 0.5rem; /* 📉 Reducimos el margen derecho a la mitad */
     flex: 0 0 auto;
   }
 
   .kanban-item {
     position: relative;
-    /* Ya no bloqueamos el touch-action aquí para permitir el scroll */
     touch-action: auto !important; 
   }
 
-  /* 🛠️ EL TIRADOR PROFESIONAL PARA MÓVILES */
+  /* El tirador profesional se mantiene igual... */
   .mobile-drag-handle {
     position: absolute;
-    top: -10px; /* Lo subimos un poco para que sobresalga por arriba */
-    left: 50%; /* Lo centramos */
+    top: -10px; 
+    left: 50%; 
     transform: translateX(-50%);
     z-index: 100;
     
-    /* Diseño tipo 'Pestaña' / 'Pill' */
-    background: rgba(13, 110, 253, 0.95); /* Azul Bootstrap */
+    background: rgba(13, 110, 253, 0.95); 
     backdrop-filter: blur(4px);
     color: white;
     width: 48px;
@@ -506,14 +495,13 @@ header.container {
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     font-size: 1.2rem;
     
-    /* SOLO este elemento tiene touch-action: none */
     touch-action: none !important; 
     cursor: grab;
 
     &:active {
       cursor: grabbing;
       transform: translateX(-50%) scale(1.1);
-      background: #0b5ed7; /* Azul más oscuro al pulsar */
+      background: #0b5ed7; 
     }
   }
 }

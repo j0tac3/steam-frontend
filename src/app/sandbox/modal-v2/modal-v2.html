@@ -255,7 +255,6 @@
                       <span class="text-white-50 small">Plataformas no especificadas</span>
                     }
                   </div>
-
                   <h6 class="text-white-50 tiny fw-bold mb-2">FECHA DE SALIDA</h6>
                   <div class="metadata-pill" [class.unconfirmed]="!game()?.releaseDate">
                     <i [class]="game()?.releaseDate ? 'bi bi-calendar3' : 'bi bi-hourglass-split'"></i>
@@ -268,6 +267,26 @@
                     <p>{{ game()?.summary }}</p>
                   }
                 </div>
+                @if (game()?.time_to_beat?.main || game()?.time_to_beat?.['100_percent']) {
+                  <div class="time-section mt-4 animate__animated animate__fadeIn">
+                    <label class="section-label">TIEMPO ESTIMADO</label>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                      
+                      @if (game()?.time_to_beat?.main) {
+                        <span class="badge glass-badge text-bg-dark border border-secondary py-2 px-3 fs-6 fw-normal">
+                          ⏳ Historia: <strong class="text-info">{{ game()?.time_to_beat.main }}h</strong>
+                        </span>
+                      }
+                      
+                      @if (game()?.time_to_beat?.['100_percent']) {
+                        <span class="badge glass-badge text-bg-dark border border-secondary py-2 px-3 fs-6 fw-normal">
+                          🏆 Completista: <strong class="text-warning">{{ game()?.time_to_beat['100_percent'] }}h</strong>
+                        </span>
+                      }
+
+                    </div>
+                  </div>
+                }
                 @if (game()?.screenshots && game()!.screenshots.length > 0) {
                   <div class="screenshots-section mt-5">
                     <h3 class="section-title text-white-50 mb-3">CAPTURAS</h3>
