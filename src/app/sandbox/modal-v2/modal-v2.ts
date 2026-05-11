@@ -332,22 +332,30 @@ evaluarCambios() {
   }
 
   guardarJuego() {
-    if (!this.hasChanges) return;
+    // 🎯 CORRECCIÓN: Si el juego YA está en la biblioteca y no hay cambios, salimos.
+    // Pero si es una nueva adición (!this.enBiblioteca()), permitimos que continúe.
+    if (this.enBiblioteca() && !this.hasChanges) return;
 
     const payload = {
       external_id: this.gameId(),
       source: this.source(),
       title: this.game()?.name,
       cover_url: this.game()?.coverUrl,
-      platform: this.detalleForm.platforms.join(', '), 
-      status: this.detalleForm.status,
-      personal_rating: this.detalleForm.personal_rating,
-      active_platforms: this.detalleForm.activePlatforms.join(', ') // 🎯 ENVÍA EL ARRAY COMO TEXTO A LA BBDD
+      // 🛡️ Añadimos un fallback "|| []" por si acaso el array viene vacío y evita que .join() pete
+      platform: (this.detalleForm.platforms || []).join(', '), 
+      status: this.detalleForm.status || 'pendiente', // Estado por defecto si es nuevo
+      personal_rating: this.detalleForm.personal_rating || 0,
+      active_platforms: (this.detalleForm.activePlatforms || []).join(', ') 
     };
 
     this.saved.emit(payload);
+    
+    // Reseteamos el estado del formulario después de guardar
     this.modalMode = 'read';
-    this.originalForm = { ...this.detalleForm, platforms: [...this.detalleForm.platforms] };
+    this.originalForm = { 
+      ...this.detalleForm, 
+      platforms: [...(this.detalleForm.platforms || [])] 
+    };
     this.hasChanges = false;
   }
 
