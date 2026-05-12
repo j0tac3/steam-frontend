@@ -1,9 +1,9 @@
-import { Component, Output, input, EventEmitter, signal, inject, computed } from '@angular/core';
+import { Component, Output, input, EventEmitter, signal, inject, computed, viewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SteamService } from '../../services/steam'; // Asegúrate de que el nombre coincida
+import { SteamService } from '../../services/steam';
 import { IconComponent } from '../icon/icon';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
-import { Game } from '../../models/game'; // 🚀 Tu nuevo modelo limpio
+import { Game } from '../../models/game'; 
 import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 
 @Component({
@@ -15,11 +15,16 @@ import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 })
 export class GameSearchComponent {
   private gameService = inject(SteamService);
-  public searchCategory: string = 'main';
+  
+  // 🚀 Usamos viewChild de Angular 17+ en lugar del antiguo @ViewChild
+  public cajaBusqueda = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  // 🚀 Por defecto buscamos 'juego' (o 'todas', según prefieras)
+  public searchCategory: string = 'juego';
 
   searchResults = signal<Game[]>([]);
   cargando = signal<boolean>(false);
-  misJuegos = input<any[]>([]); // idealmente será de tipo SavedGame[]
+  misJuegos = input<any[]>([]); 
   busquedaRealizada = signal<boolean>(false);
 
   paginaActual = signal<number>(1);
@@ -31,7 +36,6 @@ export class GameSearchComponent {
 
   esqueletosArray = computed(() => new Array(this.elementosPorPagina()).fill(0));
 
-  // 🚀 Verificamos si el juego ya está en la biblioteca comparando external_id
   resultadosPaginados = computed(() => {
     const inicio = (this.paginaActual() - 1) * this.elementosPorPagina();
     const fin = inicio + this.elementosPorPagina();
@@ -40,7 +44,6 @@ export class GameSearchComponent {
 
     return pagina.map(game => ({
       ...game,
-      // Comparamos el ID nuevo con la base de datos
       yaLoTengo: bibliotecaActual.some(m => String(m.external_id) === String(game.external_id))
     }));
   });
@@ -52,9 +55,7 @@ export class GameSearchComponent {
 
   paginasArray = computed(() => Array.from({ length: this.totalPaginas() }, (_, i) => i + 1));
 
-  // 🚀 BÚSQUEDA ORQUESTADA
 
-  // 🎯 2. Modifica tu función buscar
   buscar(termino: string) {
     if (!termino.trim()) return;
 
@@ -63,7 +64,6 @@ export class GameSearchComponent {
     this.paginaActual.set(1); 
     this.busquedaRealizada.set(false);
 
-    // 🚀 AQUÍ ESTÁ LA MAGIA: Le pasamos 'this.searchCategory' como segundo parámetro
     this.gameService.searchGames(termino, this.searchCategory).subscribe({
       next: (res: Game[]) => {
         this.searchResults.set(res || []);
@@ -86,6 +86,12 @@ export class GameSearchComponent {
     this.searchResults.set([]);
     this.paginaActual.set(1);
     this.busquedaRealizada.set(false);
+    
+    // 🚀 Limpiamos visualmente la caja de texto accediendo a la Signal
+    const inputEl = this.cajaBusqueda();
+    if (inputEl) {
+      inputEl.nativeElement.value = '';
+    }
   }
 
   private hacerScrollArriba() {
@@ -111,6 +117,17 @@ export class GameSearchComponent {
     if (this.paginaActual() > 1) {
       this.paginaActual.set(this.paginaActual() - 1);
       this.hacerScrollArriba();
+    }
+  }
+
+  // 🚀 Método que es llamado desde los botones y lanza la búsqueda si ya había texto
+  setCategory(cat: string) {
+    this.searchCategory = cat;
+    
+    const textoActual = this.cajaBusqueda()?.nativeElement?.value?.trim();
+    
+    if (textoActual && textoActual !== '') {
+      this.buscar(textoActual);
     }
   }
 }

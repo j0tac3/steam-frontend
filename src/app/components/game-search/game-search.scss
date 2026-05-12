@@ -206,3 +206,56 @@ $card-bg: rgba(18, 20, 25, 0.7);
     border-color: #fff;
   }
 }
+
+/* ==========================================================================
+   🎛️ SELECTOR DE CATEGORÍA (Juegos / DLCs)
+   ========================================================================== */
+.category-selector {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .cat-btn {
+    background: transparent;
+    border: none;
+    color: $text-muted;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      color: $text-bright;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* 🚀 ESTADO ACTIVO */
+    &.active {
+      background: rgba(88, 101, 242, 0.85); /* Tu color primary/accent */
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+  }
+}
+
+/* En móviles, aseguramos que los botones encajen bien */
+@media (max-width: 576px) {
+  .category-selector {
+    width: 100%;
+    justify-content: center;
+    
+    .cat-btn {
+      flex: 1; /* Hacemos que ocupen todo el ancho disponible */
+      justify-content: center;
+    }
+  }
+}

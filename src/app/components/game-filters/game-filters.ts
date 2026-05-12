@@ -25,7 +25,7 @@ export class GameFiltersComponent {
   opcionesPlataforma = [
     { id: 'todas',  nombre: 'Todas',   tipo: 'icon', valor: 'bi-grid-fill', color: '' },
     { id: 'PC',     nombre: 'PC',      tipo: 'dot',  valor: '',             color: '#d4d4d8' },
-    { id: 'PS5',    nombre: 'PS5',     tipo: 'dot',  valor: '',             color: '#006FCD' },
+    { id: 'PlayStation',    nombre: 'PlayStation',     tipo: 'dot',  valor: '',             color: '#006FCD' },
     { id: 'Xbox',   nombre: 'Xbox',    tipo: 'dot',  valor: '',             color: '#107C10' },
     { id: 'Switch', nombre: 'Switch',  tipo: 'dot',  valor: '',             color: '#E60012' },
     { id: 'Mobile', nombre: 'Móvil',   tipo: 'dot',  valor: '',             color: '#F59E0B' }

@@ -24,8 +24,8 @@ export class SteamService {
     return this.http.get<any[]>(`${this.apiUrl}/games/search`, { params });
   } */
 
-  searchGames(termino: string, category: string = 'main'): Observable<any[]> {
-    // Pasamos la categoría como parámetro de consulta
+  searchGames(termino: string, category: string = 'todas'): Observable<any[]> {
+    // category puede ser "juego", "dlc", "juego,dlc" o "todas"
     return this.http.get<any[]>(`${this.apiUrl}/games/search?q=${termino}&category=${category}`, {      
       headers: this.getHeaders()
     });

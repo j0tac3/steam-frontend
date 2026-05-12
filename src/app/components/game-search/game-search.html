@@ -4,7 +4,24 @@
     <header class="search-glass-card">
       <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mb-4">
         <h3 class="fw-bold mb-0 text-center text-sm-start">Buscar Juegos</h3>
-        <!-- 🗑️ Se eliminó el Switch de IGDB/Steam -->
+        
+        <div class="category-selector d-flex gap-1">
+          <button class="cat-btn" 
+                  [class.active]="searchCategory === 'juego'" 
+                  (click)="setCategory('juego')">
+            <i class="bi bi-controller"></i> Juegos
+          </button>
+          <button class="cat-btn" 
+                  [class.active]="searchCategory === 'dlc'" 
+                  (click)="setCategory('dlc')">
+            <i class="bi bi-puzzle"></i> DLCs
+          </button>
+          <button class="cat-btn" 
+                  [class.active]="searchCategory === 'todas'" 
+                  (click)="setCategory('todas')">
+            <i class="bi bi-collection-fill"></i> Ambos
+          </button>
+        </div>
       </div>
 
       <div class="search-bar-container">
@@ -17,7 +34,7 @@
                  placeholder="Buscar títulos en IGDB..." 
                  class="input-field">
           @if (searchInput.value) {
-            <button class="clear-input-btn" (click)="searchInput.value = ''; limpiar()">✕</button>
+            <button class="clear-input-btn" (click)="limpiar()">✕</button>
           }
         </div>
         <button class="btn-search" (click)="buscar(searchInput.value)">
@@ -30,7 +47,7 @@
       <main class="results-area">
         <div class="results-header">
           <span class="count">Resultados: {{ searchResults().length }}</span>
-          <button class="link-btn" (click)="searchInput.value = ''; limpiar()">Limpiar todo</button>
+          <button class="link-btn" (click)="limpiar()">Limpiar todo</button>
         </div>
         
         @if (cargando()) {
@@ -43,7 +60,6 @@
           </div>
         } @else {
           <div class="games-grid">
-            <!-- 🚀 Usamos los nuevos nombres del Modelo Game -->
             @for (game of resultadosPaginados(); track game.external_id) {
               <app-card-clean 
                 [gameId]="game.external_id"
@@ -56,7 +72,6 @@
             }
           </div>
 
-          <!-- Paginación Premium (Sin Cambios) -->
           @if (totalPaginas() > 1) {
             <nav class="d-flex justify-content-center mt-4 mb-2">
               <ul class="pagination pagination-premium gap-2 m-0">
@@ -77,7 +92,6 @@
         }
       </main>
     } @else {
-      <!-- Footer sin Cambios -->
       <div class="minimal-footer">
         @if (busquedaRealizada()) {
           <div class="text-white-50 mt-4">
