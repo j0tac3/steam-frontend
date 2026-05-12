@@ -6,16 +6,6 @@ $color-abandonado: #dc3545;
 
 .fw-black { font-weight: 900; }
 
-/* MEJORA DEL CONTENEDOR PRINCIPAL */
-
-/* --- GRID OPTIMIZADO --- */
-@media (min-width: 1400px) {
-  .row-cols-xl-5 {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); // 6 columnas reales
-    gap: 20px;
-  }
-}
 
 /* --- CARDS: MEJORA DE ELEVACIÓN Y DISEÑO --- */
 .search-result-card {
@@ -604,12 +594,19 @@ header.container {
   left: 0;
   width: 100%;
   z-index: 1050;
-  background: var(--glass-bg-panel);
+  
+  /* 💜 1. EL TOQUE DE IDENTIDAD: Background y Glow morado */
+  background: rgba(18, 20, 25, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(111, 66, 193, 0.3);
+  border-left: 1px solid rgba(111, 66, 193, 0.15);
+  border-right: 1px solid rgba(111, 66, 193, 0.15);
   border-radius: 24px 24px 0 0;
   padding: 24px 20px;
+  
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.8), 0 -5px 30px rgba(111, 66, 193, 0.2);
 
   &.show {
     transform: translateY(0);
@@ -646,6 +643,34 @@ header.container {
     }
   }
 
+  /* 📏 3. LIMPIEZA DE SEPARADORES: Botones elegantes en el menú */
+  .action-menu-item {
+    background: transparent;
+    border: none;
+    position: relative;
+    padding: 1rem 1rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    /* Línea divisoria suave (10% opacidad y margen interno) */
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 5%;
+      width: 90%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    &:hover, &:focus {
+      background: rgba(255, 255, 255, 0.05);
+      /* Ocultamos la línea al hacer hover para limpieza visual */
+      &::after { opacity: 0; }
+    }
+  }
+
   /* Optimización para Pantallas Grandes (PC) */
   @media (min-width: 768px) {
     max-width: 450px;
@@ -653,10 +678,27 @@ header.container {
     margin-left: -225px; /* Centrado perfecto */
     bottom: 20px;
     border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.1);
+    /* En PC cerramos el borde morado por completo (Rim Light) */
+    border: 1px solid rgba(111, 66, 193, 0.3);
     
     /* En PC la pill de arrastre no hace falta */
     .drag-pill { display: none; }
   }
+}
+
+.badge-estado-modal {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50rem;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  margin-top: 4px;
+
+  &.completado { background-color: $color-completado; color: white; }
+  &.jugando { background-color: $color-jugando; color: white; }
+  &.pendiente { background-color: $color-pendiente; color: black; }
+  &.abandonado { background-color: $color-abandonado; color: white; }
 }
 

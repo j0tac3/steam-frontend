@@ -20,6 +20,7 @@ export class CardCleanComponent {
   hasNotes = input<boolean | undefined>(false);
   hasFeaturedNotes = input<boolean | undefined>(false);
   isReadOnly = input<boolean>(false); // 🚀 NUEVO
+  releaseYear = input<string | undefined>();
   
   @Output() clicked = new EventEmitter<string>();
   @Output() addClicked = new EventEmitter<string>();

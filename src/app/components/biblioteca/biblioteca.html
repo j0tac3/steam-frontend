@@ -110,7 +110,7 @@
       <div class="col-lg-8 col-xl-9">
 
         @if (vistaActual() === 'cuadricula') {
-          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-2 g-md-3 mt-4">
+          <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 g-md-4 mt-4">
             @for (game of myLibrary(); track game.external_id) {
               <div class="col">
                 <app-card-clean 
@@ -224,7 +224,7 @@
 
   <div class="bottom-sheet-overlay" [class.show]="isMenuRapidoOpen()" (click)="cerrarMenuRapido()"></div>
   
-  <div class="bottom-sheet-container glass-panel" [class.show]="isMenuRapidoOpen()">
+  <div class="bottom-sheet-container" [class.show]="isMenuRapidoOpen()">
     @if (juegoMenuRapido(); as juegoActivo) {
       <div class="bs-header">
         <div class="drag-pill"></div>
@@ -232,48 +232,56 @@
           <img [src]="juegoActivo.cover_url || '/no-image.svg'" [alt]="juegoActivo.title" class="bs-thumbnail rounded">
           <div>
             <h5 class="text-white mb-1 fw-bold text-truncate" style="max-width: 250px;">{{ juegoActivo.title }}</h5>
-            <span class="badge bg-secondary text-uppercase" style="font-size: 0.7rem;">{{ juegoActivo.status }}</span>
+            <span class="badge-estado-modal" [ngClass]="juegoActivo.status">
+              {{ juegoActivo.status | uppercase }}
+            </span>
           </div>
         </div>
       </div>
 
       <div class="bs-body mt-3">
-        <div class="list-group list-group-flush bg-transparent">
-          <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="toggleFavoriteSheet()">
+        <div class="d-flex flex-column">
+          
+          <button class="action-menu-item d-flex align-items-center w-100 text-white" (click)="toggleFavoriteSheet()">
             @if (juegoActivo.is_favorite) {
               <i class="bi bi-heart-fill text-danger me-3 fs-5"></i> Quitar de favoritos
             } @else {
               <i class="bi bi-heart text-danger me-3 fs-5"></i> Marcar como favorito
             }
           </button>
+
           @if (juegoActivo.status !== 'jugando') {
-            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('jugando')">
+            <button class="action-menu-item d-flex align-items-center w-100 text-white" (click)="cambiarEstadoRapido('jugando')">
               <i class="bi bi-controller text-primary me-3 fs-5"></i> Empezar a jugar
             </button>
           }
+          
           @if (juegoActivo.status !== 'completado') {
-            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('completado')">
+            <button class="action-menu-item d-flex align-items-center w-100 text-white" (click)="cambiarEstadoRapido('completado')">
               <i class="bi bi-trophy-fill text-success me-3 fs-5"></i> Marcar como completado
             </button>
           }
+          
           @if (juegoActivo.status !== 'abandonado') {
-            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('abandonado')">
+            <button class="action-menu-item d-flex align-items-center w-100 text-white" (click)="cambiarEstadoRapido('abandonado')">
               <i class="bi bi-x-circle text-danger me-3 fs-5"></i> Abandonar
             </button>
           }
+          
           @if (juegoActivo.status !== 'pendiente') {
-            <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3" (click)="cambiarEstadoRapido('pendiente')">
+            <button class="action-menu-item d-flex align-items-center w-100 text-white" (click)="cambiarEstadoRapido('pendiente')">
               <i class="bi bi-hourglass-split text-warning me-3 fs-5"></i> Mover a pendientes
             </button>
           }
 
-          <button class="list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary d-flex align-items-center py-3 mt-2" (click)="abrirEdicionDesdeMenu()">
+          <button class="action-menu-item d-flex align-items-center w-100 text-white mt-1" (click)="abrirEdicionDesdeMenu()">
             <i class="bi bi-journal-text text-info me-3 fs-5"></i> Editar diario y detalles
           </button>
           
-          <button class="list-group-item list-group-item-action bg-transparent text-danger d-flex align-items-center py-3" (click)="eliminarJuegoRapido()">
+          <button class="action-menu-item d-flex align-items-center w-100 text-danger fw-bold mt-2" (click)="eliminarJuegoRapido()">
             <i class="bi bi-trash3 text-danger me-3 fs-5"></i> Eliminar de la biblioteca
           </button>
+
         </div>
       </div>
     }

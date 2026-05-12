@@ -44,6 +44,7 @@ export interface Game {
   
   // Textos y Fechas
   summary?: string;
+  release_year?: string;
   storyline?: string;
   first_release_date?: number; // IGDB lo envía como Unix Timestamp (segundos)
   
