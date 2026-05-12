@@ -110,7 +110,7 @@
       <div class="col-lg-8 col-xl-9">
 
         @if (vistaActual() === 'cuadricula') {
-          <div class="row row-cols-3 row-cols-sm-4 row-cols-md-5 row-cols-lg-6 g-1 g-sm-2 g-md-3">
+          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-2 g-md-3 mt-4">
             @for (game of myLibrary(); track game.external_id) {
               <div class="col">
                 <app-card-clean 

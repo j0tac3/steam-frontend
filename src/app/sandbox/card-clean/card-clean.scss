@@ -48,8 +48,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 55%; 
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 35%, transparent 100%);
+    height: 40%; 
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 40%, transparent 100%);
     z-index: 2;
   }
 }
@@ -60,28 +60,29 @@
 
 .fab-add-btn, .fab-added-badge, .fab-options-btn, .fab-complete-btn {
   position: absolute;
-  top: 6px; /* 📉 Menos margen superior */
-  right: 6px;
-  width: 28px; /* 📉 De 36px a 28px */
-  height: 28px;
+  top: 4px; /* 📉 Más pegados a los bordes */
+  right: 4px;
+  width: 26px; /* 📉 Más pequeños en escritorio */
+  height: 26px;
   border-radius: 50%;
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem; /* 📉 De 1.4rem a 1rem */
+  font-size: 0.9rem; /* 📉 Icono reducido */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
 }
 
-.fab-add-btn {
-  background: rgba(88, 101, 242, 0.85);
-  backdrop-filter: blur(5px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  opacity: 0; 
+/* Modificamos específicamente el botón de opciones para que sea menos dominante */
+.fab-options-btn {
+  background: rgba(0, 0, 0, 0.25); /* 📉 Mucho más transparente */
+  backdrop-filter: blur(2px); /* Menos desenfoque para que el arte se intente ver debajo */
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0; /* En PC se oculta hasta el hover */
 
-  &:hover { background: rgba(88, 101, 242, 1); transform: scale(1.1); }
+  &:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
   &:active { transform: scale(0.9); }
 }
 
@@ -199,18 +200,17 @@
    5. ADAPTACIÓN TÁCTIL (MÓVILES)
    ========================================= */
 @media (hover: none), (max-width: 768px) {
-  /* En móviles los botones táctiles necesitan ser un poco más grandes para el dedo, 
-     pero los reducimos frente a tu versión anterior */
   .card-wrapper .fab-add-btn, 
   .card-wrapper .fab-options-btn, 
   .card-wrapper .fab-complete-btn {
     opacity: 1; 
-    width: 32px; /* 📉 De 40px a 32px */
-    height: 32px;
-    font-size: 1.1rem;
+    /* 📉 Reducimos también el tamaño táctil (antes 32px, ahora 28px) */
+    width: 28px; 
+    height: 28px;
+    font-size: 1rem;
   }
   
   .game-info .title {
-    font-size: 0.75rem; /* 📉 Texto aún más micro en móvil */
+    font-size: 0.8rem; /* Recuperamos un pelín de tamaño al tener 2 columnas */
   }
 }
