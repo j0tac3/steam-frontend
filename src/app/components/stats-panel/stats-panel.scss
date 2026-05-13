@@ -1,129 +1,131 @@
 /* ==========================================================================
-   NUEVO LAYOUT DE LISTA (LIST-VIEW EDITION)
+   STATS PANEL (ANGULAR 18 PREMIUM EDITION)
    ========================================================================== */
-.legend-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.stats-glass-card {
+  background: rgba(18, 20, 25, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(138, 58, 255, 0.3); // Rim Light Morado
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  color: #fff;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 58, 255, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.stats-glass-card {
-  /* 🚀 EL PUNTO DULCE: 0.80 de opacidad. Mantiene el cristal, pero es legible */
-  background: rgba(18, 20, 25, 0.70);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+.header-area {
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0.5rem;
+
+  .trigger-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 📏 2. Chevron atenuado y más pequeño */
+    color: rgba(255, 255, 255, 0.4); 
+    font-size: 0.9rem; 
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  &:hover .trigger-icon {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    transform: scale(1.1);
+  }
+}
+
+/* 🎢 SISTEMA DE ACORDEÓN (GRID HACK) */
+.panel-collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open { grid-template-rows: 1fr; }
+
+  .panel-content {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+  }
+
+  &.open .panel-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
+  }
+}
+
+.premium-progress {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1rem 0;
   
-  border: 1px solid rgba(138, 58, 255, 0.3);
-  /* Sombra para despegarlo del fondo desenfocado */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(138, 58, 255, 0.15);
-  
-  border-radius: 16px;
-  padding: 1.5rem;
-  color: #fff;
-  
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
+  .bar {
+    height: 100%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    &.success { background: #10b981; }
+    &.primary { background: #3b82f6; }
+    &.warning { background: #f59e0b; }
+    &.danger  { background: #ef4444; }
+  }
 }
 
 .stat-row {
   position: relative;
-  /* 🚀 Restauramos un fondo intermedio para las filas */
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
+  margin-bottom: 8px;
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s ease;
 
-  /* ✨ 4. Micro-interacción: La Barra Fantasma */
   .stat-bg-bar {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: var(--progress, 0%); /* Se nutre de la variable de Angular */
-    z-index: 0;
-    opacity: 0.12; /* Muy sutil para no ahogar el texto */
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 0; left: 0; height: 100%;
+    width: var(--progress, 0%);
+    opacity: 0.4;
+    transition: width 1s ease;
   }
 
-  /* Asignación de colores semánticos a las barras fantasmas */
   &.type-success .stat-bg-bar { background: #10b981; }
   &.type-primary .stat-bg-bar { background: #3b82f6; }
   &.type-warning .stat-bg-bar { background: #f59e0b; }
   &.type-danger  .stat-bg-bar { background: #ef4444; }
 
-  /* Contenedor Flex para la Alineación Extrema */
   .stat-content {
     position: relative;
-    z-index: 1; /* Por encima de la barra fantasma */
-    padding: 12px 18px;
+    z-index: 1;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .label {
-    display: flex;
-    align-items: center; 
-    gap: 12px; 
-    font-size: 0.75rem; 
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    
-    i { font-size: 1.1rem; }
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(138, 58, 255, 0.4);
+    transform: translateX(4px);
   }
 
-  /* 📏 2. Optimización para grandes cifras */
-  .value {
-    font-size: 1.25rem; /* Menos mastodóntico, más elegante */
-    font-weight: 800;
-    color: #fff;
-    line-height: 1;
-    font-variant-numeric: tabular-nums; /* Evita que los números bailen de ancho */
-  }
-
-  /* 🎨 3. Sintonía Visual y Hover Iluminado (Rim Light Morado) */
-  &:hover:not(.is-inactive) {
-    transform: translateX(4px); /* Animación de desplazamiento lateral nativo de menús */
-    background: rgba(255, 255, 255, 0.04);
-    
-    border-color: rgba(138, 58, 255, 0.4); /* Resplandor Morado */
-    box-shadow: 0 4px 15px rgba(138, 58, 255, 0.15);
-    
-    .label { color: rgba(255, 255, 255, 0.85); }
-    .stat-bg-bar { opacity: 0.18; }
-  }
-
-  /* Filtro Activo (El estado "Encendido") */
   &.active-filter {
-    background: rgba(255, 255, 255, 0.06) !important; 
-    transform: translateX(8px);
-    
-    border-color: #8a3aff !important; /* Acento Morado Fuerte */
-    box-shadow: -4px 6px 20px rgba(138, 58, 255, 0.25) !important;
-
-    .label { color: #fff; }
-    .stat-bg-bar { opacity: 0.25; }
-  }
-
-  /* Atenuación Inactiva */
-  &.is-inactive {
-    opacity: 0.3;
-    filter: grayscale(80%);
+    border-color: #8a3aff;
+    background: rgba(138, 58, 255, 0.1);
+    box-shadow: 0 0 15px rgba(138, 58, 255, 0.2);
   }
 }
 
-/* ==========================================================================
-   EFECTO HOLOGRÁFICO DEL GRÁFICO
-   ========================================================================== */
 .chart-container canvas {
-  /* * 1er shadow: Crea una sombra oscura muy fuerte hacia abajo (Volumen físico)
-   * 2do shadow: Crea un halo de luz genérico que tomará el color de cada segmento (Glow)
-   */
-  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
-  transition: all 0.3s ease;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.9));
 }

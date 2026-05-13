@@ -174,7 +174,7 @@
                       (cdkDropListDropped)="onJuegoSoltado($event, estado)"
                       (cdkDragStarted)="vibrarAlArrastrar()">
                   @for (game of getJuegosPorEstado(estado); track game.external_id) {
-                    <div class="kanban-item mb-3" cdkDrag>0
+                    <div class="kanban-item mb-3" cdkDrag>
                       @if (!isReadOnly()){
                         @if (isMobile) {
                         <div class="mobile-drag-handle" cdkDragHandle>

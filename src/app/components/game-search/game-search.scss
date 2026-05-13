@@ -126,9 +126,10 @@ $brand-glow: rgba(138, 58, 255, 0.3);
     }
 
     .summary-text {
-      color: $text-muted;
-      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.85); /* 👁️ FIX: +25% de visibilidad */
+      font-size: 0.95rem; 
       font-style: italic;
+      font-weight: 500; /* Un poco más de cuerpo a la letra */
       max-width: 150px;
     }
   }
@@ -263,10 +264,11 @@ $brand-glow: rgba(138, 58, 255, 0.3);
     
     .input-field {
       width: 100%;
+      height: 50px; /* 🛠️ FIX: Altura estricta para simetría perfecta */
       background: rgba(0, 0, 0, 0.5); 
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      padding: 14px 35px 14px 42px; /* 42px deja el hueco exacto para la lupa */
+      padding: 0 35px 0 42px; /* Quitamos el padding vertical, delegamos en el height */
       color: white;
       font-size: 0.95rem;
       transition: all 0.3s ease;
@@ -275,7 +277,7 @@ $brand-glow: rgba(138, 58, 255, 0.3);
         outline: none; 
         border-color: $brand-purple; 
         background: rgba(0, 0, 0, 0.7);
-        box-shadow: 0 0 20px rgba(138, 58, 255, 0.15); /* Brillo interior al escribir */
+        box-shadow: 0 0 20px rgba(138, 58, 255, 0.15); 
       }
     }
 
@@ -288,10 +290,14 @@ $brand-glow: rgba(138, 58, 255, 0.3);
 
   /* 🎨 2. BOTÓN MORADO VIBRANTE */
   .btn-search {
+    height: 50px; /* 🛠️ FIX: Altura estricta, calcada al input */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: linear-gradient(135deg, $brand-purple-dark 0%, $brand-purple 100%);
     color: white;      
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 14px 24px; 
+    padding: 0 24px; 
     border-radius: 10px;
     font-size: 0.9rem;
     font-weight: 800;
@@ -301,7 +307,7 @@ $brand-glow: rgba(138, 58, 255, 0.3);
     width: 100%; 
     box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
 
-    @media (min-width: 576px) {
+    @media (min-width: 576px) { width: auto; }
       width: auto; 
     }
 
@@ -315,20 +321,31 @@ $brand-glow: rgba(138, 58, 255, 0.3);
       transform: translateY(1px);
     }
   }
-}
 
 .results-area { margin-top: 1.5rem; }
 
 .results-header {
   display: flex;
   justify-content: space-between;
+  align-items: center; /* Asegura que el texto y el botón se alineen bien */
   margin-bottom: 1rem;
   font-size: 0.8rem;
   color: $text-muted;
+  
   .link-btn { 
-    background: none; border: none; color: #fff; 
+    background: none; 
+    border: none; 
+    color: #fff; 
     opacity: 0.6;
-    cursor: pointer; text-decoration: underline; 
+    cursor: pointer; 
+    text-decoration: underline; 
+    
+    /* 📱 FIX: Tap Target gigante para el pulgar */
+    padding: 12px 16px; 
+    margin-right: -16px; /* Lo empuja a su sitio original para no romper el layout */
+    margin-top: -12px;
+    margin-bottom: -12px;
+    
     &:hover { opacity: 1; }
   }
 }
