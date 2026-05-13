@@ -2,7 +2,7 @@
 $bg-dark: #0b0e14;
 $accent-white: #ffffff;      
 $text-bright: #f3f4f6;
-$text-muted: rgba(255, 255, 255, 0.6); /* 📏 3. Mayor contraste para opciones inactivas */
+$text-muted: rgba(255, 255, 255, 0.6); 
 $glass-bg: rgba(255, 255, 255, 0.03); 
 $card-bg: rgba(18, 20, 25, 0.7);      
 
@@ -30,26 +30,153 @@ $brand-glow: rgba(138, 58, 255, 0.3);
   background: $card-bg;
   backdrop-filter: blur(20px); 
   -webkit-backdrop-filter: blur(20px);
-  /* 🎨 2. Borde de Identidad (Rim Light) */
   border: 1px solid $brand-glow; 
   border-radius: 16px;
-  padding: 1.2rem 2rem;
-  /* ✨ 4. Glow de Profundidad */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 58, 255, 0.1);
+  
+  /* 🚀 FIX: Quitamos el padding global para dárselo a los hijos */
+  padding: 0; 
+  
   position: relative;
+  transition: all 0.3s ease;
+  z-index: 5;
 
-  /* 📱 1. Estructura Mobile-First apilada */
+  /* 📱 4. Sombra Z-Index al expandir */
+  &.is-expanded {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(138, 58, 255, 0.15);
+    z-index: 10;
+  }
+
+  /* Sombra sutil al contraer */
+  &:not(.is-expanded) {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  &:focus-within {
+    border-color: rgba(138, 58, 255, 0.6);
+  }
+
+  /* La antigua clase que mantenemos internamente */
   .header-flex-stack {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     @media (min-width: 576px) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
     }
+  }
+}
+
+/* ==========================================================================
+   🎢 SISTEMA DE ACORDEÓN (MOBILE-FIRST)
+   ========================================================================== */
+
+/* 1. Área Táctil Completa (Mango) */
+.panel-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  border-radius: 16px; /* Sigue la curva de la tarjeta */
+
+  @media (min-width: 576px) { padding: 1.2rem 2rem; }
+
+  &:hover { background: rgba(255, 255, 255, 0.03); }
+
+  h3 {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  /* 👁️ 2. Estado Resumido */
+  .summary-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    visibility: hidden;
+
+    &.visible {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+    }
+
+    .summary-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(138, 58, 255, 0.15);
+      color: #b99aff;
+      border: 1px solid rgba(138, 58, 255, 0.3);
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      font-size: 1rem;
+    }
+
+    .summary-text {
+      color: $text-muted;
+      font-size: 0.9rem;
+      font-style: italic;
+      max-width: 150px;
+    }
+  }
+
+  /* Chevron */
+  .trigger-icon {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+  }
+}
+
+/* 3. Lógica de Desplazamiento (Grid Hack a 60fps) */
+.panel-collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open { grid-template-rows: 1fr; }
+
+  .panel-content {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem; 
+
+    @media (min-width: 576px) { padding: 0 2rem; }
+  }
+}
+
+.panel-inner {
+  padding-bottom: 1.5rem; /* El padding inferior que le quitamos al padre */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+
+  .open & {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s; /* Retraso sutil para que el texto aparezca mientras baja */
   }
 }
 
