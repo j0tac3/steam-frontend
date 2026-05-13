@@ -1,4 +1,4 @@
-import { Component, input, output, signal, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { Component, input, output, signal, computed, inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { IconComponent } from '../icon/icon'; 
 
@@ -12,7 +12,6 @@ import { IconComponent } from '../icon/icon';
 export class GameFiltersComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   
-  // 🚀 ESTADO Y PERSISTENCIA (Signals)
   public isExpanded = signal<boolean>(true);
 
   filtroTexto = input.required<string>();
@@ -25,6 +24,15 @@ export class GameFiltersComponent implements OnInit {
   estadoCambiado = output<string>();
   plataformaCambiada = output<string>();
   vistaCambiada = output<'cuadricula' | 'tablero'>();
+
+  // ✍️ 3. Lógica Inteligente de Abreviatura
+  platformSummaryText = computed(() => {
+    const plat = this.filtroPlataforma();
+    if (plat === 'todas' || !plat) return '';
+    const arr = plat.split(',').filter(x => x);
+    // Si hay 1 devuelve el nombre exacto (ej: "PC"), si no, abrevia
+    return arr.length === 1 ? arr[0] : `${arr.length} plat.`;
+  });
 
   opcionesPlataforma = [
     { id: 'todas',  nombre: 'Todas',   tipo: 'icon', valor: 'bi-grid-fill', color: '' },

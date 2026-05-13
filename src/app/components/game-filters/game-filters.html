@@ -16,14 +16,14 @@
       @if (isExpanded()) {
         <span class="fs-7 text-white-50 opacity-75">(clic para ocultar)</span>
       } @else {
-        <div class="d-flex flex-wrap gap-2 mt-2">
+        <div class="summary-chips-container d-flex flex-wrap align-items-center gap-3 mt-2">
           @if (filtroTexto()) {
-            <span class="badge bg-primary text-truncate border border-primary" style="max-width: 100px; --bs-bg-opacity: 0.2;">"{{ filtroTexto() }}"</span>
+            <span class="summary-chip brand-chip text-truncate">"{{ filtroTexto() }}"</span>
           }
           @if (filtroPlataforma() !== 'todas') {
-            <span class="badge bg-secondary border border-secondary" style="--bs-bg-opacity: 0.2;">{{ filtroPlataforma().split(',').length }} plat.</span>
+            <span class="summary-chip secondary-chip">{{ platformSummaryText() }}</span>
           }
-          <span class="badge border border-secondary text-white-50 text-capitalize">{{ vistaActual() }}</span>
+          <span class="summary-chip secondary-chip text-capitalize">{{ vistaActual() }}</span>
         </div>
       }
     </div>
