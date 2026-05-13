@@ -82,4 +82,20 @@
   <circle cx="6" cy="9" r="1"></circle>
   <circle cx="18" cy="15" r="1"></circle>
 </symbol>
+
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#8b5cf6" flood-opacity="1"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="#8b5cf6" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+  
+  <path d="M50 5 L90 27.5 V72.5 L50 95 L10 72.5 V27.5 Z" fill="#1e293b" stroke="#8b5cf6" stroke-width="2" />
+  
+  <path d="M50 25 C35 25 35 45 35 45 L35 55 C35 55 35 75 50 75 C65 75 65 55 65 55 L65 45 C65 45 65 25 50 25 Z" fill="#e2e8f0" filter="url(#neon-glow)" />
+  
+  <path d="M45 58 V62 H41 V66 H45 V70 H49 V66 H53 V62 H49 V58 H45 Z" fill="#8b5cf6" filter="url(#neon-glow)" />
+</svg>
+
 </svg>

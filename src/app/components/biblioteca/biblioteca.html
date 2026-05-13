@@ -81,6 +81,13 @@
   <main class="container">
     <div class="row g-4">
       <aside class="col-lg-4 col-xl-3">
+        <app-user-profile-card class="mb-4 d-block"
+          [usuario]="usuarioPerfil()"
+          [isPublic]="profileOwner()?.is_public || false"
+          (privacyToggled)="togglePrivacidadDirecto($event)"
+          (shareClicked)="compartirPerfil()">
+        </app-user-profile-card>
+        
         <app-stats-panel 
           [total]="estadisticas().total" 
           [pendientes]="estadisticas().pendientes"

@@ -17,6 +17,7 @@ import { IconComponent } from '../icon/icon';
 import { ModalV2Component } from '../../sandbox/modal-v2/modal-v2';
 import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 import { environment } from '../../../environments/environment';
+import { UserProfileCardComponent } from '../user-profile-card/user-profile-card';
 
 
 import { SavedGame } from '../../models/saved-games';
@@ -28,7 +29,7 @@ import confetti from 'canvas-confetti';
   imports: [
     CommonModule, StatsPanelComponent, GameSearchComponent, GameFiltersComponent,
     IconComponent, DragDropModule, RouterModule,
-    ModalV2Component, CardCleanComponent, ScrollingModule
+    ModalV2Component, CardCleanComponent, ScrollingModule, UserProfileCardComponent
   ],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
@@ -74,6 +75,28 @@ export class BibliotecaComponent implements OnInit {
 
   isMenuRapidoOpen = signal<boolean>(false);
   juegoMenuRapido = signal<any>(null);
+
+  usuarioPerfil = computed(() => {
+    const owner = this.profileOwner();
+    const stats = this.estadisticas();
+    const juegos = this.myLibrary();
+
+    // Sacamos las 3 joyas favoritas
+    const topFavoritos = juegos
+      .filter(j => j.is_favorite)
+      .slice(0, 3)
+      .map(j => ({ id: String(j.external_id), cover_url: j.cover_url || '/no-image.svg', title: j.title }));
+
+    return {
+      avatar: owner?.avatar || '/default-avatar.png', // Ajusta a la URL real de tu BD
+      username: owner?.username || owner?.name || 'Jugador Oculto',
+      badge: stats.completados > 10 ? 'Completista' : 'Cazatrofeos', // Lógica dinámica simple
+      juegosTotales: stats.total || 0,
+      juegosCompletados: stats.completados || 0,
+      favoritosCount: juegos.filter(j => j.is_favorite).length,
+      topJuegos: topFavoritos
+    };
+  });
 
   constructor() {
     // 1. Detectamos si hay un username en la URL al instanciar el componente
@@ -459,6 +482,24 @@ export class BibliotecaComponent implements OnInit {
       },
       error: (err) => {
         // Si falla, revertimos el cambio en la UI
+        this.profileOwner.update(user => user ? { ...user, is_public: !nuevoEstado } : null);
+        this.mostrarNotificacion('No se pudo cambiar la privacidad', 'error');
+      }
+    });
+  }
+
+  // 🚀 Recibe el booleano directo desde la tarjeta
+  togglePrivacidadDirecto(nuevoEstado: boolean) {
+    this.profileOwner.update(user => user ? { ...user, is_public: nuevoEstado } : null);
+
+    this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe({
+      next: () => {
+        this.mostrarNotificacion(
+          nuevoEstado ? 'Tu perfil ahora es público' : 'Tu perfil ahora es privado', 
+          'success'
+        );
+      },
+      error: (err) => {
         this.profileOwner.update(user => user ? { ...user, is_public: !nuevoEstado } : null);
         this.mostrarNotificacion('No se pudo cambiar la privacidad', 'error');
       }

@@ -1,0 +1,187 @@
+/* Variables Locales de Identidad */
+$brand-purple: #8a3aff;
+$brand-glow: rgba(138, 58, 255, 0.4);
+$glass-bg: rgba(18, 20, 25, 0.80);
+
+/* 🎨 4. Contenedor Principal (Glassmorphism & Rim Light) */
+.dni-gamer-card {
+  background: $glass-bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(138, 58, 255, 0.3); /* Rim Light Morado */
+  border-radius: 20px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px; /* Tamaño tipo tarjeta física */
+  margin: 0 auto;
+  color: #fff;
+  
+  /* Sombra de Proyección 3D */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.02);
+  
+  /* Transición para el Tilt y la vuelta al centro */
+  transition: transform 0.1s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+  transform-style: preserve-3d; /* Clave para el efecto 3D nativo */
+
+  &:hover {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(138, 58, 255, 0.15);
+  }
+}
+
+/* 🏗️ 1. Cabecera e Identidad */
+.avatar-container {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%; /* 🚀 Volvemos al círculo perfecto */
+  padding: 2px;
+  background: linear-gradient(135deg, #8a3aff, #5865F2);
+  box-shadow: 0 0 15px rgba(138, 58, 255, 0.4);
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* 🚀 Evita que el PNG se deforme o achate */
+    border: 2px solid #121419;
+    background-color: #1a1a2e; /* Color oscuro de fondo por seguridad */
+  }
+}
+
+.username {
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.5px;
+}
+
+.badge-pill {
+  background: rgba(138, 58, 255, 0.15);
+  color: #d8b4fe;
+  border: 1px solid rgba(138, 58, 255, 0.3);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.btn-share {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $brand-purple;
+    border-color: $brand-purple;
+    box-shadow: 0 0 10px $brand-glow;
+  }
+}
+
+/* 📊 2. KPIs y Telemetría */
+.kpi-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 12px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.kpi-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+
+  .kpi-value {
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+  
+  .kpi-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  &.highlight .kpi-value {
+    color: #10b981; /* Verde éxito para finalización */
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.kpi-divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 🖼️ 3. El Escaparate (Stacking de Carátulas) */
+.showcase-title {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.stacking-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centrado vertical para escalar bien */
+  padding-top: 10px;
+
+  .stacked-card-wrapper {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    
+    /* 🃏 Carta Izquierda */
+    &:nth-child(1) {
+      transform: rotate(-6deg) translateX(15px);
+      z-index: 1;
+    }
+    
+    /* 👑 Carta Central (La Joya de la Corona) */
+    &:nth-child(2) {
+      transform: scale(1.15) translateY(-5px); /* Más grande y elevada */
+      z-index: 5; /* Por encima de todas */
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8); /* Sombra extra */
+    }
+    
+    /* 🃏 Carta Derecha */
+    &:nth-child(3) {
+      transform: rotate(6deg) translateX(-15px);
+      z-index: 1;
+    }
+
+    /* Efecto Hover para desenfundar cualquier carta */
+    &:hover {
+      transform: translateY(-15px) scale(1.2) rotate(0deg) !important;
+      z-index: 10 !important;
+    }
+  }
+
+  .stacked-cover {
+    width: 65px;
+    height: 95px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
+  }
+}

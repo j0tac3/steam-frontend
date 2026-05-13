@@ -1,0 +1,67 @@
+<div class="dni-gamer-card" 
+     [style.transform]="tiltStyle()"
+     (mousemove)="onMouseMove($event)"
+     (mouseleave)="onMouseLeave()">
+
+  <header class="card-header d-flex justify-content-between align-items-start">
+    <div class="d-flex gap-3 align-items-center">
+      
+      <div class="avatar-container">
+        <!-- <img [src]="usuario().avatar" [alt]="usuario().username" class="avatar-img"> -->
+      </div>
+      
+      <div class="user-info d-flex flex-column">
+        <h2 class="username m-0">{{ usuario().username }}</h2>
+        <span class="badge-pill">{{ usuario().badge }}</span>
+      </div>
+    </div>
+
+    <div class="actions-container d-flex flex-column align-items-end gap-2">
+      <div class="form-check form-switch m-0" title="Perfil Público">
+        <input class="form-check-input custom-switch" type="checkbox" 
+               [checked]="isPublic()" 
+               (change)="onTogglePrivacy($event)">
+      </div>
+      
+      @if (isPublic()) {
+        <button class="btn-share" (click)="compartirPerfil()" title="Compartir perfil">
+          <i class="bi bi-share-fill"></i>
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="kpi-grid mt-4">
+    <div class="kpi-item highlight">
+      <span class="kpi-value">{{ tasaFinalizacion() }}%</span>
+      <span class="kpi-label">Completados</span>
+    </div>
+    
+    <div class="kpi-divider"></div>
+    
+    <div class="kpi-item">
+      <span class="kpi-value">{{ usuario().juegosTotales }}</span>
+      <span class="kpi-label">Juegos</span>
+    </div>
+    
+    <div class="kpi-divider"></div>
+
+    <div class="kpi-item">
+      <span class="kpi-value">{{ usuario().favoritosCount }}</span>
+      <span class="kpi-label">Favoritos</span>
+    </div>
+  </div>
+
+  <div class="showcase-area mt-4">
+    <p class="showcase-title">TUS JOYAS</p>
+    
+    <div class="stacking-container">
+      @for (juego of usuario().topJuegos; track juego.id) {
+        <div class="stacked-card-wrapper">
+          <img [src]="juego.cover_url" [alt]="juego.title" class="stacked-cover">
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
