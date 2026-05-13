@@ -1,4 +1,4 @@
-import { Component, input, output, effect } from '@angular/core';
+import { Component, input, output, effect, viewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon'; 
 import { Chart, registerables } from 'chart.js';
@@ -13,6 +13,8 @@ Chart.register(...registerables);
   styleUrl: './stats-panel.scss'
 })
 export class StatsPanelComponent {
+  // 🚀 1. Atrapamos el canvas de forma segura (nativa de Angular)
+  donutCanvas = viewChild<ElementRef<HTMLCanvasElement>>('donutCanvas');
   chart: any;
 
   total = input<number>(0);
@@ -25,46 +27,59 @@ export class StatsPanelComponent {
   filtroSeleccionado = output<string>();
 
   constructor() {
-    // Angular Signals: Escuchamos los cambios en los datos para animar el gráfico automáticamente
+    // 🚀 2. EFFECT INTELIGENTE: Reacciona tanto a los datos como al DOM
     effect(() => {
+      const canvas = this.donutCanvas()?.nativeElement;
       const datos = [this.completados(), this.jugando(), this.pendientes(), this.abandonados()];
+      
+      // Si Angular aún no ha dibujado el <canvas> en pantalla, no hacemos nada
+      if (!canvas) return;
+
       if (this.chart) {
+        // Si ya existe, actualizamos suavemente
         this.chart.data.datasets[0].data = datos;
         this.chart.update();
       } else {
-        // Le damos un pequeño tiempo a Angular para que pinte el HTML antes de buscar el <canvas>
-        setTimeout(() => this.crearGrafico(), 100);
+        // Si el canvas está listo pero el gráfico no, lo creamos
+        this.crearGrafico(canvas, datos);
       }
     });
   }
 
-  crearGrafico() {
-    const ctx = document.getElementById('donutChart') as HTMLCanvasElement;
-    if (!ctx) return;
+  crearGrafico(canvas: HTMLCanvasElement, datos: number[]) {
+    // Escudo: Limpia basura previa de Chart.js si se recarga la vista
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
 
-    this.chart = new Chart(ctx, {
+    this.chart = new Chart(canvas, {
       type: 'doughnut',
       data: {
         labels: ['Completados', 'Jugando', 'Pendientes', 'Abandonados'],
         datasets: [{
-          data: [this.completados(), this.jugando(), this.pendientes(), this.abandonados()],
-          backgroundColor: ['#198754', '#0d6efd', '#ffc107', '#dc3545'], // Colores Bootstrap
-          borderWidth: 0, // Sin bordes para encajar con el Glassmorphism
-          hoverOffset: 10 // Al pasar el ratón, el trozo sobresale un poco
+          data: datos,
+          backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], 
+          borderColor: '#121419', 
+          borderWidth: 3, 
+          hoverOffset: 8 
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '65%', // Grosor del donut (cuanto mayor, más fino)
+        cutout: '70%', 
         plugins: {
-          legend: { display: false }, // Ocultamos la leyenda (usamos tus botones debajo)
+          legend: { display: false }, 
           tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.8)',
+            backgroundColor: 'rgba(0,0,0,0.85)',
             padding: 12,
-            bodyFont: { size: 14, weight: 'bold' }
+            bodyFont: { size: 14, weight: 'bold' },
+            boxPadding: 6,
+            usePointStyle: true 
           }
-        }
+        },
+        animation: { animateScale: true, animateRotate: true }
       }
     });
   }

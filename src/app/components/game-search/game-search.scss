@@ -321,16 +321,3 @@ $brand-glow: rgba(138, 58, 255, 0.3);
     }
   }
 }
-
-/* En móviles, aseguramos que los botones encajen bien */
-@media (max-width: 576px) {
-  .category-selector {
-    width: 100%;
-    justify-content: center;
-    
-    .cat-btn {
-      flex: 1; /* Hacemos que ocupen todo el ancho disponible */
-      justify-content: center;
-    }
-  }
-}

@@ -1,138 +1,129 @@
 /* ==========================================================================
-   PANEL DE ESTADÍSTICAS (GLASSMORPHISM)
+   NUEVO LAYOUT DE LISTA (LIST-VIEW EDITION)
    ========================================================================== */
-.stats-glass-card {
-  background: var(--glass-bg-panel);
-  backdrop-filter: var(--glass-blur-light);
-  -webkit-backdrop-filter: var(--glass-blur-light);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  color: var(--text-main);
-  box-shadow: var(--glass-shadow);
-  
-  /* ASEGÚRATE DE QUE ESTO ESTÉ ASÍ: */
-  width: 100% !important;   /* Forzamos el ancho completo */
-  max-width: none !important; /* Eliminamos cualquier tope */
-  margin-left: 0 !important;  /* Quitamos márgenes laterales */
-  margin-right: 0 !important;
-}
-
-.header-area {
-  cursor: pointer;
-  border-radius: 8px;
-  padding: 8px;
-  margin-left: -8px;
-  margin-right: -8px;
-  transition: background 0.2s;
-
-  &:hover {
-    background: var(--glass-bg-btn);
-  }
-  
-  &.active-filter {
-    background: var(--glass-bg-btn-hover);
-  }
-}
-
-/* ==========================================================================
-   BARRA DE PROGRESO PREMIUM
-   ========================================================================== */
-.premium-progress {
-  display: flex;
-  height: 2px; /* 🚀 FASE 1: Reducida para no redundar con el donut */
-  width: 100%;
-  background: var(--glass-border);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  margin-top: 1rem;
-  /* ... mantén el resto de .bar y colores igual ... */
-  .bar {
-    height: 100%;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .success { background: var(--color-success); }
-  .primary { background: var(--color-info); }
-  .warning { background: var(--color-warning); }
-  .danger  { background: var(--color-danger); }
-}
-
-/* ==========================================================================
-   CUADRÍCULA DE LEYENDAS Y FILTROS
-   ========================================================================== */
-.legend-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 12px;
-}
-
-.stat-pill {
-  background: var(--glass-bg-nav);
-  border: 1px solid var(--glass-border);
-  padding: 10px 8px; 
-  border-radius: 12px;
+.legend-list {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.stats-glass-card {
+  /* 🚀 EL PUNTO DULCE: 0.80 de opacidad. Mantiene el cristal, pero es legible */
+  background: rgba(18, 20, 25, 0.70);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  border: 1px solid rgba(138, 58, 255, 0.3);
+  /* Sombra para despegarlo del fondo desenfocado */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(138, 58, 255, 0.15);
+  
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: #fff;
+  
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.stat-row {
+  position: relative;
+  /* 🚀 Restauramos un fondo intermedio para las filas */
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-  &:hover:not(.is-inactive) {
-    background: var(--glass-bg-btn);
-    transform: translateY(-2px);
+  /* ✨ 4. Micro-interacción: La Barra Fantasma */
+  .stat-bg-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%); /* Se nutre de la variable de Angular */
+    z-index: 0;
+    opacity: 0.12; /* Muy sutil para no ahogar el texto */
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* 🚀 FASE 1: Feedback Visual Activo */
-  &.active-filter {
-    background: rgba(255, 255, 255, 0.08) !important; 
-    border-color: var(--glass-border-light);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    transform: translateY(-4px);
-  }
+  /* Asignación de colores semánticos a las barras fantasmas */
+  &.type-success .stat-bg-bar { background: #10b981; }
+  &.type-primary .stat-bg-bar { background: #3b82f6; }
+  &.type-warning .stat-bg-bar { background: #f59e0b; }
+  &.type-danger  .stat-bg-bar { background: #ef4444; }
 
-  /* 🚀 FASE 1: Atenuación Visual Inactiva */
-  &.is-inactive {
-    opacity: 0.4;
-    transform: scale(0.97);
-    filter: grayscale(50%);
+  /* Contenedor Flex para la Alineación Extrema */
+  .stat-content {
+    position: relative;
+    z-index: 1; /* Por encima de la barra fantasma */
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .label {
     display: flex;
     align-items: center; 
-    gap: 6px; 
-    font-size: 0.65rem; 
+    gap: 12px; 
+    font-size: 0.75rem; 
     font-weight: 700;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    letter-spacing: 0.5px;
     
-    /* 🚀 FASE 1: FIX Text Wrapping */
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-  }
-  
-  /* ... mantén el .dot y .value igual ... */
-  .dot {
-    width: 8px; 
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 1px; 
-    
-    &.dot-success { background: var(--color-success); }
-    &.dot-primary { background: var(--color-info); }
-    &.dot-warning { background: var(--color-warning); }
-    &.dot-danger  { background: var(--color-danger); }
+    i { font-size: 1.1rem; }
   }
 
+  /* 📏 2. Optimización para grandes cifras */
   .value {
-    font-size: 1.3rem; 
+    font-size: 1.25rem; /* Menos mastodóntico, más elegante */
     font-weight: 800;
-    color: var(--text-main);
+    color: #fff;
     line-height: 1;
+    font-variant-numeric: tabular-nums; /* Evita que los números bailen de ancho */
   }
+
+  /* 🎨 3. Sintonía Visual y Hover Iluminado (Rim Light Morado) */
+  &:hover:not(.is-inactive) {
+    transform: translateX(4px); /* Animación de desplazamiento lateral nativo de menús */
+    background: rgba(255, 255, 255, 0.04);
+    
+    border-color: rgba(138, 58, 255, 0.4); /* Resplandor Morado */
+    box-shadow: 0 4px 15px rgba(138, 58, 255, 0.15);
+    
+    .label { color: rgba(255, 255, 255, 0.85); }
+    .stat-bg-bar { opacity: 0.18; }
+  }
+
+  /* Filtro Activo (El estado "Encendido") */
+  &.active-filter {
+    background: rgba(255, 255, 255, 0.06) !important; 
+    transform: translateX(8px);
+    
+    border-color: #8a3aff !important; /* Acento Morado Fuerte */
+    box-shadow: -4px 6px 20px rgba(138, 58, 255, 0.25) !important;
+
+    .label { color: #fff; }
+    .stat-bg-bar { opacity: 0.25; }
+  }
+
+  /* Atenuación Inactiva */
+  &.is-inactive {
+    opacity: 0.3;
+    filter: grayscale(80%);
+  }
+}
+
+/* ==========================================================================
+   EFECTO HOLOGRÁFICO DEL GRÁFICO
+   ========================================================================== */
+.chart-container canvas {
+  /* * 1er shadow: Crea una sombra oscura muy fuerte hacia abajo (Volumen físico)
+   * 2do shadow: Crea un halo de luz genérico que tomará el color de cada segmento (Glow)
+   */
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+  transition: all 0.3s ease;
 }
