@@ -264,10 +264,11 @@ export class ModalV2Component {
   toggleActivePlatform(platName: string) {
     const idx = this.detalleForm.activePlatforms.indexOf(platName);
     if (idx > -1) {
-      this.detalleForm.activePlatforms.splice(idx, 1); // Lo quita si ya estaba
+      this.detalleForm.activePlatforms.splice(idx, 1);
     } else {
-      this.detalleForm.activePlatforms.push(platName); // Lo añade
+      this.detalleForm.activePlatforms.push(platName);
     }
+    // 🚀 Importante: Notificamos que hay cambios para que el botón "Hecho" sepa que debe guardar
     this.evaluarCambios();
   }
 
@@ -359,21 +360,42 @@ evaluarCambios() {
     this.hasChanges = false;
   }
 
-  get availablePlatforms(): { id: string, name: string, icon: string }[] {
+  get availablePlatforms(): { id: string, name: string, icon: string, family: string }[] {
     const rawPlatforms = this.game()?.platforms || [];
-    const mapped = new Map<string, { id: string, name: string, icon: string }>();
+    const mapped = new Map<string, { id: string, name: string, icon: string, family: string }>();
 
-    rawPlatforms.forEach((p: string) => {
-  const lower = p.toLowerCase();
-    if (lower.includes('pc') || lower.includes('windows') || lower.includes('mac')) 
-      mapped.set('PC', { id: 'PC', name: 'PC', icon: '⚪' }); // Punto blanco/gris para PC
-    if (lower.includes('playstation') || lower.includes('ps4') || lower.includes('ps5')) 
-      mapped.set('PlayStation', { id: 'PlayStation', name: 'PlayStation', icon: '🔵' }); // Punto azul para PS
-    if (lower.includes('xbox')) 
-      mapped.set('Xbox', { id: 'Xbox', name: 'Xbox', icon: '🟢' }); // Punto verde para Xbox
-    if (lower.includes('switch') || lower.includes('nintendo')) 
-      mapped.set('Nintendo', { id: 'Nintendo', name: 'Nintendo', icon: '🔴' }); // Punto rojo para Switch
-  });
+    rawPlatforms.forEach((p: any) => {
+      // Obtenemos el nombre exacto de IGDB (ej: "PlayStation 4", "Xbox One")
+      const platName = typeof p === 'string' ? p : p.name;
+      const family = typeof p === 'string' ? '' : p.family; 
+      
+      const lower = platName.toLowerCase();
+      let icon = 'bi-controller';
+      let assignedFamily = family || 'other';
+
+      // Asignamos iconos y familias según la coincidencia
+      if (assignedFamily === 'pc' || lower.includes('pc') || lower.includes('windows') || lower.includes('mac')) {
+        icon = 'bi-pc-display';
+        assignedFamily = 'pc';
+      } else if (assignedFamily === 'playstation' || lower.includes('playstation') || lower.includes('ps4') || lower.includes('ps5')) {
+        icon = 'bi-playstation';
+        assignedFamily = 'playstation';
+      } else if (assignedFamily === 'xbox' || lower.includes('xbox')) {
+        icon = 'bi-xbox';
+        assignedFamily = 'xbox';
+      } else if (assignedFamily === 'nintendo' || lower.includes('switch') || lower.includes('nintendo')) {
+        icon = 'bi-nintendo-switch';
+        assignedFamily = 'nintendo';
+      }
+
+      // 🚀 EL CAMBIO CLAVE: Usamos el nombre exacto como identificador
+      mapped.set(platName, { 
+        id: platName, 
+        name: platName, 
+        icon: icon, 
+        family: assignedFamily 
+      });
+    });
 
     return Array.from(mapped.values());
   }

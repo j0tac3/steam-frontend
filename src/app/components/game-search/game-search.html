@@ -2,10 +2,10 @@
   <div class="content-container">
     
     <header class="search-glass-card">
-      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mb-4">
-        <h3 class="fw-bold mb-0 text-center text-sm-start">Buscar Juegos</h3>
+      <div class="header-flex-stack">
+        <h3 class="fw-bold mb-0">Buscar Juegos</h3>
         
-        <div class="category-selector d-flex gap-1">
+        <div class="category-selector">
           <button class="cat-btn" 
                   [class.active]="searchCategory === 'juego'" 
                   (click)="setCategory('juego')">
@@ -26,7 +26,7 @@
 
       <div class="search-bar-container">
         <div class="input-group-premium">
-          <span class="search-icon d-flex align-items-center">
+          <span class="search-icon">
             <app-icon name="icon-search"></app-icon>
           </span>
           <input #searchInput type="text" 
@@ -37,6 +37,7 @@
             <button class="clear-input-btn" (click)="limpiar()">✕</button>
           }
         </div>
+        
         <button class="btn-search" (click)="buscar(searchInput.value)">
           BUSCAR
         </button>

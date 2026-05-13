@@ -807,125 +807,165 @@
 }
 
 /* 🔲 2. Definición de Contenedores */
-/* 🔲 2. Definición del Contenedor (Popover) */
+/* =========================================
+   🔲 V2: BOTTOM SHEET (MÓVIL) Y POPOVER (PC)
+   ========================================= */
+
+/* 🚀 1. Overlay Oscuro para aislar la acción en móvil */
+.dropdown-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+  animation: fadeIn 0.2s ease;
+}
+
 .status-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 4px); // Más pegado a la pastilla
-  left: -10px; // Ligeramente ajustado
-  width: 240px; // Reducimos ancho (era 280px)
+  /* 📱 MÓVIL: COMPORTAMIENTO BOTTOM SHEET (ERGONOMÍA) */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background: #121419; /* Fondo muy oscuro, casi negro */
+  border-radius: 24px 24px 0 0;
   z-index: 1050;
-  animation: slideDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  padding: 10px; // Menos padding interior general
+  padding: 24px 24px 35px 24px; /* Extra padding abajo para los iPhone/Gestos */
+  border-top: 1px solid rgba(111, 66, 193, 0.4); /* Línea de luz corporativa superior */
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9);
+  animation: slideUpBottomSheet 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-  /* Estilo Glass compactado */
-  background: rgba(26, 26, 36, 0.95); // Ligeramente traslúcido
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  border-radius: 12px; // Más sutil, en sintonía con la app
-
-  @media (max-width: 450px) {
-    width: 220px;
-    left: -20px;
+  @keyframes slideUpBottomSheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
   }
 
-  /* Títulos de sección compactos */
+  /* 💻 PC: COMPORTAMIENTO POPOVER CON PROFUNDIDAD */
+  @media (min-width: 768px) {
+    position: absolute;
+    bottom: auto;
+    top: calc(100% + 16px); /* 🚀 Offset: Separado para no tapar estrellas */
+    left: 0;
+    width: 320px; /* Un poco más ancho para respirar */
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(111, 66, 193, 0.4); /* Rim Light Morado */
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(111, 66, 193, 0.15); /* Mucha profundidad */
+    animation: slideDownPopover 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    @keyframes slideDownPopover {
+      from { opacity: 0; transform: translateY(-15px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 🚀 La Flecha de Conexión Espacial */
+    .popover-arrow {
+      position: absolute;
+      top: -7px;
+      left: 24px;
+      width: 14px;
+      height: 14px;
+      background: #121419;
+      border-top: 1px solid rgba(111, 66, 193, 0.4);
+      border-left: 1px solid rgba(111, 66, 193, 0.4);
+      transform: rotate(45deg);
+      z-index: 1051;
+    }
+  }
+
+  /* 📏 Títulos de sección */
   h6 {
-    font-size: 0.7rem !important; // Más pequeño
-    letter-spacing: 0.5px;
-    margin-bottom: 6px !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1px;
   }
 
-  /* Chips de selección COMPACTOS */
+  /* 🎯 Botones de Selección (Tap Targets grandes) */
   button.btn.chip-btn {
-    background: rgba(255, 255, 255, 0.03); // Fondo más sutil
+    background: rgba(255, 255, 255, 0.03); 
     color: var(--text-main, #ffffff);
-    opacity: 0.5; // Menos intrusivo cuando está inactivo
-    font-size: 0.75rem; // Letra más pequeña
+    opacity: 0.6; 
+    font-size: 0.85rem; 
     font-weight: 500;
-    transition: all 0.2s ease;
     border: 1px solid transparent;
-    border-radius: 6px; // Esquinas más sutiles
-    padding: 6px 10px; // REDUCIDO DRÁSTICAMENTE (era 10px 16px)
+    border-radius: 10px; 
+    padding: 8px 14px;
+    min-height: 44px; /* 🚀 Tap Target mínimo Apple HIG */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 
-    &:focus, &:active {
-      outline: 0 !important;
-      box-shadow: none !important;
+    @media (min-width: 768px) {
+      min-height: 38px; /* En PC usamos ratón, puede ser un poco menor */
     }
 
-    /* Hover genérico */
     &:hover:not([class*="is-"]) {
-      opacity: 0.8;
-      background: rgba(255, 255, 255, 0.06);
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
     }
 
-    /* 👁️ REDISEÑO DE ESTADOS: Resplandor sutil (sin !important) */
-    
-    // PENDIENTE (Amarillo)
+    /* 🌟 RESPLANDORES ACTIVOS (Glow Effects) */
     &.is-warning {
-      background-color: rgba(251, 191, 36, 0.05);
+      background-color: rgba(251, 191, 36, 0.1);
       color: #FBBF24;
-      border: 1px solid rgba(251, 191, 36, 0.3);
+      border: 1px solid rgba(251, 191, 36, 0.6);
       opacity: 1;
       font-weight: 600;
-      box-shadow: 0 0 6px rgba(251, 191, 36, 0.1);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); 
     }
 
-    // JUGANDO (Azul)
     &.is-primary {
-      background-color: rgba(59, 130, 246, 0.05);
+      background-color: rgba(59, 130, 246, 0.1);
       color: #60A5FA;
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.6);
       opacity: 1;
       font-weight: 600;
-      box-shadow: 0 0 6px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
     }
 
-    // COMPLETADO (Verde)
     &.is-success {
-      background-color: rgba(52, 211, 153, 0.05);
+      background-color: rgba(52, 211, 153, 0.1);
       color: #34D399;
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      border: 1px solid rgba(52, 211, 153, 0.6);
       opacity: 1;
       font-weight: 600;
-      box-shadow: 0 0 6px rgba(52, 211, 153, 0.1);
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.3); /* Resplandor encendido */
     }
 
-    // ABANDONADO (Rojo)
     &.is-danger {
-      background-color: rgba(248, 113, 113, 0.05);
+      background-color: rgba(248, 113, 113, 0.1);
       color: #F87171;
-      border: 1px solid rgba(248, 113, 113, 0.3);
+      border: 1px solid rgba(248, 113, 113, 0.6);
       opacity: 1;
       font-weight: 600;
-      box-shadow: 0 0 6px rgba(248, 113, 113, 0.1);
-    }
-
-    /* Estado seleccionado genérico (si usas 'is-selected' para plataformas) */
-    &.is-selected {
-      background-color: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      opacity: 1;
-      font-weight: 600;
+      box-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
     }
   }
 
-  /* 🎨 Botón "Hecho" (o cerrar) Compactado */
-  button.btn.btn-light {
-    background-color: #FFFFFF;
-    color: #000000;
-    border-radius: 100px;
-    font-size: 0.75rem; // Letra pequeña
-    font-weight: 700;
-    text-transform: uppercase; // Volvemos a mayúsculas para que se vea más CTA, pero pequeño
+  /* 🚀 BOTÓN HECHO VIBRANTE (El CTA Principal) */
+  .btn-done {
+    background: linear-gradient(135deg, #7b4df2, #5a32b9); /* Morado vibrante */
+    color: #FFFFFF;
+    border-radius: 12px;
+    font-size: 0.95rem; 
+    font-weight: 800;
     letter-spacing: 0.5px;
-    border: none;
-    margin-top: 10px; // Menos separación
-    padding: 8px 0; // Mucho menos padding (era 12px 0)
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    min-height: 50px; /* Target gigante para confirmar */
     width: 100%;
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+    transition: all 0.2s ease;
     
-    &:hover { opacity: 0.9; }
+    &:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(111, 66, 193, 0.6), inset 0 2px 4px rgba(255,255,255,0.3);
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+    
+    &:active {
+      transform: translateY(1px);
+    }
   }
 }
 
@@ -999,15 +1039,64 @@
 
   /* ✨ 3. Estado: Lo tengo (Owned) - Minimalista y Premium */
   &.owned {
-    background: rgba(100, 65, 165, 0.15); /* Tu tono morado suave de fondo */
-    border-color: rgba(100, 65, 165, 0.6); /* Borde morado más definido */
-    color: #ffffff; /* Blanco puro para contraste máximo */
+    color: #ffffff; 
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(100, 65, 165, 0.1); /* Resplandor morado muy sutil */
 
     .plat-icon { 
       filter: grayscale(0); 
-      opacity: 1; /* Círculo a todo color */
+      opacity: 1; 
+    }
+
+    /* 🎮 PlayStation (Azul) */
+    &.brand-playstation {
+      background: rgba(0, 112, 204, 0.15); 
+      border-color: rgba(0, 112, 204, 0.6); 
+      box-shadow: 0 4px 10px rgba(0, 112, 204, 0.1);
+      .plat-icon i { color: #0070cc; text-shadow: 0 0 8px rgba(0, 112, 204, 0.5); }
+    }
+
+    /* 🟩 Xbox (Verde) */
+    &.brand-xbox {
+      background: rgba(16, 124, 16, 0.15);
+      border-color: rgba(16, 124, 16, 0.6);
+      box-shadow: 0 4px 10px rgba(16, 124, 16, 0.1);
+      .plat-icon i { color: #107c10; text-shadow: 0 0 8px rgba(16, 124, 16, 0.5); }
+    }
+
+    /* 🟥 Nintendo (Rojo) */
+    &.brand-nintendo {
+      background: rgba(230, 0, 18, 0.15);
+      border-color: rgba(230, 0, 18, 0.6);
+      box-shadow: 0 4px 10px rgba(230, 0, 18, 0.1);
+      .plat-icon i { color: #e60012; text-shadow: 0 0 8px rgba(230, 0, 18, 0.5); }
+    }
+
+    /* 💻 PC (Blanco/Gris Claro) */
+    &.brand-pc {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05);
+      .plat-icon i { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); }
+    }
+    
+    /* 🟣 Por defecto (si no tiene familia) */
+    &.brand-other {
+      background: rgba(100, 65, 165, 0.15); 
+      border-color: rgba(100, 65, 165, 0.6); 
+      box-shadow: 0 4px 10px rgba(100, 65, 165, 0.1); 
+      .plat-icon i { color: #b99aff; }
+    }
+  }
+  &.dropdown-chip {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.02); /* Fondo más sutil para que no sature el menú */
+    
+    &:hover:not(.owned) {
+      background: rgba(255, 255, 255, 0.06);
     }
   }
 }
@@ -1090,21 +1179,24 @@
 }
 
 /* 🎯 3. Ajustes de la Pastilla junto al título */
+/* 🎯 3. Ajustes de la Pastilla junto al título (Escritorio) */
 @media (min-width: 768px) {
   .desktop-header {
     .status-dropdown-container {
-      margin-left: 0;
+      margin-left: auto; /* Empuja el contenedor a la derecha si está en flex */
     }
-    /* Como la pastilla ahora está a la izquierda, el menú debe abrir hacia la izquierda (left: 0) */
+    
+    /* 🚀 FIX DROPDOWN: Alinear a la derecha para que no se salga del modal */
     .status-dropdown-menu {
-      left: 0;
-      right: auto;
+      left: auto;
+      right: 0; /* Anclado al borde derecho del botón */
       min-width: 250px; 
+      transform-origin: top right; /* Que la animación nazca de la esquina correcta */
     }
     
     .status-pill-btn {
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      padding: 6px 14px;
+      font-size: 0.85rem; /* En PC nos podemos permitir un pelín más de tamaño */
     }
   }
   

@@ -29,6 +29,11 @@ export interface SimilarGame {
   cover?: GameImage;
 }
 
+export interface GamePlatform {
+  name: string;
+  family: string;
+}
+
 // 2. 🚀 MODELO PRINCIPAL DE JUEGO (God Mode)
 export interface Game {
   // --- CAMPOS BÁSICOS (Usados en la lista de búsqueda) ---
@@ -59,7 +64,8 @@ export interface Game {
   
   // Etiquetas (IGDB las devuelve como un array de objetos con id y name)
   genres?: GenericEntity[];
-  platforms?: GenericEntity[];
+  //platforms?: GenericEntity[];
+  platforms?: GamePlatform[];
   game_modes?: GenericEntity[];
   themes?: GenericEntity[];
   player_perspectives?: GenericEntity[];

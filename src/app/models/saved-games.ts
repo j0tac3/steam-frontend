@@ -1,7 +1,7 @@
-import { Game } from './game';
+import { Game, GamePlatform } from './game';
 
 export interface SavedGame extends Game {
-  id: number; // El ID interno de tu tabla en MySQL
+  id: number;
   status: 'pendiente' | 'jugando' | 'completado' | 'abandonado';
   notes?: string | null;
   personal_rating: number;
@@ -14,4 +14,6 @@ export interface SavedGame extends Game {
 
   has_notes?: boolean;
   has_featured_notes?: boolean;
+
+  platform_families?: GamePlatform[]; 
 }

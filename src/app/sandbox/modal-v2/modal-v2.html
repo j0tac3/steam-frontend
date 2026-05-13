@@ -32,52 +32,7 @@
           <div class="w-100">
             <h1 class="mobile-title">{{ game()?.name }}</h1>
             @if (enBiblioteca()) {
-              <div class="status-dropdown-container">
-                <button class="status-pill-btn" (click)="isDropdownOpen = !isDropdownOpen">
-                  @if (detalleForm.status === 'completado') { <span class="text-success">🏆 Completado</span> } 
-                  @else if (detalleForm.status === 'jugando') { <span class="text-primary">🎮 Jugando</span> } 
-                  @else if (detalleForm.status === 'abandonado') { <span class="text-danger">❌ Abandonado</span> }
-                  @else { <span class="text-warning">⏳ Pendiente</span> }
-                  
-                  @if (detalleForm.activePlatforms && detalleForm.activePlatforms.length > 0) { 
-                    <span class="plat-text d-flex align-items-center gap-1">
-                      <span class="text-white-50">•</span>
-                      {{ detalleForm.activePlatforms[0] }} 
-                      @if (detalleForm.activePlatforms.length > 1) {
-                        <span class="badge-plus">+{{ detalleForm.activePlatforms.length - 1 }}</span>
-                      }
-                    </span> 
-                  }
-                  
-                  <i class="bi bi-chevron-down ms-1 icon-chevron"></i>
-                </button>
 
-                @if (isDropdownOpen) {
-                  <div class="status-dropdown-menu shadow-lg">
-                    <div class="p-1"> <h6 class="text-white-50 small mb-2"><i class="bi bi-kanban"></i> ESTADO</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-2"> <button class="btn btn-sm chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">Pendiente</button>
-                        <button class="btn btn-sm chip-btn" [class.is-primary]="detalleForm.status === 'jugando'" (click)="setStatus('jugando')">Jugando</button>
-                        <button class="btn btn-sm chip-btn" [class.is-success]="detalleForm.status === 'completado'" (click)="setStatus('completado')">Completado</button>
-                        <button class="btn btn-sm chip-btn" [class.is-danger]="detalleForm.status === 'abandonado'" (click)="setStatus('abandonado')">Abandonado</button>
-                      </div>
-
-                      <h6 class="text-white-50 small mb-2"><i class="bi bi-controller"></i> JUGANDO EN</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-2"> @for (plat of availablePlatforms; track plat.id) {
-                          <button class="btn btn-sm chip-btn" 
-                                  [class.is-selected]="detalleForm.activePlatforms.includes(plat.name)" 
-                                  (click)="toggleActivePlatform(plat.name)">
-                            {{ plat.icon }} {{ plat.name }}
-                          </button>
-                        }
-                      </div>
-
-                      <button class="btn btn-sm btn-light py-2 mt-2" (click)="cerrarDropdown()">
-                        Hecho
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
             } @else {
               <button class="btn btn-sm btn-primary mt-2 rounded-pill px-3 fw-bold" (click)="guardarJuego()">
                 <i class="bi bi-plus-lg"></i> Añadir a mi lista
@@ -104,6 +59,58 @@
             <div class="stats mt-4 tab-pane-anim">
               @if (enBiblioteca()) {
 
+                <div class="status-dropdown-container">
+                  <button class="status-pill-btn" (click)="isDropdownOpen = !isDropdownOpen">
+                    @if (detalleForm.status === 'completado') { <span class="text-success">🏆 Completado</span> } 
+                    @else if (detalleForm.status === 'jugando') { <span class="text-primary">🎮 Jugando</span> } 
+                    @else if (detalleForm.status === 'abandonado') { <span class="text-danger">❌ Abandonado</span> }
+                    @else { <span class="text-warning">⏳ Pendiente</span> }
+                    
+                    @if (detalleForm.activePlatforms && detalleForm.activePlatforms.length > 0) { 
+                      <span class="plat-text d-flex align-items-center gap-1">
+                        <span class="text-white-50">•</span>
+                        <span class="plat-name-truncate">{{ detalleForm.activePlatforms[0] }}</span> 
+                      </span> 
+                    }
+                    <i class="bi bi-chevron-down ms-1 icon-chevron"></i>
+                  </button>
+
+                  @if (isDropdownOpen) {
+                    <div class="dropdown-backdrop d-md-none" (click)="cerrarDropdown()"></div>
+
+                    <div class="status-dropdown-menu">
+                      <div class="popover-arrow d-none d-md-block"></div>
+
+                      <div class="p-1"> 
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-3"><i class="bi bi-kanban me-2"></i>Estado</h6>
+                        
+                        <div class="d-flex flex-wrap gap-2 mb-4"> 
+                          <button class="btn btn-sm chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">Pendiente</button>
+                          <button class="btn btn-sm chip-btn" [class.is-primary]="detalleForm.status === 'jugando'" (click)="setStatus('jugando')">Jugando</button>
+                          <button class="btn btn-sm chip-btn" [class.is-success]="detalleForm.status === 'completado'" (click)="setStatus('completado')">Completado</button>
+                          <button class="btn btn-sm chip-btn" [class.is-danger]="detalleForm.status === 'abandonado'" (click)="setStatus('abandonado')">Abandonado</button>
+                        </div>
+
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-3"><i class="bi bi-controller me-2"></i>Jugando En</h6>
+                        
+                        <div class="d-flex flex-column gap-2 mb-4">
+                          @for (plat of availablePlatforms; track plat.id) {
+                            <button class="btn btn-sm inventory-chip dropdown-chip brand-{{ plat.family }}" 
+                                    [class.owned]="detalleForm.activePlatforms.includes(plat.name)"
+                                    (click)="toggleActivePlatform(plat.name)">
+                              <span class="plat-icon"><i class="bi {{ plat.icon }}"></i></span>
+                              <span class="plat-name">{{ plat.name }}</span>
+                            </button>
+                          }
+                        </div>
+
+                        <button class="btn btn-done mt-2" (click)="cerrarDropdown()">
+                          Guardar Cambios
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
                 <div class="inventory-card mb-4">
                   <div class="d-flex flex-column align-items-start mb-3">
                     <h6 class="text-white-50 small mb-1 fw-bold"><i class="bi bi-box-seam me-2"></i>MI COLECCIÓN</h6>
@@ -112,12 +119,12 @@
                   
                   <div class="d-flex flex-wrap gap-2">
                     @for (plat of availablePlatforms; track plat.id) {
-                      <button class="btn btn-sm inventory-chip" 
+                      <button class="btn btn-sm inventory-chip brand-{{ plat.family }}" 
                               [class.owned]="detalleForm.platforms.includes(plat.id)"
                               (click)="togglePlatform(plat.id)">
-                        <span class="plat-icon">{{ plat.icon }}</span>
+                        <span class="plat-icon"><i class="bi {{ plat.icon }}"></i></span>
                         <span class="plat-name">{{ plat.name }}</span>
-                        </button>
+                      </button>
                     }
                   </div>
                 </div>
@@ -170,55 +177,7 @@
             <h1 class="desktop-title mb-0">{{ game()?.name }}</h1>
             
             @if (enBiblioteca()) {
-              <div class="status-dropdown-container">
-                <button class="status-pill-btn" (click)="isDropdownOpen = !isDropdownOpen">
-                  @if (detalleForm.status === 'completado') { <span class="text-success">🏆 Completado</span> } 
-                  @else if (detalleForm.status === 'jugando') { <span class="text-primary">🎮 Jugando</span> } 
-                  @else if (detalleForm.status === 'abandonado') { <span class="text-danger">❌ Abandonado</span> }
-                  @else { <span class="text-warning">⏳ Pendiente</span> }
-                  
-                  @if (detalleForm.activePlatforms && detalleForm.activePlatforms.length > 0) { 
-                    <span class="plat-text d-flex align-items-center gap-1">
-                      <span class="text-white-50">•</span>
-                      {{ detalleForm.activePlatforms[0] }} 
-                      @if (detalleForm.activePlatforms.length > 1) {
-                        <span class="badge-plus">+{{ detalleForm.activePlatforms.length - 1 }}</span>
-                      }
-                    </span> 
-                  }
-                  
-                  <i class="bi bi-chevron-down ms-1 icon-chevron"></i>
-                </button>
-
-                @if (isDropdownOpen) {
-                  <div class="status-dropdown-menu shadow-lg">
-                    <div class="p-1">
-                      <h6 class="text-white-50 small mb-2"><i class="bi bi-kanban"></i> ESTADO</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-2">
-                        <button class="btn btn-sm chip-btn" [class.is-warning]="detalleForm.status === 'pendiente'" (click)="setStatus('pendiente')">Pendiente</button>
-                        <button class="btn btn-sm chip-btn" [class.is-primary]="detalleForm.status === 'jugando'" (click)="setStatus('jugando')">Jugando</button>
-                        <button class="btn btn-sm chip-btn" [class.is-success]="detalleForm.status === 'completado'" (click)="setStatus('completado')">Completado</button>
-                        <button class="btn btn-sm chip-btn" [class.is-danger]="detalleForm.status === 'abandonado'" (click)="setStatus('abandonado')">Abandonado</button>
-                      </div>
-
-                      <h6 class="text-white-50 small mb-2"><i class="bi bi-controller"></i> JUGANDO EN</h6>
-                      <div class="d-flex flex-wrap gap-2 mb-2">
-                        @for (plat of availablePlatforms; track plat.id) {
-                          <button class="btn btn-sm chip-btn" 
-                                  [class.is-selected]="detalleForm.activePlatforms.includes(plat.name)" 
-                                  (click)="toggleActivePlatform(plat.name)">
-                            {{ plat.icon }} {{ plat.name }}
-                          </button>
-                        }
-                      </div>
-
-                      <button class="btn btn-sm btn-light py-2 mt-2 w-100" (click)="cerrarDropdown()">
-                        Hecho
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
+              
             }
           </div>
           
@@ -249,7 +208,7 @@
                   <div class="d-flex flex-wrap gap-2 mb-4">
                     @if (game()?.platforms?.length) {
                       @for (plat of game()?.platforms; track $index) {
-                        <span class="platform-tag">{{ plat }}</span>
+                        <span class="platform-tag">{{ plat.name || plat }}</span>
                       }
                     } @else {
                       <span class="text-white-50 small">Plataformas no especificadas</span>

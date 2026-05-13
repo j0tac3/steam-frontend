@@ -2,9 +2,14 @@
 $bg-dark: #0b0e14;
 $accent-white: #ffffff;      
 $text-bright: #f3f4f6;
-$text-muted: #94a3b8;
+$text-muted: rgba(255, 255, 255, 0.6); /* 📏 3. Mayor contraste para opciones inactivas */
 $glass-bg: rgba(255, 255, 255, 0.03); 
 $card-bg: rgba(18, 20, 25, 0.7);      
+
+/* 🎨 2. Identidad Morada */
+$brand-purple: #8a3aff;
+$brand-purple-dark: #6f42c1;
+$brand-glow: rgba(138, 58, 255, 0.3);
 
 .premium-layout-wrapper {
   display: flex;
@@ -25,32 +30,88 @@ $card-bg: rgba(18, 20, 25, 0.7);
   background: $card-bg;
   backdrop-filter: blur(20px); 
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1); 
+  /* 🎨 2. Borde de Identidad (Rim Light) */
+  border: 1px solid $brand-glow; 
   border-radius: 16px;
   padding: 1.2rem 2rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  /* ✨ 4. Glow de Profundidad */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 58, 255, 0.1);
   position: relative;
 
-  .card-header {
+  /* 📱 1. Estructura Mobile-First apilada */
+  .header-flex-stack {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
 
-    .brand-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      .accent { color: $accent-white; } 
+    @media (min-width: 576px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}
+
+/* ==========================================================================
+   🎛️ SELECTOR DE CATEGORÍA (Juegos / DLCs)
+   ========================================================================== */
+.category-selector {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* 📱 1. Ancho total en móvil */
+  display: flex;
+  width: 100%;
+  gap: 4px;
+
+  @media (min-width: 576px) {
+    width: auto;
+  }
+
+  .cat-btn {
+    flex: 1; /* 📱 1. Chips ocupan todo el ancho uniformemente */
+    background: transparent;
+    border: 1px solid transparent; 
+    color: $text-muted;
+    padding: 8px 12px; /* Botones más altos para pulgares */
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    outline: none;
+
+    i {
+      font-size: 1rem;
+      opacity: 0.8; /* 📏 3. Iconos inactivos más visibles */
+    }
+
+    &:hover:not(.active) {
+      color: $text-bright;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* 🚀 ESTADO ACTIVO */
+    &.active {
+      background: rgba(111, 66, 193, 0.6);
+      color: #fff;
+      border-color: rgba(138, 58, 255, 0.5);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(138, 58, 255, 0.2);
+      i { opacity: 1; }
     }
   }
 }
 
 .search-bar-container {
   display: flex;
-  flex-direction: column; // NUEVO: Por defecto en móvil, se apilan verticalmente
+  flex-direction: column; 
   gap: 12px;
 
-  /* NUEVO: A partir de tamaño tablet/PC (576px), se ponen en la misma línea */
   @media (min-width: 576px) {
     flex-direction: row; 
   }
@@ -58,28 +119,36 @@ $card-bg: rgba(18, 20, 25, 0.7);
   .input-group-premium {
     position: relative;
     flex-grow: 1;
-    width: 100%; // Asegura que ocupe todo el ancho disponible
+    width: 100%; 
     
+    /* 📏 3. Alineación matemática de la lupa al centro */
     .search-icon { 
-      position: absolute; left: 14px; top: 50%; 
-      transform: translateY(-50%); opacity: 0.4; font-size: 0.9rem; 
+      position: absolute; 
+      left: 14px; 
+      top: 0; 
+      bottom: 0; 
+      display: flex; 
+      align-items: center; 
+      opacity: 0.6; 
+      font-size: 1rem; 
+      pointer-events: none; /* Evita que la lupa bloquee el clic */
     }
     
     .input-field {
       width: 100%;
       background: rgba(0, 0, 0, 0.5); 
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 12px 35px 12px 40px; // Aumentado un poco el padding vertical para móviles
+      border-radius: 10px;
+      padding: 14px 35px 14px 42px; /* 42px deja el hueco exacto para la lupa */
       color: white;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       transition: all 0.3s ease;
       
       &:focus { 
         outline: none; 
-        border-color: rgba(255, 255, 255, 0.4); 
+        border-color: $brand-purple; 
         background: rgba(0, 0, 0, 0.7);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 20px rgba(138, 58, 255, 0.15); /* Brillo interior al escribir */
       }
     }
 
@@ -90,27 +159,33 @@ $card-bg: rgba(18, 20, 25, 0.7);
     }
   }
 
+  /* 🎨 2. BOTÓN MORADO VIBRANTE */
   .btn-search {
-    background: white; 
-    color: black;      
-    border: none;
-    padding: 12px 20px; // Aumentado el alto para que sea más fácil de pulsar en móvil
-    border-radius: 8px;
-    font-size: 0.85rem;
+    background: linear-gradient(135deg, $brand-purple-dark 0%, $brand-purple 100%);
+    color: white;      
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 14px 24px; 
+    border-radius: 10px;
+    font-size: 0.9rem;
     font-weight: 800;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: all 0.2s;
-    width: 100%; // En móvil, el botón ocupa todo el ancho
+    transition: all 0.3s ease;
+    width: 100%; 
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
 
-    /* En PC, el botón vuelve a ajustarse a su contenido */
     @media (min-width: 576px) {
       width: auto; 
-      padding: 0 20px; // Recupera el padding original para alinearse con el input
     }
 
     &:hover { 
-      background: #e0e0e0; 
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(111, 66, 193, 0.5);
+      filter: brightness(1.1);
+    }
+    
+    &:active {
+      transform: translateY(1px);
     }
   }
 }
@@ -220,14 +295,14 @@ $card-bg: rgba(18, 20, 25, 0.7);
     background: transparent;
     border: none;
     color: $text-muted;
-    padding: 6px 14px;
+    padding: 6px 8px;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 3px;
 
     i {
       font-size: 1rem;
