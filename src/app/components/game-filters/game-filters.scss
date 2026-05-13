@@ -1,4 +1,68 @@
 /* 🎨 2. SELECTOR DE VISTAS (Segmented Control) */
+/* ==========================================================================
+   COMPONENT CARD & HEADER ACORDEÓN
+   ========================================================================== */
+.filters-glass-card {
+  background: rgba(18, 20, 25, 0.40);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(138, 58, 255, 0.3); // Rim Light Morado de marca
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  color: #fff;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 58, 255, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.header-area {
+  cursor: pointer;
+  user-select: none;
+
+  .trigger-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  &:hover .trigger-icon {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    transform: scale(1.1);
+  }
+}
+
+/* 🎢 SISTEMA DE ACORDEÓN (GRID HACK) */
+.panel-collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open { grid-template-rows: 1fr; }
+
+  .panel-content {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+  }
+
+  &.open .panel-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
+  }
+}
+
+/* El resto de tu CSS original a partir de aquí... (view-switcher-container, chips-grid, etc) */
+
 .view-switcher-container {
   display: flex;
   background: rgba(255, 255, 255, 0.03);

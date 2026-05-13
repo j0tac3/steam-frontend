@@ -91,20 +91,17 @@
           (filtroSeleccionado)="actualizarFiltroEstado($event)">
         </app-stats-panel>
 
-        <div class="glass-panel p-4 rounded-4 mt-4">
-          <app-game-filters 
-            [filtroTexto]="filtros().search" 
-            [filtroEstado]="filtros().status"
-            [filtroPlataforma]="filtros().platform"
-            [totalMostrados]="totalEncontrados()"
-            [vistaActual]="vistaActual()" 
-            
-            (textoCambiado)="actualizarFiltroTexto($event)" 
-            (estadoCambiado)="actualizarFiltroEstado($event)"
-            (plataformaCambiada)="actualizarFiltroPlataforma($event)"
-            (vistaCambiada)="vistaActual.set($event)">
-          </app-game-filters>
-        </div>
+        <app-game-filters class="mt-4 d-block"
+          [filtroTexto]="filtros().search" 
+          [filtroEstado]="filtros().status"
+          [filtroPlataforma]="filtros().platform"
+          [totalMostrados]="totalEncontrados()"
+          [vistaActual]="vistaActual()" 
+          (textoCambiado)="actualizarFiltroTexto($event)" 
+          (estadoCambiado)="actualizarFiltroEstado($event)"
+          (plataformaCambiada)="actualizarFiltroPlataforma($event)"
+          (vistaCambiada)="vistaActual.set($event)">
+        </app-game-filters>
       </aside>
 
       <div class="col-lg-8 col-xl-9">

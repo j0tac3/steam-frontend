@@ -1,50 +1,89 @@
-<div class="search-section d-flex flex-column gap-3">
+<div class="filters-glass-card w-100" [class.is-collapsed]="!isExpanded()">
   
-  <div class="search-wrapper position-relative">
-    <span class="search-icon"><app-icon name="icon-search"></app-icon></span>
-    <input type="text" class="custom-search-input w-100" placeholder="Filtrar por nombre..."
-           [value]="filtroTexto()" (input)="textoCambiado.emit($any($event.target).value)">
-    @if (filtroTexto()) {
-      <button class="btn-clear" (click)="limpiarBusqueda()">×</button>
-    }
-  </div>
-
-  <div class="view-switcher-container">
-    <button class="view-btn" 
-            [class.active]="vistaActual() === 'cuadricula'" 
-            (click)="vistaCambiada.emit('cuadricula')">
-      <i class="bi bi-grid-fill"></i>
-      <span>Cuadrícula</span>
-    </button>
-    <button class="view-btn" 
-            [class.active]="vistaActual() === 'tablero'" 
-            (click)="vistaCambiada.emit('tablero')">
-      <i class="bi bi-view-list"></i>
-      <span>Tablero</span>
-    </button>
-  </div>
-
-  <hr class="separator my-1">
-
-  <div class="platforms-area">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <label class="section-label-header">PLATAFORMA</label>
-      <span class="results-badge">{{ totalMostrados() }} juegos</span>
+  <div class="header-area" (click)="togglePanel()">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <h3 class="m-0 text-white fw-bold fs-5">Filtros y Vista</h3>
+        <i class="bi bi-funnel text-primary fs-5" style="color: #8a3aff !important;"></i>
+      </div>
+      
+      <div class="trigger-icon">
+        <i class="bi" [class.bi-chevron-down]="!isExpanded()" [class.bi-chevron-up]="isExpanded()"></i>
+      </div>
     </div>
     
-    <div class="chips-grid">
-      @for (plat of opcionesPlataforma; track plat.id) {
-        <button class="chip-pill" [class.active]="isActiva(plat.id)" (click)="onSelectPlataforma(plat.id)">
-          <div class="icon-center-wrapper">
-            @if (plat.tipo === 'icon') {
-              <i class="bi {{ plat.valor }}"></i>
-            } @else {
-              <span class="color-dot" [style.backgroundColor]="plat.color"></span>
+    <div class="m-0 mt-1">
+      @if (isExpanded()) {
+        <span class="fs-7 text-white-50 opacity-75">(clic para ocultar)</span>
+      } @else {
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          @if (filtroTexto()) {
+            <span class="badge bg-primary text-truncate border border-primary" style="max-width: 100px; --bs-bg-opacity: 0.2;">"{{ filtroTexto() }}"</span>
+          }
+          @if (filtroPlataforma() !== 'todas') {
+            <span class="badge bg-secondary border border-secondary" style="--bs-bg-opacity: 0.2;">{{ filtroPlataforma().split(',').length }} plat.</span>
+          }
+          <span class="badge border border-secondary text-white-50 text-capitalize">{{ vistaActual() }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="panel-collapsible" [class.open]="isExpanded()">
+    <div class="panel-content">
+      <div class="panel-inner pt-3">
+        
+        <div class="search-section d-flex flex-column gap-3">
+          <div class="search-wrapper position-relative">
+            <span class="search-icon"><app-icon name="icon-search"></app-icon></span>
+            <input type="text" class="custom-search-input w-100" placeholder="Filtrar por nombre..."
+                   [value]="filtroTexto()" (input)="textoCambiado.emit($any($event.target).value)">
+            @if (filtroTexto()) {
+              <button class="btn-clear" (click)="limpiarBusqueda()">×</button>
             }
           </div>
-          <span class="chip-text">{{ plat.nombre }}</span>
-        </button>
-      }
+
+          <div class="view-switcher-container">
+            <button class="view-btn" 
+                    [class.active]="vistaActual() === 'cuadricula'" 
+                    (click)="vistaCambiada.emit('cuadricula')">
+              <i class="bi bi-grid-fill"></i>
+              <span>Cuadrícula</span>
+            </button>
+            <button class="view-btn" 
+                    [class.active]="vistaActual() === 'tablero'" 
+                    (click)="vistaCambiada.emit('tablero')">
+              <i class="bi bi-view-list"></i>
+              <span>Tablero</span>
+            </button>
+          </div>
+
+          <hr class="separator my-1">
+
+          <div class="platforms-area">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="section-label-header text-white-50 small fw-bold tracking-wide">PLATAFORMA</label>
+              <span class="results-badge text-white-50 small">{{ totalMostrados() }} juegos</span>
+            </div>
+            
+            <div class="chips-grid">
+              @for (plat of opcionesPlataforma; track plat.id) {
+                <button class="chip-pill" [class.active]="isActiva(plat.id)" (click)="onSelectPlataforma(plat.id)">
+                  <div class="icon-center-wrapper">
+                    @if (plat.tipo === 'icon') {
+                      <i class="bi {{ plat.valor }}"></i>
+                    } @else {
+                      <span class="color-dot" [style.backgroundColor]="plat.color"></span>
+                    }
+                  </div>
+                  <span class="chip-text">{{ plat.nombre }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
