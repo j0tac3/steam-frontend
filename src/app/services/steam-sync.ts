@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from './game.service';
 import { concatMap, from } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface SteamGamePayload {
   steam_id: number;
@@ -15,9 +16,8 @@ export interface SteamGamePayload {
 export class SteamSyncService {
   private http = inject(HttpClient);
   private gameService = inject(GameService); 
-  
-  // ⚠️ Cambia esto por la URL de tu backend Laravel
-  private apiUrl = 'http://localhost:8000/api'; 
+  private apiUrl: string = environment.apiUrl;
+
 
   // 🚦 Signals Reactivos
   public isSyncing = signal<boolean>(false);
