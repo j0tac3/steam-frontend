@@ -1,0 +1,111 @@
+.steam-sync-container {
+  font-family: system-ui, -apple-system, sans-serif;
+  display: inline-block;
+
+  /* ==================================
+     1. EL BOTÓN INICIAL
+     ================================== */
+  .btn-sync {
+    background: rgba(18, 20, 25, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 18px;
+    border-radius: 50rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(139, 92, 246, 0.4); /* Toque morado al pasar el ratón */
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+    }
+  }
+
+  /* ==================================
+     2. LA CAJA DE BÚSQUEDA
+     ================================== */
+  .input-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    background: rgba(18, 20, 25, 0.85); 
+    backdrop-filter: blur(10px);
+    border-radius: 50rem;
+    border: 1px solid rgba(139, 92, 246, 0.4); 
+    padding: 4px 6px 4px 14px;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+    height: 42px; /* Altura fija para evitar saltos */
+
+    .steam-icon-left {
+      color: #a855f7;
+      font-size: 1.2rem;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      width: 140px;
+      padding: 0;
+      margin: 0;
+      flex-grow: 1;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    /* 🔥 Contenedor blindado para los botones */
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      flex-shrink: 0; /* IMPIDE que se aplasten */
+
+      button {
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover:not(:disabled) {
+          transform: scale(1.1);
+          background: rgba(255, 255, 255, 0.1);
+        }
+        
+        &:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn-search {
+        color: #a855f7;
+        font-size: 1.1rem;
+      }
+
+      .btn-cancel {
+        color: #e74c3c;
+        font-size: 1.1rem;
+      }
+    }
+  }
+}

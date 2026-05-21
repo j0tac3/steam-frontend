@@ -1,0 +1,104 @@
+/* Posicionamiento flotante premium (fijo en la esquina inferior derecha) */
+.sync-progress-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  
+  /* Glassmorphism y Rim Light Morado */
+  background: rgba(18, 20, 25, 0.85); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.4); 
+  border-radius: 12px;
+  padding: 18px;
+  z-index: 1050; // Flota sobre todo
+  
+  /* Sombra profunda para "flotabilidad" */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(139, 92, 246, 0.1);
+  
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: system-ui, -apple-system, sans-serif;
+
+  /* 🔥 NUEVO: Toda la tarjeta tiene cursor de agarre */
+  cursor: grab;
+  transition: box-shadow 0.2s ease;
+
+  /* 🔥 Efecto visual al agarrarla */
+  &:active {
+    cursor: grabbing;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+}
+
+/* Cabecera con título y contador */
+.sync-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 2px;
+  user-select: none; /* Evita seleccionar texto al arrastrar */
+}
+
+.sync-title {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .steam-icon {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+  }
+}
+
+.sync-counter {
+  font-weight: 700;
+  font-size: 14px;
+  
+  .current {
+    color: #a855f7; /* Morado para el actual */
+  }
+  .total {
+    color: rgba(255, 255, 255, 0.5); /* Gris apagado para el total */
+  }
+}
+
+/* Nombre del juego actual */
+.sync-current-game {
+  font-size: 15px;
+  color: #ffffff;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Añade los "..." si es muy largo */
+  margin-bottom: 6px;
+  user-select: none; /* Evita seleccionar texto al arrastrar */
+}
+
+/* Contenedor de la barra de progreso */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50rem;
+  overflow: hidden;
+}
+
+/* Relleno Neón Morado */
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 50rem;
+  background: linear-gradient(90deg, #8b5cf6, #d946ef); /* Degradado Premium */
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); /* Efecto Neón/Resplandor */
+  transition: width 0.3s ease-out; 
+}
+
+/* Opcional: Quitar contornos feos de Angular CDK al arrastrar */
+.cdk-drag-placeholder {
+  opacity: 0;
+}

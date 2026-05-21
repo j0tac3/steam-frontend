@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // ⚠️ IMPORTANTE: Ajusta estas rutas a donde tengas tu servicio e interfaz
-import { SteamService } from '../../services/steam'; 
+import { GameService } from '../../services/game.service'; 
 import { SteamDeal } from '../../models/deal';
 
 @Component({
@@ -12,7 +12,7 @@ import { SteamDeal } from '../../models/deal';
   styleUrl: './radar.scss'
 })
 export class RadarComponent implements OnInit {
-  private gameService = inject(SteamService);
+  private gameService = inject(GameService);
   
   // Señales reactivas tipadas con nuestra nueva interfaz
   ofertas = signal<SteamDeal[]>([]);

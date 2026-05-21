@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameCardComponent } from './game-card';
+import { SteamSyncBanner } from './steam-sync-banner';
 
-describe('GameCard', () => {
-  let component: GameCardComponent;
-  let fixture: ComponentFixture<GameCardComponent>;
+describe('SteamSyncBanner', () => {
+  let component: SteamSyncBanner;
+  let fixture: ComponentFixture<SteamSyncBanner>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GameCardComponent]
+      imports: [SteamSyncBanner]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GameCardComponent);
+    fixture = TestBed.createComponent(SteamSyncBanner);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

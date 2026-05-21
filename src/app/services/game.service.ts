@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
-export class SteamService { 
+export class GameService { 
   private http = inject(HttpClient);
   private apiUrl: string = environment.apiUrl;
+  public juegoSincronizado$ = new Subject<void>();
+  public sincronizacionTerminada$ = new Subject<void>();
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token'); 
@@ -68,10 +70,9 @@ export class SteamService {
     });
   }
   
-  updateStatus(id: number | string, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/games/${id}/status`, { status }, {
-      headers: this.getHeaders()
-    });
+  updateStatus(id: number | string, data: any) {
+    // 🚀 CAMBIAMOS .put POR .patch
+    return this.http.patch(`${this.apiUrl}/games/${id}/status`, data);
   }
 
   updateGameDiario(gameId: number | string, data: any): Observable<any> {
@@ -112,5 +113,13 @@ export class SteamService {
     }
     
     return this.http.get(`${this.apiUrl}/public/profile/${username}`, { params });
+  }
+
+  getAdvancedStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats/advanced`);
+  }
+
+  getDiscoverFeed(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/discover/feed`);
   }
 }

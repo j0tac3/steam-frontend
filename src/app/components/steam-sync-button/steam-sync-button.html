@@ -1,0 +1,27 @@
+<div class="steam-sync-container">
+  @if (!showInput() && !syncService.isSyncing()) {
+    <button class="btn-sync" (click)="showInput.set(true)">
+      <i class="bi bi-steam text-primary fs-5"></i> Sincronizar Steam
+    </button>
+  } @else if (showInput() && !syncService.isSyncing()) {
+    <div class="input-box shadow-sm">
+      <i class="bi bi-steam steam-icon-left"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="steamId" 
+        (keyup.enter)="triggerSync()"
+        placeholder="ID de Steam..."
+        [disabled]="syncService.isSyncing()"
+        autofocus
+      >
+      <div class="action-buttons">
+        <button class="btn-search" (click)="triggerSync()" [disabled]="syncService.isSyncing() || !steamId" title="Buscar">
+          <i class="bi bi-check-lg"></i>
+        </button>
+        <button class="btn-cancel" (click)="showInput.set(false)" [disabled]="syncService.isSyncing()" title="Cancelar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+  }
+</div>

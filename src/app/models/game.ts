@@ -1,79 +1,75 @@
-// 1. Interfaces Auxiliares para Datos Relacionales
-export interface GameImage {
-  id?: number;
-  url: string;
-  image_id?: string; // Útil si quieres pedir imágenes en alta resolución a IGDB
-}
-
-export interface GenericEntity {
+// ==========================================
+// 🔗 1. MODELOS AUXILIARES (Relaciones)
+// ==========================================
+export interface GameMedia {
   id: number;
-  name: string;
+  type: 'cover' | 'screenshot' | 'trailer';
+  source: 'igdb' | 'steam' | 'local';
+  path: string;
+  is_primary: boolean;
 }
 
-export interface GameCompany {
-  id?: number;
-  company: GenericEntity;
-  developer: boolean;
-  publisher: boolean;
-}
-
-export interface GameWebsite {
-  id?: number;
-  category: number; // IGDB usa números para saber si es Steam, Twitter, Wiki...
-  url: string;
-}
-
-export interface SimilarGame {
+export interface Platform {
   id: number;
-  name: string;
-  cover?: GameImage;
-}
-
-export interface GamePlatform {
   name: string;
   family: string;
 }
 
-// 2. 🚀 MODELO PRINCIPAL DE JUEGO (God Mode)
-export interface Game {
-  // --- CAMPOS BÁSICOS (Usados en la lista de búsqueda) ---
+export interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+// ==========================================
+// 📦 2. ENTIDAD DE INVENTARIO MULTICONSONA
+// ==========================================
+export interface UserGameVersion {
+  id: number;
+  user_id: number;
+  game_id: number;
+  platform_id: number;
+  store_id?: number | null;
+  status: 'pendiente' | 'jugando' | 'completado' | 'abandonado';
+  playtime_minutes: number;
+  is_favorite: boolean;
+  personal_rating: number;
+  created_at?: string;
+  updated_at?: string;
+  platform?: Platform;
+}
+
+// ==========================================
+// 🎮 3. LOS CONTEXTOS DEL JUEGO
+// ==========================================
+export interface GameSearchResult {
   external_id: string;
-  source: string;
   title: string;
-  cover_url: string | null;
-  category?: number;
-  parent_game?: string;
-  yaLoTengo?: boolean; // Propiedad que calculas dinámicamente en el frontend
-
-  // --- CAMPOS DETALLADOS (Usados solo al ver la Ficha Completa) ---
-  
-  // Textos y Fechas
-  summary?: string;
+  cover_url: string;
+  source: string;
+  category: number;
   release_year?: string;
-  storyline?: string;
-  first_release_date?: number; // IGDB lo envía como Unix Timestamp (segundos)
-  
-  // Notas
-  rating?: number;             // Nota media de los usuarios (0 - 100)
-  rating_count?: number;       // Número de usuarios que han votado
-  aggregated_rating?: number;  // Nota media de la prensa (0 - 100)
-  
-  // Multimedia
-  artworks?: GameImage[];
-  screenshots?: GameImage[];
-  
-  // Etiquetas (IGDB las devuelve como un array de objetos con id y name)
-  genres?: GenericEntity[];
-  //platforms?: GenericEntity[];
-  platforms?: GamePlatform[];
-  game_modes?: GenericEntity[];
-  themes?: GenericEntity[];
-  player_perspectives?: GenericEntity[];
+}
 
-  // Compañías y Enlaces
-  involved_companies?: GameCompany[];
-  websites?: GameWebsite[];
+export interface Game {
+  id: number;
+  igdb_id: number;
+  name: string;
+  slug: string;
+  summary?: string;
+  release_date?: string;
+  rating?: number;
+  igdb_user_rating: number;
+  media?: GameMedia[];
+  platforms?: Platform[];
+  genres?: Genre[];
+  screenshots?: string[]; 
+  time_to_beat?: any; 
+}
 
-  // Recomendaciones
-  similar_games?: SimilarGame[];
+export interface LibraryGame extends Game {
+  // 🚀 ARQUITECTURA PURA: Mapeo directo de la relación de la Base de Datos
+  inventory_entries: UserGameVersion[]; 
+  has_notes: boolean;
+  has_featured_notes: boolean;
 }

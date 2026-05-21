@@ -1,0 +1,46 @@
+// Contenedor del carrusel horizontal
+.horizontal-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  
+  // Desplazamiento suave y magnético (Snap)
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  
+  // Ocultar la barra de scroll para un look más limpio (opcional pero recomendado)
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  // Tarjeta individual dentro del carrusel
+  .game-card-snap {
+    flex: 0 0 auto; // Evita que se encojan
+    width: 200px;   // Ancho fijo para las portadas
+    scroll-snap-align: start; // Enganche magnético al inicio
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    .cover-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+  }
+}

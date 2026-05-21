@@ -1,10 +1,17 @@
 import { Component, Output, input, EventEmitter, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SteamService } from '../../services/steam';
+import { GameService } from '../../services/game.service';
 import { IconComponent } from '../icon/icon';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card';
-import { Game } from '../../models/game'; 
 import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
+
+// 🚀 IMPORTAMOS LOS NUEVOS MODELOS LIMPIOS
+import { GameSearchResult, LibraryGame } from '../../models/game'; 
+
+// Interfaz extendida solo para esta vista (añade el chivato "yaLoTengo")
+export interface SearchResultView extends GameSearchResult {
+  yaLoTengo?: boolean;
+}
 
 @Component({
   selector: 'app-game-search',
@@ -14,22 +21,23 @@ import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
   styleUrl: './game-search.scss'
 })
 export class GameSearchComponent {
-  private gameService = inject(SteamService);
+  private gameService = inject(GameService);
   
-  // 🚀 ESTADO DEL ACORDEÓN: Abierto por defecto
   public isPanelExpanded = signal<boolean>(true);
   public searchCategory: string = 'juego';
 
-  searchResults = signal<Game[]>([]);
+  // 🚀 ACTUALIZAMOS LOS TIPOS
+  searchResults = signal<GameSearchResult[]>([]);
   cargando = signal<boolean>(false);
-  misJuegos = input<any[]>([]); 
+  misJuegos = input<LibraryGame[]>([]); // 🚀 Ahora sabe que recibe juegos de BD
   busquedaRealizada = signal<boolean>(false);
 
   paginaActual = signal<number>(1);
   elementosPorPagina = signal<number>(10);
 
-  @Output() addGame = new EventEmitter<Game>();
-  @Output() viewDetails = new EventEmitter<Game>();
+  // 🚀 LOS EMISORES AHORA ENVÍAN GameSearchResult AL PADRE
+  @Output() addGame = new EventEmitter<GameSearchResult>();
+  @Output() viewDetails = new EventEmitter<GameSearchResult>();
   @Output() notificar = new EventEmitter<{mensaje: string, tipo: 'success' | 'error' | 'warning'}>();
 
   esqueletosArray = computed(() => new Array(this.elementosPorPagina()).fill(0));
@@ -42,8 +50,9 @@ export class GameSearchComponent {
 
     return pagina.map(game => ({
       ...game,
-      yaLoTengo: bibliotecaActual.some(m => String(m.external_id) === String(game.external_id))
-    }));
+      // 🚀 EL GRAN FIX: Comparamos el ID de IGDB de la biblioteca con el external_id de la búsqueda
+      yaLoTengo: bibliotecaActual.some(m => String(m.igdb_id) === String(game.external_id))
+    })) as SearchResultView[];
   });
 
   totalPaginas = computed(() => {
@@ -53,7 +62,6 @@ export class GameSearchComponent {
 
   paginasArray = computed(() => Array.from({ length: this.totalPaginas() }, (_, i) => i + 1));
 
-  // 🚀 MÉTODO PARA ALTERNAR EL PANEL
   togglePanel() {
     this.isPanelExpanded.update(v => !v);
   }
@@ -67,12 +75,11 @@ export class GameSearchComponent {
     this.busquedaRealizada.set(false);
 
     this.gameService.searchGames(termino, this.searchCategory).subscribe({
-      next: (res: Game[]) => {
+      next: (res: GameSearchResult[]) => {
         this.searchResults.set(res || []);
         this.busquedaRealizada.set(true);
         this.cargando.set(false);
         
-        // 🚀 2. Solo colapsamos el panel si la acción viene del botón BUSCAR o del Enter
         if (autoCollapse) {
           this.isPanelExpanded.set(false);
         }
@@ -89,7 +96,6 @@ export class GameSearchComponent {
     });
   }
 
-  // 🚀 Recibimos el HTMLInputElement directamente desde la plantilla
   limpiar(inputEl: HTMLInputElement) {
     this.searchResults.set([]);
     this.paginaActual.set(1);
@@ -126,13 +132,11 @@ export class GameSearchComponent {
     }
   }
 
-  // 🚀 Recibimos el HTMLInputElement para lanzar la búsqueda automáticamente
   setCategory(cat: string, inputEl: HTMLInputElement) {
     this.searchCategory = cat;
     const textoActual = inputEl?.value?.trim();
     
     if (textoActual && textoActual !== '') {
-      // 🚀 3. Al cambiar de categoría, actualizamos resultados pero le decimos que NO colapse
       this.buscar(textoActual, false);
     }
   }

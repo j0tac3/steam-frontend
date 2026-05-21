@@ -9,7 +9,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./card-clean.scss']
 })
 export class CardCleanComponent {
-  gameId = input.required<string>();
+  // 🚀 FIX: Ahora acepta tanto textos (IGDB) como números (BD local)
+  gameId = input.required<string | number>();
+  
   title = input.required<string>();
   imageUrl = input.required<string>(); 
   showAddButton = input<boolean>(false);
@@ -19,20 +21,20 @@ export class CardCleanComponent {
   personalRating = input<number>(0);
   hasNotes = input<boolean | undefined>(false);
   hasFeaturedNotes = input<boolean | undefined>(false);
-  isReadOnly = input<boolean>(false); // 🚀 NUEVO
+  isReadOnly = input<boolean>(false); 
   releaseYear = input<string | undefined>();
   
-  @Output() clicked = new EventEmitter<string>();
-  @Output() addClicked = new EventEmitter<string>();
+  // 🚀 FIX: Los emisores también deben soportar el doble tipado
+  @Output() clicked = new EventEmitter<string | number>();
+  @Output() addClicked = new EventEmitter<string | number>();
+  @Output() optionsClicked = new EventEmitter<string | number>();
   
-  // 🚀 AHORA ENVIAMOS LAS COORDENADAS AL PADRE
   @Output() completeClicked = new EventEmitter<{clientX: number, clientY: number}>();
-  @Output() optionsClicked = new EventEmitter<string>();
+  @Output() favoriteToggled = new EventEmitter<void>();
 
   // 🚀 SIGNALS PARA LA COREOGRAFÍA VISUAL
   isPopping = signal<boolean>(false);
   isLeaving = signal<boolean>(false);
-
 
   verDetalle() {
     this.clicked.emit(this.gameId());
@@ -67,11 +69,8 @@ export class CardCleanComponent {
     });
   }
 
-  @Output() favoriteToggled = new EventEmitter<void>();
-
   toggleFavorite(event: MouseEvent) {
     event.stopPropagation();
-    // Emitimos al padre (Biblioteca) para que haga la llamada a la API y actualice la UI
     this.favoriteToggled.emit();
   }
 }

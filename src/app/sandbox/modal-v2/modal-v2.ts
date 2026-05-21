@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, signal, inject, input, effect, computed } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
-import { SteamService } from '../../services/steam';
+import { GameService } from '../../services/game.service';
 import { JournalService, JournalEntry } from '../../services/journal'; // 🚀 AÑADIDO EL NUEVO SERVICIO
 
 @Component({
@@ -43,7 +43,7 @@ export class ModalV2Component {
     this.showOnlyFeatured.update(v => !v);
   }
 
-  private gameService = inject(SteamService);
+  private gameService = inject(GameService);
   private journalService = inject(JournalService); // 🚀 INYECTADO
 
   modalMode: 'read' | 'action' = 'read';

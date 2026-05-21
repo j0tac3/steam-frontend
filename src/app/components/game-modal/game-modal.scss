@@ -1,312 +1,1331 @@
-/* --- 1. ELIMINAR RECUADRO OSCURO DE BOOTSTRAP --- */
-::ng-deep .modal-backdrop.show {
-  opacity: 0.4 !important; 
+/* =========================================
+   1. BACKDROP Y ESTADO DE CARGA
+   ========================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    align-items: flex-end; 
+    padding: 0;
+  }
 }
 
-::ng-deep .modal-content {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* --- 2. ESTILOS BASE DEL MODAL (CRISTAL CON SOMBRA) --- */
-.custom-modal-style {
-  background: var(--glass-bg-nav) !important; // Usamos el fondo más oscuro de nuestra paleta
-  backdrop-filter: var(--glass-blur-heavy);
-  -webkit-backdrop-filter: var(--glass-blur-heavy);
-  color: var(--text-main);
-  overflow: hidden;
-  position: relative;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 24px;
+.loading-state {
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8) !important;
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
-
-  &.is-dragging {
-    transition: none !important;
-  }
-}
-
-/* --- 3. CABECERA / HERO --- */
-.hero-header {
-  position: relative;
-  width: 100%;
-  min-height: 220px;
-  background-size: cover;
-  background-position: center;
-  flex-shrink: 0; 
-  
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    /* Usamos el color base oscuro para hacer el degradado fluido */
-    background: linear-gradient(180deg, rgba(11, 14, 20, 0.1) 0%, rgba(11, 14, 20, 0.6) 70%, var(--bg-fallback) 100%);
-    z-index: 1;
-  }
-
-  .btn-close-custom {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 110;
-    background: var(--glass-bg-btn);
-    backdrop-filter: var(--glass-blur-light);
-    border: 1px solid var(--glass-border-light);
-    color: var(--text-main) !important;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: var(--glass-bg-btn-hover);
-      color: var(--color-danger) !important;
-    }
-  }
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  padding: 60px 25px 20px;
-  .hero-title {
-    color: var(--text-main) !important;
-    font-size: 2.2rem;
-    font-weight: 800;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-  }
-}
-
-/* --- 4. TABS (SEGMENTED CONTROL) --- */
-.modern-tabs-container {
-  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 15px 0;
-  background: transparent;
-  flex-shrink: 0;
-  
-  .modern-tabs-nav {
-    display: flex;
-    background: var(--glass-bg-btn); 
-    padding: 4px;
-    border-radius: 12px;
-    width: 90%;
-    border: 1px solid var(--glass-border);
-    
-    button {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 8px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted) !important;
+  height: 100%; 
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top-color: #6441a5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =========================================
+   2. CONTENEDOR PRINCIPAL DEL MODAL
+   ========================================= */
+/* =========================================
+   2. CONTENEDOR PRINCIPAL DEL MODAL
+   ========================================= */
+.modal-content {
+  /* --- TU DISEÑO ORIGINAL (INTACTO) --- */
+  background: #121212;
+  width: 100%;
+  max-width: 1100px;
+  height: 90vh;
+  max-height: 80vh;
+  border-radius: 20px;
+  position: relative;
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #e5e5e5;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+  &::-webkit-scrollbar { width: 8px; }
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+  &::-webkit-scrollbar-track { background: #1a1a1a; }
+  &::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+  @media (max-width: 768px) {
+    max-height: 100%;
+    width: 100vw !important; 
+    height: 85vh !important; 
+    margin: 0 !important; 
+    padding: 1.5rem !important; 
+    border-radius: 24px 24px 0 0 !important;
+    border-bottom: none !important;
+  }
+
+  /* --- NUESTRO PANEL DE ACCIÓN ANIDADO --- */
+  .action-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px;
+    border-radius: 16px;
+    animation: fadeInDown 0.3s ease-out;
+
+    /* CHIPS INACTIVOS */
+    button.chip-btn {
+      background-color: rgba(255, 255, 255, 0.1) !important; 
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: rgba(255, 255, 255, 0.8) !important; 
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+      }
+
+      /* ESTADOS ACTIVOS (Anti-Bootstrap) */
+      &.is-selected {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #ffffff !important;
+        font-weight: bold !important;
+        i { color: #000000 !important; }
+      }
       
-      &.active {
-        color: var(--text-main) !important;
-        background: var(--glass-bg-panel); 
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      &.is-warning {
+        background-color: #ffc107 !important;
+        color: #000000 !important;
+        border-color: #ffc107 !important;
+        font-weight: bold !important;
+        i { color: #000000 !important; }
+      }
+
+      &.is-primary {
+        background-color: #0d6efd !important;
+        color: #ffffff !important;
+        border-color: #0d6efd !important;
+        font-weight: bold !important;
+        i { color: #ffffff !important; }
+      }
+
+      &.is-success {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        border-color: #198754 !important;
+        font-weight: bold !important;
+        i { color: #ffffff !important; }
+      }
+    }
+
+    /* BOTÓN GUARDAR INTELIGENTE */
+    button.btn-guardar {
+      transition: all 0.3s ease;
+      
+      /* Estado Deshabilitado */
+      &:disabled {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        border: 1px dashed rgba(255, 255, 255, 0.2) !important;
+        opacity: 1 !important; 
+      }
+
+      /* Estado Listo */
+      &.ready {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 2px solid #ffffff !important;
+        font-weight: 900 !important;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        
+        &:hover {
+          transform: translateY(-2px);
+          background-color: #e9ecef !important;
+          box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        }
       }
     }
   }
 }
 
-/* --- 5. CUERPO Y SCROLL --- */
-.tab-content-area {
-  background: transparent;
-  flex-grow: 1; 
-  overflow-y: auto; 
-  -webkit-overflow-scrolling: touch;
-  color: var(--text-main);
-  
-  .section-label {
-    font-size: 0.7rem;
-    color: var(--text-main) !important; 
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+/* Píldora móvil */
+.drag-pill {
+  width: 40px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 10px;
+  margin: 0 auto 20px auto; 
+}
+
+
+
+/* =========================================
+   3. GRID Y DISTRIBUCIÓN PC
+   ========================================= */
+.modal-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* Ocultamos cabecera móvil en PC */
+.mobile-header {
+  display: none;
+}
+
+/* =========================================
+   4. BARRA LATERAL (Cover y Stats)
+   ========================================= */
+.sidebar {
+  /* La clase específica para la carátula de PC */
+  .desktop-cover {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .stats {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    
+    .stat-item {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center; 
+      
+      .stat-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        
+        .label { 
+          font-size: 0.95rem; 
+          color: #e5e5e5; 
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .sub-label {
+          font-size: 0.75rem;
+          color: #888; 
+        }
+      }
+      
+      .value {
+        font-size: 1.4rem; 
+        font-weight: bold;
+        &.success { color: #4ade80; } 
+        &.info { color: #38bdf8; } 
+        &.warning { color: #facc15; }
+      }
+    }
   }
 }
 
-/* --- 6. RESPONSIVE IMÁGENES Y CONTENIDO --- */
-::ng-deep .description-text {
-  img {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    margin: 1.5rem auto !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-  }
+/* =========================================
+   5. INFORMACIÓN PRINCIPAL
+   ========================================= */
+.main-info {
+  min-width: 0;
   
-  line-height: 1.65;
-  font-size: 0.98rem;
+  /* Clase específica para título de PC */
+  .desktop-title { 
+    margin: 0 0 15px 0; 
+    font-size: 2.5rem; 
+    color: white; 
+    line-height: 1.2; 
+    padding-right: 40px; 
+  }
 
-  iframe, video {
-    width: 100% !important;
-    aspect-ratio: 16 / 9;
-    border-radius: 8px !important;
-    margin: 1.5rem 0 !important;
+  .tags .tag {
+    display: inline-block;
+    background: rgba(100, 65, 165, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    color: #b99aff;
+    border: 1px solid rgba(100, 65, 165, 0.3);
+  }
+
+  .description {
+    margin-bottom: 30px;
+    h3 { font-size: 1.2rem; color: white; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+    p { line-height: 1.6; color: #ccc; margin: 0; }
+    .mt-4 { margin-top: 25px; }
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      strong { color: #888; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 4px; }
+      span { color: white; font-size: 1rem; }
+    }
+  }
+
+  .game-metadata {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+
+    .metadata-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px; 
+      color: #a0a0a0; 
+      font-size: 0.85rem;
+      font-weight: 500;
+      
+      i { color: #d4af37; font-size: 0.9rem; }
+      &.unconfirmed {
+        border-color: rgba(239, 108, 0, 0.4); 
+        i { color: #ef6c00; }
+      }
+    }
   }
 }
 
-/* --- 7. CONFIGURACIÓN PC E INFERIORES --- */
-@media (min-width: 768px) {
-  .modal-dialog {
+/* =========================================
+   6. CARRUSEL DE CAPTURAS
+   ========================================= */
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden; 
+  
+  &:hover {
+    .nav-btn { opacity: 1; }
+  }
+}
+
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  
+  scrollbar-width: none; 
+  &::-webkit-scrollbar { display: none; }
+
+  .screenshot-img {
+    height: 180px; 
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); 
+  z-index: 10;
+  
+  background: rgba(15, 15, 15, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  
+  width: 44px;
+  height: 44px;
+  border-radius: 50%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  
+  opacity: 0.6;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    background: rgba(30, 30, 30, 0.9);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  &.prev-btn { left: 10px; }
+  &.next-btn { right: 10px; }
+}
+
+/* =========================================
+   7. ADAPTACIÓN A MÓVIL Y TABLET
+   ========================================= */
+@media (max-width: 900px) {
+  /* Rompemos el grid a 1 columna y reducimos padding general */
+  .modal-grid {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  /* Ocultamos los elementos gigantes de PC */
+  .desktop-cover, 
+  .desktop-title {
+    display: none !important;
+  }
+
+  /* Mostramos la cabecera compacta */
+  .mobile-header {
+    display: flex;
+    align-items: center; 
+    gap: 16px;
+    //margin-bottom: 20px;
+
+    .cover-thumb {
+      width: 40%; 
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0; 
+    }
+
+    .mobile-title {
+      font-size: 1.5rem;
+      color: white;
+      margin: 0;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+  }
+  .sidebar .stats {
+    gap: 8px; /* Reducimos el aire entre las propias tarjetas */
+    
+    .stat-item {
+      padding: 10px 14px; /* 1. Dieta de márgenes: menos padding vertical (antes 15px) */
+      
+      .stat-info {
+        gap: 0px; /* 2. Reducimos separación interna entre título y subtítulo */
+        line-height: 1.1; /* 1. Comprimimos la caja invisible del texto */
+        
+        .label {
+          font-size: 0.85rem; /* 2. Compactamos títulos (Prensa, Usuarios) */
+        }
+        
+        .sub-label {
+          font-size: 0.7rem; /* 2. Compactamos subtítulos */
+          margin-top: 2px; /* Pequeño respiro para que no se pegue del todo */
+        }
+      }
+      
+      .value {
+        font-size: 1.15rem; /* 2. Bajamos los porcentajes (antes 1.4rem) */
+      }
+    }
+    
+    /* 3. Preservación de la Jerarquía Visual (El Toque Híbrido) */
+    .user-rating-box {
+      /* El fondo y borde dorados ya los hereda intactos del SCSS base */
+      .stars-container {
+        font-size: 1.5rem; /* Forzamos que las estrellas sigan siendo igual de grandes y fáciles de tocar */
+      }
+    }
+  }
+}
+
+
+/* =========================================
+   9. TABS Y NUEVAS SECCIONES (Fase 2)
+   ========================================= */
+
+/* Navegación de Pestañas */
+.custom-tabs {
+  display: flex;             /* 1. Para que vivan juntos horizontalmente */
+  background: rgba(255, 255, 255, 0.05); /* 1. El Contenedor "Carril" gris sutil */
+  padding: 4px;              /* Espacio interno para que la pastilla no toque los bordes */
+  border-radius: 100px;      /* 1. Estilo píldora gigante */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+  gap: 4px;
+
+  .tab-btn {
+    flex: 1;                 /* 2. Se reparten el espacio al 50% */
+    display: flex;
+    flex-direction: row;     /* 2. Icono y Texto en la misma línea */
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: transparent; /* 3. Inactivo por defecto (sin fondo) */
+    border: none;            /* Sin bordes individuales */
+    border-radius: 100px;    /* 3. Forma de pastilla */
+    color: rgba(255, 255, 255, 0.6); /* 3. Gris claro para invitar al toque */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* 4. Transición fluida */
+    cursor: pointer;
+    white-space: nowrap;     /* 2. Evita saltos de línea molestos */
+
+    i { 
+      font-size: 1.1rem; 
+      transition: transform 0.2s ease;
+    }
+    
+    span { 
+      font-size: 0.9rem; 
+      font-weight: 500; 
+    }
+
+    /* 3. El estado Activo (La Pastilla Seleccionada) */
+    &.active {
+      background: linear-gradient(135deg, rgba(100, 65, 165, 0.4), rgba(100, 65, 165, 0.15));
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      position: relative;
+      
+      /* Microinteracción: El resplandor morado inferior */
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        left: 30%;
+        right: 30%;
+        height: 2px;
+        background: #9d7dfa;
+        box-shadow: 0 0 8px #6441a5;
+        border-radius: 10px;
+      }
+
+      i { transform: scale(1.1); } /* 4. El icono crece un poquito al activarse */
+    }
+
+    /* Efecto Hover para PC */
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+/* 📱 Ajuste tipográfico solo para móviles muy pequeños */
+@media (max-width: 400px) {
+  .custom-tabs .tab-btn {
+    padding: 10px 8px;
+    gap: 6px;
+    
+    i { font-size: 1rem; }
+    /* Ajustamos el tamaño de fuente si usas <span> o el texto suelto */
+    font-size: 0.8rem; 
+  }
+}
+
+/* Animación de cambio de pestaña */
+.tab-pane-anim {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🌟 Bloque de Estrellas (Mi Nota) */
+.user-rating-box {
+  border: 1px solid rgba(255, 193, 7, 0.3) !important;
+  background: rgba(255, 193, 7, 0.05) !important;
+  transition: all 0.3s ease;
+
+  .stars-container {
+    display: flex;
+    gap: 4px;
+    font-size: 1.5rem;
+    color: #ffc107; /* Amarillo dorado */
+
+    i { transition: transform 0.2s; }
+  }
+
+  /* Solo interactivas si está editando */
+  &.is-editing {
+    border-color: #ffc107 !important;
+    background: rgba(255, 193, 7, 0.1) !important;
+    
+    .stars-container i {
+      cursor: pointer;
+      &:hover { transform: scale(1.2); text-shadow: 0 0 10px rgba(255,193,7,0.5); }
+    }
+  }
+}
+
+/* ❤️ Botón de Favoritos (Animación de Latido) */
+.heart-btn {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  &:hover { transform: scale(1.15); }
+  &.active i { animation: pop-heartbeat 0.4s ease; }
+}
+
+/* 📖 Área de Diario (Textarea) */
+.custom-textarea {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e5e5e5 !important;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  
+  &:focus {
+    border-color: #5865F2 !important;
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2) !important;
+  }
+}
+
+.diary-read-mode {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 4px solid #5865F2;
+  padding: 24px;
+  border-radius: 0 12px 12px 0;
+  
+  .quote-icon {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 2rem;
+    opacity: 0.2;
+  }
+  
+  .diary-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #ddd;
+    margin: 0;
+    white-space: pre-wrap; /* Mantiene los saltos de línea que hiciste al escribir */
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: 1px dashed rgba(255,255,255,0.1);
+}
+
+/* 🚀 CONTENEDOR SUPERIOR DERECHO (Fav, Lápiz, Cerrar) */
+.top-actions {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    top: 15px;
+    right: 15px;
+  }
+
+  .action-icon-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid transparent;
+    color: white;
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100% - 3.5rem);
-    max-width: 800px;
-    background-color: transparent !important; 
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &:hover {
+      background: rgba(255,255,255,0.2);
+      transform: scale(1.1);
+    }
+
+    &.edit-btn {
+      background: rgba(88, 101, 242, 0.2);
+      border-color: rgba(88, 101, 242, 0.5);
+      &:hover { background: rgba(88, 101, 242, 0.8); }
+    }
+
+    &.heart-btn {
+      background: rgba(220, 53, 69, 0.1);
+      border-color: rgba(220, 53, 69, 0.3);
+      &:hover { background: rgba(220, 53, 69, 0.2); }
+      &.active {
+        background: rgba(220, 53, 69, 0.2);
+        border-color: rgba(220, 53, 69, 0.8);
+        i { animation: pop-heartbeat 0.4s ease; }
+      }
+    }
+  }
+}
+
+/* 📝 ESTILO BASE DE LA NOTA */
+.note-bubble {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* 💎 ESTILO NOTA DESTACADA (Dorado Premium) */
+.is-featured-entry {
+  border-color: rgba(255, 215, 0, 0.4) !important;
+  background: linear-gradient(to bottom right, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.02)) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.05) !important;
+}
+
+/* 🚀 BOTÓN FILTRO */
+.filter-star-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffc107;
+  transition: all 0.3s ease;
+  &.active {
+    background: rgba(255, 193, 7, 0.2);
+    border-color: rgba(255, 193, 7, 0.4);
+  }
+}
+
+/* ⚡ TRANSICIÓN SUAVE (Prevención de saltos bruscos) */
+.diary-list-container {
+  min-height: 100px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🛡️ ESTADO VACÍO DEL FILTRO */
+.empty-featured-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+
+  i { font-size: 2.5rem; display: block; }
+  p { margin: 0; font-weight: 500; }
+}
+
+/* =========================================
+   NUEVO: PASTILLA DE ESTADO IN-PLACE
+   ========================================= */
+/* =========================================
+   PASTILLA DE ESTADO IN-PLACE Y DROPDOWN
+   ========================================= */
+.status-dropdown-container {
+  position: relative;
+  width: fit-content;
+}
+
+/* =========================================
+   PASTILLA DE ESTADO IN-PLACE (FIX DESCUADRE)
+   ========================================= */
+.status-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 6px 12px; // Un pelín más estrecho el padding lateral
+  color: white;
+  font-size: 0.8rem; // Bajamos un punto para ganar espacio (era 0.85)
+  font-weight: 500;
+  display: inline-flex; // Cambiado a inline-flex para que no ocupe todo el ancho
+  align-items: center;
+  gap: 4px; // Reducimos el hueco entre elementos
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 100%; // No permite que se salga del padre
+  white-space: nowrap; // Evita que el texto salte a otra línea dentro de la pastilla
+  font-size: 0.8rem; // Bajamos un poco el tamaño
+  display: inline-flex; 
+  gap: 8px;
+  
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .custom-modal-style {
+  .plat-text { 
+    color: rgba(255, 255, 255, 0.7); /* Ligeramente más visible */
+    font-weight: 500;
+    max-width: none; /* Quitamos el max-width porque ya no usamos ellipsis */
+    white-space: nowrap;
+    
+    .badge-plus {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      margin-left: 4px;
+      color: #fff;
+    }
+  }
+
+  .icon-chevron {
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 6px; /* Separación forzada del texto */
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Ajuste para el contenedor padre en el mobile-header */
+.status-dropdown-container {
+  display: block; // Asegura que se comporte como un bloque propio
+  width: fit-content; // Se ajusta a lo que mida la pastilla
+  margin-top: 4px;
+}
+
+/* 🔲 2. Definición de Contenedores */
+/* =========================================
+   🔲 V2: BOTTOM SHEET (MÓVIL) Y POPOVER (PC)
+   ========================================= */
+
+/* 🚀 1. Overlay Oscuro para aislar la acción en móvil */
+.dropdown-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+  animation: fadeIn 0.2s ease;
+}
+
+.status-dropdown-menu {
+  /* 📱 MÓVIL: COMPORTAMIENTO BOTTOM SHEET (ERGONOMÍA) */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background: #121419; /* Fondo muy oscuro, casi negro */
+  border-radius: 24px 24px 0 0;
+  z-index: 1050;
+  padding: 24px 24px 35px 24px; /* Extra padding abajo para los iPhone/Gestos */
+  border-top: 1px solid rgba(111, 66, 193, 0.4); /* Línea de luz corporativa superior */
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9);
+  animation: slideUpBottomSheet 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  @keyframes slideUpBottomSheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* 💻 PC: COMPORTAMIENTO POPOVER CON PROFUNDIDAD */
+  @media (min-width: 768px) {
+    position: absolute;
+    bottom: auto;
+    top: calc(100% + 16px); /* 🚀 Offset: Separado para no tapar estrellas */
+    left: 0;
+    width: 320px; /* Un poco más ancho para respirar */
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(111, 66, 193, 0.4); /* Rim Light Morado */
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(111, 66, 193, 0.15); /* Mucha profundidad */
+    animation: slideDownPopover 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    @keyframes slideDownPopover {
+      from { opacity: 0; transform: translateY(-15px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 🚀 La Flecha de Conexión Espacial */
+    .popover-arrow {
+      position: absolute;
+      top: -7px;
+      left: 24px;
+      width: 14px;
+      height: 14px;
+      background: #121419;
+      border-top: 1px solid rgba(111, 66, 193, 0.4);
+      border-left: 1px solid rgba(111, 66, 193, 0.4);
+      transform: rotate(45deg);
+      z-index: 1051;
+    }
+  }
+
+  /* 📏 Títulos de sección */
+  h6 {
+    font-size: 0.75rem !important;
+    letter-spacing: 1px;
+  }
+
+  /* 🎯 Botones de Selección (Tap Targets grandes) */
+  button.btn.chip-btn {
+    background: rgba(255, 255, 255, 0.03); 
+    color: var(--text-main, #ffffff);
+    opacity: 0.6; 
+    font-size: 0.85rem; 
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 10px; 
+    padding: 8px 14px;
+    min-height: 44px; /* 🚀 Tap Target mínimo Apple HIG */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    @media (min-width: 768px) {
+      min-height: 38px; /* En PC usamos ratón, puede ser un poco menor */
+    }
+
+    &:hover:not([class*="is-"]) {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    /* 🌟 RESPLANDORES ACTIVOS (Glow Effects) */
+    &.is-warning {
+      background-color: rgba(251, 191, 36, 0.1);
+      color: #FBBF24;
+      border: 1px solid rgba(251, 191, 36, 0.6);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); 
+    }
+
+    &.is-primary {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.6);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+    }
+
+    &.is-success {
+      background-color: rgba(52, 211, 153, 0.1);
+      color: #34D399;
+      border: 1px solid rgba(52, 211, 153, 0.6);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.3); /* Resplandor encendido */
+    }
+
+    &.is-danger {
+      background-color: rgba(248, 113, 113, 0.1);
+      color: #F87171;
+      border: 1px solid rgba(248, 113, 113, 0.6);
+      opacity: 1;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
+    }
+  }
+
+  /* 🚀 BOTÓN HECHO VIBRANTE (El CTA Principal) */
+  .btn-done {
+    background: linear-gradient(135deg, #7b4df2, #5a32b9); /* Morado vibrante */
+    color: #FFFFFF;
+    border-radius: 12px;
+    font-size: 0.95rem; 
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    min-height: 50px; /* Target gigante para confirmar */
     width: 100%;
-    height: auto; 
-    max-height: 90vh;
-    border: 1px solid var(--glass-border-light) !important;
-  }
-
-  ::ng-deep .description-text img {
-    max-width: 90% !important;
-    margin: 30px auto;
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+    transition: all 0.2s ease;
+    
+    &:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(111, 66, 193, 0.6), inset 0 2px 4px rgba(255,255,255,0.3);
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+    
+    &:active {
+      transform: translateY(1px);
+    }
   }
 }
 
-@media (max-width: 767px) {
-  .modal.fade .modal-dialog {
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Modificación para las Estrellas (Siempre activas) */
+.user-rating-box.is-editing .stars-container i {
+  cursor: pointer;
+  transition: transform 0.1s ease, color 0.2s ease;
+  
+  &:active {
+    transform: scale(0.8); /* Feedback de pulsación (tap) */
+  }
+}
+
+/* =========================================
+   ESTILOS DE INVENTARIO (FICHA TÉCNICA)
+   ========================================= */
+.inventory-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  
+  
+
+  .card-header-simple {
     display: flex;
-    align-items: flex-end;
-    min-height: 100vh;
-    margin: 0;
-  }
-  .modal.show .modal-dialog { transform: translateY(0); }
-  .custom-modal-style {
-    border-radius: 24px 24px 0 0 !important;
-    height: 85vh; 
-    width: 100vw;
+    justify-content: space-between;
+    align-items: center;
+    
+    .tiny { 
+      font-size: 0.75rem; 
+      opacity: 0.7;
+    }
   }
 }
 
-/* --- 8. ANIMACIONES Y DRAG HANDLE --- */
-.drag-handle-container {
-  width: 100%;
-  padding: 10px 0;
+.inventory-chip {
+  background: rgba(255, 255, 255, 0.04); /* Fondo muy sutil */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Borde visible pero tenue */
+  color: #9CA3AF; /* 👁️ 2. Gris más claro para mejorar la legibilidad inactiva */
+  padding: 8px 14px;
+  border-radius: 12px;
+  display: inline-flex; /* Comportamiento de etiqueta/tag */
+  width: fit-content; /* Ocupa solo lo que necesita, rompiendo la cuadrícula */
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+
+  .plat-icon { 
+    opacity: 0.5; /* Icono inactivo más visible que antes */
+    filter: grayscale(1); 
+    transition: all 0.2s ease; 
+  }
+
+  /* Eliminar focus nativo de bootstrap */
+  &:focus, &:active {
+    outline: 0;
+    box-shadow: none;
+  }
+
+  &:hover:not(.owned) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #D1D5DB;
+  }
+
+  /* ✨ 3. Estado: Lo tengo (Owned) - Minimalista y Premium */
+  &.owned {
+    color: #ffffff; 
+    font-weight: 600;
+
+    .plat-icon { 
+      filter: grayscale(0); 
+      opacity: 1; 
+    }
+
+    /* 🎮 PlayStation (Azul) */
+    &.brand-playstation {
+      background: rgba(0, 112, 204, 0.15); 
+      border-color: rgba(0, 112, 204, 0.6); 
+      box-shadow: 0 4px 10px rgba(0, 112, 204, 0.1);
+      .plat-icon i { color: #0070cc; text-shadow: 0 0 8px rgba(0, 112, 204, 0.5); }
+    }
+
+    /* 🟩 Xbox (Verde) */
+    &.brand-xbox {
+      background: rgba(16, 124, 16, 0.15);
+      border-color: rgba(16, 124, 16, 0.6);
+      box-shadow: 0 4px 10px rgba(16, 124, 16, 0.1);
+      .plat-icon i { color: #107c10; text-shadow: 0 0 8px rgba(16, 124, 16, 0.5); }
+    }
+
+    /* 🟥 Nintendo (Rojo) */
+    &.brand-nintendo {
+      background: rgba(230, 0, 18, 0.15);
+      border-color: rgba(230, 0, 18, 0.6);
+      box-shadow: 0 4px 10px rgba(230, 0, 18, 0.1);
+      .plat-icon i { color: #e60012; text-shadow: 0 0 8px rgba(230, 0, 18, 0.5); }
+    }
+
+    /* 💻 PC (Blanco/Gris Claro) */
+    &.brand-pc {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05);
+      .plat-icon i { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); }
+    }
+    
+    /* 🟣 Por defecto (si no tiene familia) */
+    &.brand-other {
+      background: rgba(100, 65, 165, 0.15); 
+      border-color: rgba(100, 65, 165, 0.6); 
+      box-shadow: 0 4px 10px rgba(100, 65, 165, 0.1); 
+      .plat-icon i { color: #b99aff; }
+    }
+  }
+  &.dropdown-chip {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.02); /* Fondo más sutil para que no sature el menú */
+    
+    &:hover:not(.owned) {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+}
+
+/* =========================================
+   REFINAMIENTO DE ESCRITORIO (DESKTOP POLISH)
+   ========================================= */
+
+/* 🎯 1. Tags de Plataforma */
+.platform-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+}
+
+/* 🎯 Estilo para la píldora de la Fecha de Salida */
+.metadata-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  width: fit-content;
+
+  i {
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  /* Si el juego no tiene fecha confirmada, se pone naranja/aviso */
+  &.unconfirmed {
+    color: #fbbf24; 
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.2);
+    
+    i { 
+      color: #fbbf24; 
+      opacity: 1;
+    }
+  }
+}
+
+/* 🎯 Puntos del Carrusel (Dots) - Sin interferencia de Bootstrap */
+.custom-indicators {
   display: flex;
   justify-content: center;
-  flex-shrink: 0;
-  .drag-handle {
-    width: 40px;
-    height: 5px;
-    background: var(--glass-border-light);
-    border-radius: 10px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  width: 100%;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+
+    &.active {
+      background: var(--text-main, #ffffff);
+      width: 18px; 
+      border-radius: 10px;
+    }
   }
 }
 
-.modal.fade.show .modal-dialog {
-  animation: modalContentFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes modalContentFadeIn {
-  0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.custom-modal-style {
-  transition: transform 0.1s ease-out;
-  &.is-dragging { transition: none; }
-}
-
-
-/* ==========================================================================
-   FORMULARIOS CRISTAL (Inputs y Quill)
-   ========================================================================== */
-.glass-input {
-  background: rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid var(--glass-border) !important;
-  color: var(--text-main) !important;
-  border-radius: 8px;
-  backdrop-filter: var(--glass-blur-light);
+/* 🎯 3. Ajustes de la Pastilla junto al título */
+/* 🎯 3. Ajustes de la Pastilla junto al título (Escritorio) */
+@media (min-width: 768px) {
+  .desktop-header {
+    .status-dropdown-container {
+      margin-left: auto; /* Empuja el contenedor a la derecha si está en flex */
+    }
+    
+    /* 🚀 FIX DROPDOWN: Alinear a la derecha para que no se salga del modal */
+    .status-dropdown-menu {
+      left: auto;
+      right: 0; /* Anclado al borde derecho del botón */
+      min-width: 250px; 
+      transform-origin: top right; /* Que la animación nazca de la esquina correcta */
+    }
+    
+    .status-pill-btn {
+      padding: 6px 14px;
+      font-size: 0.85rem; /* En PC nos podemos permitir un pelín más de tamaño */
+    }
+  }
   
-  &:focus {
-    background: rgba(0, 0, 0, 0.4) !important;
-    border-color: var(--color-info) !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-  }
-  
-  /* Pone el icono del calendario en blanco */
-  &::-webkit-calendar-picker-indicator {
-    filter: invert(1); 
-    opacity: 0.7;
-    cursor: pointer;
+  .desktop-meta {
+    padding-right: 1.5rem;
   }
 }
 
-.glass-editor-wrapper {
+.inventory-chip {
+  /* ... tus estilos actuales de .inventory-chip ... */
+
+  /* 🚀 Estado temporal (Seleccionado para añadir) */
+  &.pending {
+    background: rgba(25, 135, 84, 0.15); /* Verde clarito */
+    border: 1px dashed rgba(25, 135, 84, 0.6);
+    color: #fff;
+    .plat-icon { filter: grayscale(0); opacity: 0.8; }
+  }
+}
+
+/* =========================================
+   LISTA DE PLATAFORMAS EN ACORDEÓN
+   ========================================= */
+.platform-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  /* 🚀 CORREGIDO: Eliminamos overflow: hidden para permitir que el menú flote hacia afuera */
+  transition: all 0.2s ease;
 
-  /* La barra superior (Toolbar) */
-  ::ng-deep .ql-toolbar.ql-snow {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: var(--glass-blur-light);
-    border: 1px solid var(--glass-border);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px 12px 0 0;
-    padding: 10px;
+  &.is-owned {
+    border-color: rgba(25, 135, 84, 0.3);
+    background: rgba(25, 135, 84, 0.05);
   }
 
-  /* El área donde escribes */
-  ::ng-deep .ql-container.ql-snow {
-    border: 1px solid var(--glass-border);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: var(--glass-blur-light);
-    color: var(--text-main);
-    font-size: 1rem;
-    font-family: inherit;
+  &.is-pending {
+    border-color: rgba(13, 110, 253, 0.3);
+    background: rgba(13, 110, 253, 0.05);
   }
+}
 
-  /* Placeholder (El texto gris antes de escribir) */
-  ::ng-deep .ql-editor.ql-blank::before {
-    color: rgba(255, 255, 255, 0.4);
-    font-style: normal;
-  }
+.plat-header-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  /* 🚀 AÑADIDO: Redondeamos las esquinas superiores del botón para mantener la estética limpia */
+  border-radius: 11px 11px 0 0; 
 
-  /* Color base de los iconos (negrita, cursiva, etc) */
-  ::ng-deep .ql-snow .ql-stroke { stroke: rgba(255, 255, 255, 0.7); }
-  ::ng-deep .ql-snow .ql-fill, 
-  ::ng-deep .ql-snow .ql-stroke.ql-fill { fill: rgba(255, 255, 255, 0.7); }
-  
-  /* Efecto azul al pasar el ratón o activar (negrita activada) */
-  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-stroke,
-  ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-stroke {
-    stroke: var(--color-info);
+  &:hover { background: rgba(255, 255, 255, 0.05); }
+
+  .plat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+
+    &.brand-playstation { color: #0070cc; background: rgba(0, 112, 204, 0.15); }
+    &.brand-xbox { color: #107c10; background: rgba(16, 124, 16, 0.15); }
+    &.brand-pc { color: #fff; background: rgba(255, 255, 255, 0.1); }
+    &.brand-nintendo { color: #e60012; background: rgba(230, 0, 18, 0.15); }
+    /* 📱 Móvil (Cian/Teal) */
+    &.brand-mobile {
+      background: rgba(14, 165, 233, 0.15); 
+      border-color: rgba(14, 165, 233, 0.6); 
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.1);
+      .plat-icon i { color: #0ea5e9; text-shadow: 0 0 8px rgba(14, 165, 233, 0.5); }
+    }
   }
-  ::ng-deep .ql-snow.ql-toolbar button:hover .ql-fill,
-  ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-fill {
-    fill: var(--color-info);
+}
+
+.plat-edit-panel {
+  padding: 0 16px 16px 16px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.05);
+  margin-top: 4px;
+  padding-top: 12px;
+
+  .stars-container i {
+    cursor: pointer;
+    transition: transform 0.1s;
+    &:hover { transform: scale(1.2); }
   }
-  
-  /* Textos de los selectores (Tamaño, Fuente) */
-  ::ng-deep .ql-snow .ql-picker { color: rgba(255, 255, 255, 0.7); }
-  ::ng-deep .ql-snow .ql-picker-options {
-    background: var(--glass-bg-panel);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: var(--glass-blur-heavy);
+}
+
+.status-badge {
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+
+  &.badge-completado { background: rgba(25, 135, 84, 0.1); color: #4ade80; border-color: rgba(25, 135, 84, 0.3); }
+  &.badge-jugando { background: rgba(13, 110, 253, 0.1); color: #60A5FA; border-color: rgba(13, 110, 253, 0.3); }
+  &.badge-abandonado { background: rgba(220, 53, 69, 0.1); color: #F87171; border-color: rgba(220, 53, 69, 0.3); }
+  &.badge-pendiente { background: rgba(255, 193, 7, 0.1); color: #FBBF24; border-color: rgba(255, 193, 7, 0.3); }
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1050;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+  .menu-item {
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(255, 255, 255, 0.05); }
   }
 }

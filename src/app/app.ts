@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SteamSyncBannerComponent } from './components/steam-sync-banner/steam-sync-banner';
 
 @Component({
   selector: 'app-root',

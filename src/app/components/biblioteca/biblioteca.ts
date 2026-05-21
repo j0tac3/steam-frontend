@@ -7,21 +7,22 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators'; 
 import { ActivatedRoute } from '@angular/router';
 
-import { SteamService } from '../../services/steam';
+import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth';
 
 import { StatsPanelComponent } from '../stats-panel/stats-panel';
+import { SteamSyncButtonComponent } from '../steam-sync-button/steam-sync-button';
 import { GameSearchComponent } from '../game-search/game-search';
 import { GameFiltersComponent } from '../game-filters/game-filters';
 import { IconComponent } from '../icon/icon';
-import { ModalV2Component } from '../../sandbox/modal-v2/modal-v2';
+import { GameModal } from '../game-modal/game-modal'; 
 import { CardCleanComponent } from '../../sandbox/card-clean/card-clean';
 import { environment } from '../../../environments/environment';
 import { UserProfileCardComponent } from '../user-profile-card/user-profile-card';
 
-
-import { SavedGame } from '../../models/saved-games';
+import { Game, LibraryGame } from '../../models/game'; 
 import confetti from 'canvas-confetti';
+import { SteamSyncBannerComponent } from "../steam-sync-banner/steam-sync-banner";
 
 @Component({
   selector: 'app-biblioteca',
@@ -29,29 +30,22 @@ import confetti from 'canvas-confetti';
   imports: [
     CommonModule, StatsPanelComponent, GameSearchComponent, GameFiltersComponent,
     IconComponent, DragDropModule, RouterModule,
-    ModalV2Component, CardCleanComponent, ScrollingModule, UserProfileCardComponent
-  ],
+    GameModal, CardCleanComponent, ScrollingModule, UserProfileCardComponent, SteamSyncButtonComponent,
+    SteamSyncBannerComponent
+],
   templateUrl: './biblioteca.html',
   styleUrl: './biblioteca.scss',
 })
 export class BibliotecaComponent implements OnInit {
-  public myLibrary = signal<SavedGame[]>([]);
+  public myLibrary = signal<LibraryGame[]>([]); 
   public cargandoBiblioteca = signal<boolean>(true);
 
   private route = inject(ActivatedRoute);
   public isReadOnly = signal<boolean>(false);
   public profileOwner = signal<any>(null);
 
-  // 🧠 CEREBRO CENTRAL: Aquí vive todo el estado de la vista
-  filtros = signal({
-    status: 'todos',
-    platform: 'todas',
-    search: '',
-    page: 1,
-    _t: Date.now() // Token para forzar recargas
-  });
+  filtros = signal({ status: 'todos', platform: 'todas', search: '', page: 1, _t: Date.now() });
 
-  // 📊 ESTADÍSTICAS (Directas desde Laravel)
   estadisticas = signal({ total: 0, pendientes: 0, jugando: 0, completados: 0, abandonado: 0 });
   totalEncontrados = signal<number>(0);
   totalPaginas = signal<number>(1);
@@ -59,7 +53,7 @@ export class BibliotecaComponent implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private gameService = inject(SteamService); 
+  private gameService = inject(GameService); 
   private ngZone = inject(NgZone);
 
   notificacion = signal<{mensaje: string, tipo: 'success' | 'error' | 'warning', mostrarBoton?: boolean} | null>(null);
@@ -68,118 +62,148 @@ export class BibliotecaComponent implements OnInit {
 
   isModalOpen = signal<boolean>(false);
   selectedGameId = signal<number | string | null>(null);
-  selectedGameSource = signal<'igdb' | 'steam'>('igdb');
+  selectedGameSource = signal<'igdb' | 'steam' | 'local'>('igdb');
   modoModal = signal<'read' | 'action'>('read'); 
   juegoModalEnBiblioteca = signal<boolean>(false);
-  juegoSeleccionadoData = signal<any>(null); 
+  juegoSeleccionadoData = signal<LibraryGame | null>(null); 
 
   isMenuRapidoOpen = signal<boolean>(false);
-  juegoMenuRapido = signal<any>(null);
+  juegoMenuRapido = signal<LibraryGame | null>(null);
+
+  // ==========================================
+  // 🚀 SELECTORES NATIVOS MULTICONSOLA
+  // ==========================================
+  getInventory(game: LibraryGame): any[] {
+    return game?.inventory_entries || (game as any)?.inventoryEntries || [];
+  }
+
+  getMainStatus(game: LibraryGame): string {
+    const entries = this.getInventory(game);
+    if (!entries || entries.length === 0) return 'pendiente';
+    const isPlaying = entries.find((e: any) => e.status === 'jugando');
+    return isPlaying ? 'jugando' : entries[0].status;
+  }
+
+  isFavorite(game: LibraryGame): boolean {
+    const entries = this.getInventory(game);
+    return entries ? entries.some((e: any) => e.is_favorite) : false;
+  }
+
+  getMainRating(game: LibraryGame): number {
+    const entries = this.getInventory(game);
+    if (!entries || entries.length === 0) return 0;
+    return Math.max(...entries.map((e: any) => e.personal_rating || 0));
+  }
+
+  updateLocalGame(gameId: number | string, updates: any) {
+    this.myLibrary.update(juegos => 
+      juegos.map(j => {
+        if (String(j.igdb_id) === String(gameId) || String(j.id) === String(gameId)) {
+          const newEntries = this.getInventory(j).map(e => ({ ...e, ...updates }));
+          return { ...j, inventory_entries: newEntries } as LibraryGame;
+        }
+        return j;
+      })
+    );
+  }
 
   usuarioPerfil = computed(() => {
     const owner = this.profileOwner();
     const stats = this.estadisticas();
     const juegos = this.myLibrary();
 
-    // Sacamos las 3 joyas favoritas
     const topFavoritos = juegos
-      .filter(j => j.is_favorite)
+      .filter(j => this.isFavorite(j))
       .slice(0, 3)
-      .map(j => ({ id: String(j.external_id), cover_url: j.cover_url || '/no-image.svg', title: j.title }));
+      .map(j => ({ id: String(j.igdb_id), cover_url: this.getCover(j), title: j.name }));
 
     return {
-      avatar: owner?.avatar || '/default-avatar.png', // Ajusta a la URL real de tu BD
+      avatar: owner?.avatar || '/default-avatar.png', 
       username: owner?.username || owner?.name || 'Jugador Oculto',
-      badge: stats.completados > 10 ? 'Completista' : 'Cazatrofeos', // Lógica dinámica simple
+      badge: stats.completados > 10 ? 'Completista' : 'Cazatrofeos', 
       juegosTotales: stats.total || 0,
       juegosCompletados: stats.completados || 0,
-      favoritosCount: juegos.filter(j => j.is_favorite).length,
+      favoritosCount: juegos.filter(j => this.isFavorite(j)).length,
       topJuegos: topFavoritos
     };
   });
 
   constructor() {
-    // 1. Detectamos si hay un username en la URL al instanciar el componente
     const usernameParam = this.route.snapshot.paramMap.get('username');
     this.isReadOnly.set(!!usernameParam);
+
+    // 1. Recarga silenciosa (por cada juego)
+    this.gameService.juegoSincronizado$.subscribe(() => {
+        this.forzarRecargaDatos();
+    });
+    // 2. 🔥 Notificación visual (solo al final)
+    this.gameService.sincronizacionTerminada$.subscribe(() => {
+        this.mostrarNotificacion('¡Sincronización de Steam finalizada!', 'success');
+    });
 
     effect(() => {
       const nuevaVista = this.vistaActual();
       localStorage.setItem('vistaBiblioteca', nuevaVista);
-      
-      // 🚀 MEJORA: Solo disparamos la petición si no es solo lectura Y si tenemos token
       if (!this.isReadOnly() && localStorage.getItem('token')) {
-        this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe({
-          error: (err) => console.error('No se pudo guardar la preferencia en BD', err)
-        });
+        this.gameService.updateUserPreferences({ vista_biblioteca: nuevaVista }).subscribe();
       }
     });
 
-    // 🚀 2. TUBERÍA REACTIVA MULTIUSO (Pública y Privada)
     toObservable(this.filtros).pipe(
       debounceTime(300),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       tap(() => this.cargandoBiblioteca.set(true)),
       switchMap(f => {
-        // Si estamos viendo el perfil de alguien, llamamos al nuevo endpoint
         if (this.isReadOnly() && usernameParam) {
-          // 🚀 AHORA SÍ PASAMOS LOS FILTROS
           return this.gameService.getPublicGames(usernameParam, f.status, f.platform, f.search);
         }
-        // Si no, llamamos a tu colección personal con sus filtros
         return this.gameService.getMyGames(f.status, f.platform, f.search, f.page);
       })
     ).subscribe({
       next: (res: any) => {
-        if (this.isReadOnly()) {
-          const juegosPublicos = res.games || [];
-          this.myLibrary.set(juegosPublicos);
+        const listado = res.data ? res.data : (res.games ? res.games : res);
+        this.myLibrary.set(listado);
+        this.totalPaginas.set(res.last_page || 1);
+        this.totalEncontrados.set(res.total || listado.length);
+        
+        if (res.stats) {
           this.profileOwner.set(res.owner || null);
-          this.totalPaginas.set(1); 
-          this.totalEncontrados.set(juegosPublicos.length);
-
-          // 🚀 Usamos las estadísticas blindadas del Backend
-          if (res.stats) {
-            this.estadisticas.set({
-              total: res.stats.total || 0,
-              pendientes: res.stats.pendiente || 0,  // Traducimos el singular al plural
-              jugando: res.stats.jugando || 0,
-              completados: res.stats.completado || 0, // Traducimos el singular al plural
-              abandonado: res.stats.abandonado || 0
-            });
-          }
+          this.estadisticas.set({
+            total: res.stats.total || 0,
+            pendientes: res.stats.pendiente || 0,  
+            jugando: res.stats.jugando || 0,
+            completados: res.stats.completado || 0, 
+            abandonado: res.stats.abandonado || 0
+          });
         } else {
-          // ✏️ MODO EDICIÓN: El backend devuelve la paginación estándar
-          this.myLibrary.set(res.data ? res.data : res);
-          this.totalPaginas.set(res.last_page || 1);
-          this.totalEncontrados.set(res.total || (res.data ? res.data.length : res.length));
+          this.cargarEstadisticas();
         }
         this.cargandoBiblioteca.set(false);
       },
-      error: (err) => {
-        console.error('Error al cargar biblioteca:', err);
-        this.cargandoBiblioteca.set(false);
-        
-        if (this.isReadOnly()) {
-          // Si el perfil es privado (403) o no existe (404), mostramos mensaje
-          this.mostrarNotificacion('El perfil es privado o no existe', 'error');
-          // En lugar de enviarlo al limbo, vaciamos la librería para que vea el estado vacío
-          this.myLibrary.set([]);
-          this.profileOwner.set({ name: 'Usuario Privado' });
-        }
-      }
+      error: () => this.cargandoBiblioteca.set(false)
     });
   }
 
   ngOnInit() {
     if (!this.isReadOnly()) {
       this.cargarEstadisticas();
-      
-      this.authService.getUser().subscribe({
-        next: (userData) => this.profileOwner.set(userData),
-        error: (err) => console.error('Error al cargar datos del usuario', err)
-      });
+      this.authService.getUser().subscribe({ next: (userData) => this.profileOwner.set(userData) });
     }
+  }
+
+  getCover(game: any): string {
+    if (game.cover_url) return game.cover_url; 
+    if (game.media && game.media.length > 0) {
+      const primary = game.media.find((m: any) => m.is_primary) || game.media[0];
+      
+      // 🚀 FIX: Si la ruta ya es una URL web completa (ej. la carátula de Steam de emergencia)
+      if (primary.path && primary.path.startsWith('http')) {
+        return primary.path;
+      }
+
+      return `https://images.igdb.com/igdb/image/upload/t_cover_big/${primary.path}.jpg`;
+    }
+    return '/no-image.svg';
   }
 
   cargarEstadisticas() {
@@ -196,139 +220,117 @@ export class BibliotecaComponent implements OnInit {
     });
   }
 
-  forzarRecargaDatos() {
-    this.filtros.update(f => ({ ...f, _t: Date.now() }));
-    this.cargarEstadisticas();
-  }
-
+  forzarRecargaDatos() { this.filtros.update(f => ({ ...f, _t: Date.now() })); this.cargarEstadisticas(); }
   actualizarFiltroPlataforma(p: string) { this.filtros.update(f => ({ ...f, platform: p, page: 1 })); }
   actualizarFiltroEstado(e: string) { this.filtros.update(f => ({ ...f, status: e, page: 1 })); }
   actualizarFiltroTexto(t: string) { this.filtros.update(f => ({ ...f, search: t, page: 1 })); }
   actualizarPagina(p: number) { this.filtros.update(f => ({ ...f, page: p })); }
 
   guardarJuegoDesdeModal(payload: any) {
-    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(payload.external_id));
+    // Como ahora somos puristas, sabemos el ID real del juego que está abierto
+    const internalId = this.juegoSeleccionadoData()?.id;
 
-    if (juegoExistente && juegoExistente.id) {
-      this.gameService.updateGame(juegoExistente.id, payload).subscribe({
-        next: () => {
-          this.juegoSeleccionadoData.set({ ...juegoExistente, ...payload });
-          this.forzarRecargaDatos(); 
-          this.mostrarNotificacion(`¡${payload.title} ha sido actualizado!`, 'success');
-        },
-        error: () => this.mostrarNotificacion('Error al actualizar el juego', 'error')
+    if (payload.action === 'delete' && internalId) {
+      this.gameService.deleteGame(`${internalId}?platform_id=${payload.platform_id}`).subscribe({
+        next: () => { this.forzarRecargaDatos(); this.cerrarModal(); }
       });
-    } else {
+    } else if (payload.platform_ids) {
       this.gameService.saveGame(payload).subscribe({
-        next: () => {
-          this.forzarRecargaDatos(); 
-          this.mostrarNotificacion(`¡${payload.title} añadido a tu colección!`, 'success', true);
-          this.cerrarModal();
-        },
-        error: () => this.mostrarNotificacion('Error al guardar el juego', 'error')
+        next: () => { this.forzarRecargaDatos(); this.mostrarNotificacion('¡Añadido a tu colección!', 'success'); }
+      });
+    } else if (payload.platform_id && internalId) {
+      this.gameService.updateStatus(internalId, payload).subscribe({
+        next: () => this.forzarRecargaDatos()
       });
     }
   }
 
-  getJuegosPorEstado(estado: string): SavedGame[] {
-    return this.myLibrary().filter(j => j.status === estado);
+  getJuegosPorEstado(estado: string): LibraryGame[] {
+    return this.myLibrary().filter(j => this.getMainStatus(j) === estado);
   }
 
-  onJuegoSoltado(event: CdkDragDrop<SavedGame[]>, nuevoEstado: string) {
+  onJuegoSoltado(event: CdkDragDrop<LibraryGame[]>, nuevoEstado: string) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
       const juegoMovido = event.previousContainer.data[event.previousIndex];
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
       
-      this.myLibrary.update(juegos => 
-        juegos.map(juego => 
-          juego.id === juegoMovido.id 
-            ? { ...juego, status: nuevoEstado as 'pendiente' | 'jugando' | 'completado' | 'abandonado' } 
-            : juego
-        )
-      );
+      const entries = this.getInventory(juegoMovido);
+      const platformId = entries.length > 0 ? entries[0].platform_id : null;
+      
+      this.updateLocalGame(juegoMovido.id, { status: nuevoEstado });
 
-      if (juegoMovido.id) {
-        this.gameService.updateStatus(juegoMovido.id, nuevoEstado).subscribe({
-          next: () => {
-            this.mostrarNotificacion('Estado actualizado', 'success');
-            this.cargarEstadisticas();
-          },
-          error: () => {
-            this.forzarRecargaDatos(); 
-            this.mostrarNotificacion('Error al actualizar', 'error');
-          }
+      if (juegoMovido.id && platformId) {
+        this.gameService.updateStatus(juegoMovido.id, { status: nuevoEstado, platform_id: platformId }).subscribe({
+          next: () => { this.mostrarNotificacion('Estado actualizado', 'success'); this.cargarEstadisticas(); },
+          error: () => this.forzarRecargaDatos()
         });
       }
     }
   }
 
   abrirModoLectura(game: any) {
-    if (this.isReadOnly()) return;
-    this.selectedGameId.set(game.external_id);
-    this.selectedGameSource.set(game.source || 'igdb');
+    if (game.id) {
+      console.log('Datos del juego al hacer clic:', game);
+      // 🛡️ ENFOQUE SOBERANO: El juego ya está en nuestra base de datos relacional
+      this.selectedGameId.set(game.id);
+      this.selectedGameSource.set('steam'); // 'steam' evita el bloque de IGDB en Laravel y fuerza la consulta local directa, respetando el estricto tipado del modal
+      this.juegoModalEnBiblioteca.set(true);
+      this.juegoSeleccionadoData.set(game);
+    } else {
+      // Si el juego viene puramente de los resultados del buscador general
+      this.selectedGameId.set(game.external_id || game.igdb_id); 
+      this.selectedGameSource.set(game.source || 'igdb');
+      this.juegoModalEnBiblioteca.set(false);
+      this.juegoSeleccionadoData.set(null);
+    }
     this.modoModal.set('read');
-    
-    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(game.external_id));
-    this.juegoModalEnBiblioteca.set(!!juegoExistente);
-    this.juegoSeleccionadoData.set(juegoExistente || null);
-    
     this.isModalOpen.set(true);
   }
 
   abrirModoAccion(game: any) {
-    this.selectedGameId.set(game.external_id);
-    this.selectedGameSource.set(game.source || 'igdb');
+      console.log('Datos del juego al hacer clic:', game);
+    if (game.id) {
+      this.selectedGameId.set(game.id);
+      this.selectedGameSource.set('steam');
+      this.juegoModalEnBiblioteca.set(true);
+      this.juegoSeleccionadoData.set(game);
+    } else {
+      this.selectedGameId.set(game.external_id || game.igdb_id);
+      this.selectedGameSource.set(game.source || 'igdb');
+      this.juegoModalEnBiblioteca.set(false);
+      this.juegoSeleccionadoData.set(null);
+    }
     this.modoModal.set('action');
-    
-    const juegoExistente = this.myLibrary().find(g => String(g.external_id) === String(game.external_id));
-    this.juegoModalEnBiblioteca.set(!!juegoExistente);
-    this.juegoSeleccionadoData.set(juegoExistente || null); 
-    
     this.isModalOpen.set(true);
   }
+  
+  @HostListener('window:resize') onResize() { this.isMobile = window.innerWidth <= 768; }
 
-  @HostListener('window:resize')
-  onResize() { this.isMobile = window.innerWidth <= 768; }
-
-  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success', mostrarBoton = false) {
-    this.notificacion.set({ mensaje, tipo, mostrarBoton });
+  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success') {
+    this.notificacion.set({ mensaje, tipo });
     setTimeout(() => this.notificacion.set(null), 4000); 
   }
 
   cerrarModal() { this.isModalOpen.set(false); this.selectedGameId.set(null); }
   cerrarSesion() { this.authService.logout(); this.router.navigate(['/login']); }
-
-  abrirMenuRapido(game: any) {
-    this.juegoMenuRapido.set(game);
-    this.isMenuRapidoOpen.set(true);
-  }
-
-  cerrarMenuRapido() {
-    this.isMenuRapidoOpen.set(false);
-    setTimeout(() => this.juegoMenuRapido.set(null), 300); 
-  }
+  abrirMenuRapido(game: LibraryGame) { this.juegoMenuRapido.set(game); this.isMenuRapidoOpen.set(true); }
+  cerrarMenuRapido() { this.isMenuRapidoOpen.set(false); setTimeout(() => this.juegoMenuRapido.set(null), 300); }
 
   cambiarEstadoRapido(nuevoEstado: 'pendiente' | 'jugando' | 'completado' | 'abandonado') {
     const juego = this.juegoMenuRapido();
     if (!juego || !juego.id) return;
 
-    this.myLibrary.update(juegos => 
-      juegos.map(j => j.id === juego.id ? { ...j, status: nuevoEstado } : j)
-    );
+    const entries = this.getInventory(juego);
+    const platformId = entries.length > 0 ? entries[0].platform_id : null;
 
-    this.gameService.updateStatus(juego.id, nuevoEstado).subscribe({
-      next: () => {
-        this.mostrarNotificacion(`Movido a ${nuevoEstado}`, 'success');
-        this.forzarRecargaDatos(); // 🚀 Asegura que desaparezca del filtro actual
-      },
-      error: () => {
-        this.forzarRecargaDatos(); 
-        this.mostrarNotificacion('Error al cambiar el estado', 'error');
-      }
-    });
-
+    this.updateLocalGame(juego.id, { status: nuevoEstado });
+    if (platformId) {
+      this.gameService.updateStatus(juego.id, { status: nuevoEstado, platform_id: platformId }).subscribe({
+        next: () => { this.mostrarNotificacion(`Movido a ${nuevoEstado}`, 'success'); this.forzarRecargaDatos(); }
+      });
+    }
     this.cerrarMenuRapido();
   }
 
@@ -336,173 +338,67 @@ export class BibliotecaComponent implements OnInit {
     const juego = this.juegoMenuRapido();
     if (!juego || !juego.id) return;
 
-    const nuevoEstadoFav = !juego.is_favorite;
-
-    this.myLibrary.update(juegos => 
-      juegos.map(j => j.id === juego.id ? { ...j, is_favorite: nuevoEstadoFav } : j)
-    );
-    this.juegoMenuRapido.set({ ...juego, is_favorite: nuevoEstadoFav });
-
-    this.gameService.toggleFavorite(juego.id).subscribe({
-      error: () => {
-        this.forzarRecargaDatos(); 
-        this.mostrarNotificacion('Error al actualizar favorito', 'error');
-      }
-    });
-
+    const nuevoEstadoFav = !this.isFavorite(juego);
+    this.updateLocalGame(juego.id, { is_favorite: nuevoEstadoFav });
+    this.gameService.toggleFavorite(juego.id).subscribe({ error: () => this.forzarRecargaDatos() });
     this.cerrarMenuRapido();
   }
 
-  abrirEdicionDesdeMenu() {
-    const juego = this.juegoMenuRapido();
-    this.cerrarMenuRapido();
-    if (juego) setTimeout(() => this.abrirModoAccion(juego), 100); 
-  }
+  abrirEdicionDesdeMenu() { const j = this.juegoMenuRapido(); this.cerrarMenuRapido(); if (j) setTimeout(() => this.abrirModoAccion(j), 100); }
 
   eliminarJuegoRapido() {
     const juego = this.juegoMenuRapido();
-    if (!juego || !juego.id) return;
-
-    if (confirm(`¿Estás seguro de que deseas eliminar "${juego.title}" de tu biblioteca?`)) {
+    if (juego && confirm(`¿Estás seguro de que deseas eliminar "${juego.name}" de tu biblioteca?`)) {
       this.gameService.deleteGame(juego.id).subscribe({
-        next: () => {
-          this.forzarRecargaDatos();
-          this.mostrarNotificacion('Juego eliminado', 'success');
-        },
-        error: () => this.mostrarNotificacion('Error al eliminar', 'error')
+        next: () => { this.forzarRecargaDatos(); this.mostrarNotificacion('Juego eliminado', 'success'); }
       });
       this.cerrarMenuRapido();
     }
   }
 
-  marcarComoCompletado(game: any, coords?: any) {
+  marcarComoCompletado(game: LibraryGame, coords?: any) {
     if (!game || !game.id) return;
-
     if (coords?.preventDefault) { coords.preventDefault(); coords.stopPropagation(); }
 
-    // 1. Efectos visuales instantáneos (Confeti y Notificación)
     if (coords && coords.clientX) {
       this.ngZone.runOutsideAngular(() => {
-        confetti({
-          particleCount: 80,
-          spread: 60,
-          origin: { x: coords.clientX / window.innerWidth, y: coords.clientY / window.innerHeight },
-          colors: ['#198754', '#30d760', '#ffffff'],
-          zIndex: 1060,
-          disableForReducedMotion: true 
-        });
+        confetti({ particleCount: 80, spread: 60, origin: { x: coords.clientX / window.innerWidth, y: coords.clientY / window.innerHeight }, colors: ['#198754', '#30d760', '#ffffff'], zIndex: 1060 });
       });
     }
-    
-    this.mostrarNotificacion(`¡Enhorabuena! Has terminado ${game.title}`, 'success');
+    this.mostrarNotificacion(`¡Enhorabuena! Has terminado ${game.name}`, 'success');
 
-    // 2. Petición silenciosa al servidor
-    this.gameService.updateStatus(game.id, 'completado').subscribe({
-      next: () => {
-        // 3. Le damos 600ms de margen para que la tarjeta termine de desaparecer
-        // con su propia animación CSS antes de recargar la red.
-        setTimeout(() => {
-          this.forzarRecargaDatos();
-        }, 600);
-      },
-      error: () => this.mostrarNotificacion('Error al actualizar el estado', 'error')
-    });
-  }
-
-  vibrarAlArrastrar() {
-    if (typeof window !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-  }
-
-  actualizarFavoritoLocal(isFav: boolean) {
-    const currentId = this.selectedGameId();
-    if (!currentId) return;
-    
-    this.myLibrary.update(juegos => 
-      juegos.map(j => String(j.external_id) === String(currentId) ? { ...j, is_favorite: isFav } : j)
-    );
-    
-    if (this.juegoSeleccionadoData()) {
-      this.juegoSeleccionadoData.update(data => ({ ...data, is_favorite: isFav }));
+    const entries = this.getInventory(game);
+    const platformId = entries.length > 0 ? entries[0].platform_id : null;
+    if (platformId) {
+      this.gameService.updateStatus(game.id, { status: 'completado', platform_id: platformId }).subscribe({
+        next: () => setTimeout(() => this.forzarRecargaDatos(), 600)
+      });
     }
   }
+
+  vibrarAlArrastrar() { if (typeof window !== 'undefined' && navigator.vibrate) navigator.vibrate(50); }
+  actualizarFavoritoLocal(isFav: boolean) { this.forzarRecargaDatos(); }
 
   actualizarEstadoDiarioEnLista(event: {hasNotes: boolean, hasFeaturedNotes: boolean}) {
     const gameId = this.selectedGameId(); 
-    if (!gameId) return;
-
     this.myLibrary.update(lista => 
-      lista.map(g => String(g.external_id) === String(gameId) 
-        ? { ...g, has_notes: event.hasNotes, has_featured_notes: event.hasFeaturedNotes } 
-        : g
+      lista.map(g => 
+        String(g.id) === String(gameId) || String(g.igdb_id) === String(gameId) 
+          ? { ...g, has_notes: event.hasNotes, has_featured_notes: event.hasFeaturedNotes } 
+          : g
       )
     );
   }
 
   compartirPerfil() {
-    let urlCompartir = '';
-    
-    // 🚀 La variable de entorno hace la magia: pondrá localhost o Render automáticamente
-    // Quitamos el '/api' repetido si ya está en la variable de entorno, ajustamos la ruta:
-    // Tu environment.apiUrl ya termina en '/api', así que solo añadimos '/share/...'
-    
-    const apiUrlBase = environment.apiUrl.replace(/\/api$/, ''); // Limpiamos por si acaso
-
-    if (this.isReadOnly() && this.profileOwner()) {
-      urlCompartir = `${apiUrlBase}/api/share/${this.profileOwner()!.username}`;
-    } else {
-      const miUsername = this.profileOwner()?.username || 'mi_perfil'; 
-      urlCompartir = `${apiUrlBase}/api/share/${miUsername}`;
-    }
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(urlCompartir).then(() => {
-        this.mostrarNotificacion('¡Enlace público copiado al portapapeles!', 'success');
-      }).catch(err => {
-        console.error('Error al copiar:', err);
-        this.mostrarNotificacion('No se pudo copiar el enlace', 'error');
-      });
-    } else {
-      this.mostrarNotificacion('Tu navegador no soporta copiar automáticamente', 'warning');
-    }
+    const url = `${environment.apiUrl.replace(/\/api$/, '')}/share/${this.profileOwner()?.username || 'mi_perfil'}`;
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => this.mostrarNotificacion('¡Enlace público copiado!', 'success'));
   }
 
-  togglePrivacidad(event: any) {
-    const nuevoEstado = event.target.checked;
-    
-    // 1. Actualizamos localmente para feedback instantáneo
-    this.profileOwner.update(user => user ? { ...user, is_public: nuevoEstado } : null);
+  togglePrivacidad(event: any) { this.togglePrivacidadDirecto(event.target.checked); }
 
-    // 2. Guardamos en el servidor
-    this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe({
-      next: () => {
-        this.mostrarNotificacion(
-          nuevoEstado ? 'Tu perfil ahora es público' : 'Tu perfil ahora es privado', 
-          'success'
-        );
-      },
-      error: (err) => {
-        // Si falla, revertimos el cambio en la UI
-        this.profileOwner.update(user => user ? { ...user, is_public: !nuevoEstado } : null);
-        this.mostrarNotificacion('No se pudo cambiar la privacidad', 'error');
-      }
-    });
-  }
-
-  // 🚀 Recibe el booleano directo desde la tarjeta
   togglePrivacidadDirecto(nuevoEstado: boolean) {
     this.profileOwner.update(user => user ? { ...user, is_public: nuevoEstado } : null);
-
-    this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe({
-      next: () => {
-        this.mostrarNotificacion(
-          nuevoEstado ? 'Tu perfil ahora es público' : 'Tu perfil ahora es privado', 
-          'success'
-        );
-      },
-      error: (err) => {
-        this.profileOwner.update(user => user ? { ...user, is_public: !nuevoEstado } : null);
-        this.mostrarNotificacion('No se pudo cambiar la privacidad', 'error');
-      }
-    });
+    this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe();
   }
 }

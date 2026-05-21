@@ -94,7 +94,7 @@
               <app-card-clean 
                 [gameId]="game.external_id"
                 [title]="game.title"
-                [imageUrl]="game.cover_url ||'/no-image.svg'"
+                [imageUrl]="game.cover_url || '/no-image.svg'"
                 [showAddButton]="!game.yaLoTengo"
                 (clicked)="viewDetails.emit(game)" 
                 (addClicked)="addGame.emit(game)">

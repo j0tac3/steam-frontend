@@ -1,0 +1,27 @@
+@if (syncService.isSyncing()) {
+  <div class="sync-progress-banner shadow-lg" 
+       cdkDrag 
+       [cdkDragBoundary]="'.main-container'">
+    
+    <div class="sync-info-header">
+      <span class="sync-title">
+        <i class="fab fa-steam steam-icon"></i> Sincronizando Steam
+      </span>
+      <span class="sync-counter">
+        <span class="current">{{ syncService.processedGames() }}</span> 
+        <span class="total">/ {{ syncService.totalGames() }}</span>
+      </span>
+    </div>
+    
+    <div class="sync-current-game">
+      {{ syncService.currentGameName() || 'Obteniendo lista de juegos...' }}
+    </div>
+    
+    <div class="progress-bar-container">
+      <div 
+        class="progress-bar-fill" 
+        [style.width.%]="progressPercentage()">
+      </div>
+    </div>
+  </div>
+}
