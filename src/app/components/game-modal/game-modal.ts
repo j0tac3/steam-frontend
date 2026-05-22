@@ -31,6 +31,12 @@ export class GameModal implements OnInit {
   public activeTab = signal<'tech' | 'experience'>('tech');
   public currentImageIndex = signal<number>(0);
   public modalMode: 'read' | 'action' = 'read';
+  public toastMessage = signal<string | null>(null);
+  
+  // Computado para extraer fácilmente todas las portadas
+  public allCovers = computed(() => {
+    return this.game()?.media?.filter(m => m.type === 'cover') || [];
+  });
   
   // 🚀 VARIABLES DEL INVENTARIO (Acordeón e instant-save)
   public myVersions = signal<any[]>([]); 
@@ -284,6 +290,37 @@ export class GameModal implements OnInit {
       return `https://images.igdb.com/igdb/image/upload/t_cover_big/${primary.path}.jpg`;
     }
     return '/no-image.svg';
+  }
+
+  // Helper para obtener la URL de cualquier portada (no solo la principal)
+  getCoverUrl(media: any): string {
+    if (media.path && media.path.startsWith('http')) return media.path;
+    return `https://images.igdb.com/igdb/image/upload/t_cover_big/${media.path}.jpg`;
+  }
+
+  // 🚀 LA ACCIÓN: Cambia la portada al instante sin recargar
+  setPrimaryCover(mediaId: number) {
+    const currentGame = this.game();
+    if (!currentGame || !currentGame.id) return;
+
+    // 1. Optimistic UI: Actualizamos la señal local inmediatamente
+    const updatedMedia = currentGame.media?.map(m => {
+      if (m.type === 'cover') return { ...m, is_primary: m.id === mediaId };
+      return m;
+    });
+    this.game.update(g => g ? { ...g, media: updatedMedia } : g);
+
+    // 2. Notificación Efímera (Toast)
+    this.toastMessage.set('Portada principal actualizada');
+    setTimeout(() => this.toastMessage.set(null), 3000);
+
+    // 3. Avisamos al componente padre (La Cuadrícula) para que se re-renderice en segundo plano
+    this.saved.emit({ action: 'update_cover', game_id: currentGame.id });
+
+    // 4. Guardamos en el backend silenciosamente
+    this.gameService.setPrimaryCover(currentGame.id, mediaId).subscribe({
+      error: (err) => console.error("Error al actualizar portada", err)
+    });
   }
 
   abrirImagenCompleta(url: string) {

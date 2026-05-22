@@ -164,6 +164,31 @@
                     <p>{{ game()?.summary }}</p>
                   }
                 </div>
+                @if (allCovers().length > 1) {
+                  <div class="covers-section mt-5 animate__animated animate__fadeIn">
+                    <h3 class="section-title text-white-50 mb-3 fs-6">PORTADAS ALTERNATIVAS</h3>
+                    <div class="covers-carousel">
+                      @for (cover of allCovers(); track cover.id) {
+                        <div class="cover-option" [class.is-active-cover]="cover.is_primary">
+                          
+                          @if (cover.is_primary) {
+                            <div class="current-badge">ACTUAL</div>
+                          }
+                          
+                          <img [src]="getCoverUrl(cover)" alt="Portada" loading="lazy">
+                          
+                          <div class="cover-overlay">
+                            @if (!cover.is_primary) {
+                              <button class="set-primary-btn" (click)="setPrimaryCover(cover.id)" title="Fijar como portada principal">
+                                <i class="bi bi-star-fill"></i>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
                 @if (game()?.time_to_beat?.main || game()?.time_to_beat?.['100_percent']) {
                   <div class="time-section mt-4 animate__animated animate__fadeIn">
                     <label class="section-label">TIEMPO ESTIMADO</label>
@@ -301,4 +326,10 @@
       </div>
     }
   </div>
+  @if (toastMessage()) {
+      <div class="custom-toast animate__animated animate__fadeInUp">
+        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+        <span>{{ toastMessage() }}</span>
+      </div>
+    }
 </div>

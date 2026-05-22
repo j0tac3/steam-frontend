@@ -46,12 +46,11 @@ export class GameSearchComponent {
     const inicio = (this.paginaActual() - 1) * this.elementosPorPagina();
     const fin = inicio + this.elementosPorPagina();
     const pagina = (this.searchResults() || []).slice(inicio, fin);
-    const bibliotecaActual = this.misJuegos() || [];
 
     return pagina.map(game => ({
       ...game,
-      // 🚀 EL GRAN FIX: Comparamos el ID de IGDB de la biblioteca con el external_id de la búsqueda
-      yaLoTengo: bibliotecaActual.some(m => String(m.igdb_id) === String(game.external_id))
+      // 🚀 EL GRAN FIX: Dejamos que el backend decida si ya lo tienes
+      yaLoTengo: game.in_library 
     })) as SearchResultView[];
   });
 

@@ -1329,3 +1329,137 @@
     &:hover { background: rgba(255, 255, 255, 0.05); }
   }
 }
+
+/* =========================================
+   10. CARRUSEL DE PORTADAS ALTERNATIVAS
+   ========================================= */
+.covers-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .cover-option {
+    position: relative;
+    width: 120px;
+    height: 180px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.3s ease;
+    }
+
+    /* Feedback visual de la portada actual */
+    &.is-active-cover {
+      border-color: #9d7dfa; /* Rim light morado */
+      box-shadow: 0 0 15px rgba(100, 65, 165, 0.5);
+      
+      img { filter: brightness(1.1); }
+    }
+
+    .current-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(100, 65, 165, 0.9);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      z-index: 5;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .set-primary-btn {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        
+        /* Oculto por defecto en PC */
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        &:hover {
+          background: rgba(100, 65, 165, 0.8);
+          border-color: #9d7dfa;
+          color: #ffc107; /* Estrella dorada al hacer hover */
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    /* Interacción Hover en Escritorio */
+    &:not(.is-active-cover):hover {
+      .cover-overlay { background: rgba(0, 0, 0, 0.6); }
+      .set-primary-btn { opacity: 1; transform: scale(1); }
+    }
+
+    /* Adaptación para Táctil (Móvil) */
+    @media (max-width: 768px) {
+      .cover-overlay {
+        background: transparent !important;
+        
+        .set-primary-btn {
+          /* Siempre visible en la esquina en móvil */
+          opacity: 1;
+          transform: scale(0.9);
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          background: rgba(0, 0, 0, 0.5);
+          border-color: rgba(255,255,255,0.2);
+        }
+      }
+    }
+  }
+}
+
+/* =========================================
+   11. TOAST NOTIFICATION
+   ========================================= */
+.custom-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  border: 1px solid rgba(25, 135, 84, 0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  padding: 12px 24px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: 500;
+  z-index: 2000;
+  white-space: nowrap;
+}

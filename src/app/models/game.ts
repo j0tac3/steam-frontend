@@ -49,6 +49,8 @@ export interface GameSearchResult {
   source: string;
   category: number;
   release_year?: string;
+  in_library?: boolean;
+
 }
 
 export interface Game {

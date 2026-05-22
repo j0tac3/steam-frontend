@@ -122,4 +122,10 @@ export class GameService {
   getDiscoverFeed(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/discover/feed`);
   }
+
+  setPrimaryCover(gameId: number | string, mediaId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/games/${gameId}/primary-cover`, { media_id: mediaId }, {
+      headers: this.getHeaders() 
+    });
+  }
 }
