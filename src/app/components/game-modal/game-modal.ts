@@ -314,8 +314,13 @@ export class GameModal implements OnInit {
     this.toastMessage.set('Portada principal actualizada');
     setTimeout(() => this.toastMessage.set(null), 3000);
 
-    // 3. Avisamos al componente padre (La Cuadrícula) para que se re-renderice en segundo plano
-    this.saved.emit({ action: 'update_cover', game_id: currentGame.id });
+    // 3. Avisamos al componente padre (La Cuadrícula) y le pasamos la nueva foto
+    const selectedCover = currentGame.media?.find(m => m.id === mediaId);
+    this.saved.emit({ 
+      action: 'update_cover', 
+      game_id: currentGame.id,
+      new_cover_path: selectedCover?.path 
+    });
 
     // 4. Guardamos en el backend silenciosamente
     this.gameService.setPrimaryCover(currentGame.id, mediaId).subscribe({

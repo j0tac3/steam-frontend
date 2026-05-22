@@ -230,6 +230,37 @@ export class BibliotecaComponent implements OnInit {
     // Como ahora somos puristas, sabemos el ID real del juego que está abierto
     const internalId = this.juegoSeleccionadoData()?.id;
 
+    // 👇 1. INTERCEPTAMOS EL CAMBIO DE PORTADA (Optimistic UI) 👇
+    if (payload.action === 'update_cover') {
+      this.myLibrary.update(juegos => 
+        juegos.map(j => {
+          if (j.id === payload.game_id) {
+            
+            // 1. Actualizamos el array media (por si acaso)
+            const mediaActualizada = (j.media || []).map((m: any) => {
+              if (m.type === 'cover') {
+                return { ...m, is_primary: m.path === payload.new_cover_path };
+              }
+              return m;
+            });
+
+            // 🚀 2. LA SOLUCIÓN: Calculamos la nueva URL final
+            let nuevaUrl = payload.new_cover_path;
+            if (nuevaUrl && !nuevaUrl.startsWith('http')) {
+               nuevaUrl = `https://images.igdb.com/igdb/image/upload/t_cover_big/${nuevaUrl}.jpg`;
+            }
+
+            // 3. Sobrescribimos TAMBIÉN el 'cover_url' explícitamente para derrotar al if de getCover()
+            return { ...j, media: mediaActualizada, cover_url: nuevaUrl };
+          }
+          return j;
+        })
+      );
+      
+      return; 
+    }
+    // 👆 FIN DEL BLOQUE DE PORTADAS 👆
+
     if (payload.action === 'delete' && internalId) {
       this.gameService.deleteGame(`${internalId}?platform_id=${payload.platform_id}`).subscribe({
         next: () => { this.forzarRecargaDatos(); this.cerrarModal(); }

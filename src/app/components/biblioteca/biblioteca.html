@@ -173,7 +173,15 @@
   </main>
 
   @if (isModalOpen() && selectedGameId()) {
-    <app-modal [gameId]="selectedGameId()!" [source]="selectedGameSource()" [initialMode]="modoModal()" [enBiblioteca]="juegoModalEnBiblioteca()" [existingData]="juegoSeleccionadoData()" (saved)="guardarJuegoDesdeModal($event)" (favoriteChanged)="actualizarFavoritoLocal($event)" (journalStatusChanged)="actualizarEstadoDiarioEnLista($event)" (close)="cerrarModal()"></app-modal>
+  <app-modal    [gameId]="selectedGameId()!" 
+                [source]="selectedGameSource()" 
+                [initialMode]="modoModal()" 
+                [enBiblioteca]="juegoModalEnBiblioteca()" 
+                [existingData]="juegoSeleccionadoData()" 
+                (saved)="guardarJuegoDesdeModal($event)" 
+                (favoriteChanged)="actualizarFavoritoLocal($event)" 
+                (journalStatusChanged)="actualizarEstadoDiarioEnLista($event)" 
+                (close)="cerrarModal()"></app-modal>
   }
 
   <div class="bottom-sheet-overlay" [class.show]="isMenuRapidoOpen()" (click)="cerrarMenuRapido()"></div>

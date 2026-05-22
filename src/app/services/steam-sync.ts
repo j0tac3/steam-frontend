@@ -1,8 +1,15 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from './game.service';
-import { concatMap, from } from 'rxjs';
+import { concatMap, from, map, catchError, of } from 'rxjs'; // 🚀 AÑADIDOS NUEVOS OPERADORES
 import { environment } from '../../environments/environment';
+
+export interface SyncGame {
+  steam_id: string;
+  name: string;
+  playtime_minutes: number;
+  status: 'pending' | 'processing' | 'success' | 'error';
+}
 
 export interface SteamGamePayload {
   steam_id: number;
@@ -18,12 +25,14 @@ export class SteamSyncService {
   private gameService = inject(GameService); 
   private apiUrl: string = environment.apiUrl;
 
-
   // 🚦 Signals Reactivos
   public isSyncing = signal<boolean>(false);
   public totalGames = signal<number>(0);
   public processedGames = signal<number>(0);
   public currentGameName = signal<string>('');
+  
+  // 🔥 EL SIGNAL PARA LA VISTA VIRTUAL SCROLL
+  public gamesList = signal<SyncGame[]>([]);
 
   public startSync(steamId: string): void {
     if (this.isSyncing()) return;
@@ -40,6 +49,17 @@ export class SteamSyncService {
       next: (response) => {
         if (response.success && response.games_to_sync.length > 0) {
           this.totalGames.set(response.games_to_sync.length);
+          
+          // 🚀 1. VOLCAMOS LOS JUEGOS A LA LISTA VISUAL CON ESTADO 'PENDIENTE'
+          const initialList: SyncGame[] = response.games_to_sync.map(g => ({
+            steam_id: String(g.steam_id),
+            name: g.name,
+            playtime_minutes: g.playtime_minutes,
+            status: 'pending' // Empiezan con el reloj de arena
+          }));
+          this.gamesList.set(initialList);
+
+          // Pasamos a procesarlos
           this.processQueue(response.games_to_sync);
         } else {
           this.resetSync();
@@ -56,17 +76,32 @@ export class SteamSyncService {
     from(games).pipe(
       concatMap(game => {
         this.currentGameName.set(game.name);
-        return this.http.post(`${this.apiUrl}/steam/sync-single`, game);
+        
+        // 🚀 2. CAMBIAMOS VISUALMENTE A "PROCESANDO" (Spinner azul)
+        this.actualizarEstadoJuego(String(game.steam_id), 'processing');
+
+        // Hacemos la llamada, pero la envolvemos para saber qué juego exacto estamos procesando
+        return this.http.post(`${this.apiUrl}/steam/sync-single`, game).pipe(
+          map(res => ({ success: true, game, res })), // Si va bien
+          catchError(err => of({ success: false, game, err })) // 🛡️ Si falla, atrapamos el error para no romper la cola
+        );
       })
     ).subscribe({
-      next: () => {
+      next: (result) => {
         this.processedGames.update(count => count + 1);
-        // 🚀 EL CAMBIO MAGISTRAL: Avisamos a la biblioteca por cada juego insertado
-        this.gameService.juegoSincronizado$.next();
+        
+        // 🚀 3. EVALUAMOS EL RESULTADO Y PONEMOS CHECK VERDE O ASPA ROJA
+        if (result.success) {
+          this.actualizarEstadoJuego(String(result.game.steam_id), 'success');
+          this.gameService.juegoSincronizado$.next();
+        } else {
+          this.actualizarEstadoJuego(String(result.game.steam_id), 'error');
+          // 🔥 Engañamos a TypeScript con (result as any) para que nos deje imprimir el error
+          console.warn(`Juego omitido (${result.game.name}):`, (result as any).err);
+        }
       },
       error: (err) => {
-        this.processedGames.update(count => count + 1);
-        console.warn('Juego omitido por la aduana:', err);
+        console.error('Error catastrófico en la cola:', err);
       },
       complete: () => {
         this.currentGameName.set('¡Sincronización completada con éxito! 🎉');
@@ -74,6 +109,15 @@ export class SteamSyncService {
         setTimeout(() => this.resetSync(), 3500);
       }
     });
+  }
+
+  // 🚀 HELPER PARA ACTUALIZAR EL ESTADO VISUAL
+  private actualizarEstadoJuego(steamId: string, nuevoEstado: 'processing' | 'success' | 'error') {
+    this.gamesList.update(lista => 
+      lista.map(juego => 
+        juego.steam_id === steamId ? { ...juego, status: nuevoEstado } : juego
+      )
+    );
   }
 
   private resetSync(): void {

@@ -1,27 +1,53 @@
 @if (syncService.isSyncing()) {
   <div class="sync-progress-banner shadow-lg" 
+       [class.is-expanded]="isExpanded()"
        cdkDrag 
        [cdkDragBoundary]="'.main-container'">
     
-    <div class="sync-info-header">
-      <span class="sync-title">
-        <i class="fab fa-steam steam-icon"></i> Sincronizando Steam
-      </span>
-      <span class="sync-counter">
-        <span class="current">{{ syncService.processedGames() }}</span> 
-        <span class="total">/ {{ syncService.totalGames() }}</span>
-      </span>
-    </div>
-    
-    <div class="sync-current-game">
-      {{ syncService.currentGameName() || 'Obteniendo lista de juegos...' }}
-    </div>
-    
-    <div class="progress-bar-container">
-      <div 
-        class="progress-bar-fill" 
-        [style.width.%]="progressPercentage()">
+    <div class="sync-header-area">
+      <div class="sync-info-header d-flex justify-content-between align-items-center w-100">
+      
+        <div class="drag-zone flex-grow-1 py-1" cdkDragHandle style="cursor: grab;">
+          <span class="sync-title">
+            <i class="fab fa-steam steam-icon"></i> Sincronizando Steam
+          </span>
+        </div>
+        
+        <div class="click-zone ps-4 py-1" (click)="toggleExpand()" style="cursor: pointer;">
+          <span class="sync-counter d-flex align-items-center gap-2">
+            <span><span class="current">{{ syncService.processedGames() }}</span> <span class="total">/ {{ syncService.totalGames() }}</span></span>
+            <i class="bi text-white-50 transition-transform" [class.bi-chevron-up]="!isExpanded()" [class.bi-chevron-down]="isExpanded()"></i>
+          </span>
+        </div>
+
+      </div>
+      
+      @if (!isExpanded()) {
+        <div class="sync-current-game" (click)="toggleExpand()" style="cursor: pointer;">
+          {{ syncService.currentGameName() || 'Obteniendo lista de juegos...' }}
+        </div>
+      }
+      
+      <div class="progress-bar-container" [class.mt-2]="isExpanded()">
+        <div class="progress-bar-fill" [style.width.%]="progressPercentage()"></div>
       </div>
     </div>
+
+    @if (isExpanded()) {
+      <div class="sync-body-area animate__animated animate__fadeIn">
+        <cdk-virtual-scroll-viewport itemSize="60" class="sync-virtual-viewport">
+          <div *cdkVirtualFor="let game of syncService.gamesList()" class="sync-game-item">
+            <span class="game-name">{{ game.name }}</span>
+            <div class="game-status">
+              @if (game.status === 'success') { <i class="bi bi-check-circle-fill text-success fs-5"></i> }
+              @else if (game.status === 'error') { <i class="bi bi-x-circle-fill text-danger fs-5"></i> }
+              @else if (game.status === 'processing') { <div class="spinner-border spinner-border-sm text-primary" role="status"></div> }
+              @else { <i class="bi bi-hourglass-split text-white-25"></i> }
+            </div>
+          </div>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    }
+
   </div>
 }

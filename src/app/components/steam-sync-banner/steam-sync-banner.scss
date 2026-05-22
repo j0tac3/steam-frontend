@@ -1,46 +1,64 @@
-/* Posicionamiento flotante premium (fijo en la esquina inferior derecha) */
+/* ESTADO BASE (Minimizado flotando a la derecha) */
 .sync-progress-banner {
   position: fixed;
   bottom: 24px;
   right: 24px;
   width: 320px;
   
-  /* Glassmorphism y Rim Light Morado */
   background: rgba(18, 20, 25, 0.85); 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(139, 92, 246, 0.4); 
   border-radius: 12px;
   padding: 18px;
-  z-index: 1050; // Flota sobre todo
-  
-  /* Sombra profunda para "flotabilidad" */
+  z-index: 1050; 
   box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(139, 92, 246, 0.1);
   
   display: flex;
   flex-direction: column;
-  gap: 10px;
   font-family: system-ui, -apple-system, sans-serif;
+  
+  /* Animación suave al expandir/minimizar */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* 🔥 NUEVO: Toda la tarjeta tiene cursor de agarre */
-  cursor: grab;
-  transition: box-shadow 0.2s ease;
+  &:not(.is-expanded) {
+    cursor: grab;
+    &:active { cursor: grabbing; }
+  }
 
-  /* 🔥 Efecto visual al agarrarla */
-  &:active {
-    cursor: grabbing;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(139, 92, 246, 0.3);
+  /* 🔥 ESTADO EXPANDIDO (Bottom Sheet en el centro) */
+  &.is-expanded {
+    width: 100%;
+    max-width: 600px;
+    height: 60vh; /* Ocupa el 60% de la altura de la pantalla */
+    bottom: 0;
+    
+    /* Truco CSS para centrar un fixed */
+    right: 50%;
+    transform: translateX(50%);
+    
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    padding: 20px 24px;
+    cursor: default; /* Quitamos la mano de agarre */
   }
 }
 
-/* Cabecera con título y contador */
+/* Área interactiva del Header */
+.sync-header-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+
 .sync-info-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  margin-bottom: 2px;
-  user-select: none; /* Evita seleccionar texto al arrastrar */
+  user-select: none;
 }
 
 .sync-title {
@@ -49,38 +67,27 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
-  .steam-icon {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-  }
+  .steam-icon { color: rgba(255, 255, 255, 0.8); font-size: 14px; }
 }
 
 .sync-counter {
   font-weight: 700;
   font-size: 14px;
-  
-  .current {
-    color: #a855f7; /* Morado para el actual */
-  }
-  .total {
-    color: rgba(255, 255, 255, 0.5); /* Gris apagado para el total */
-  }
+  .current { color: #a855f7; }
+  .total { color: rgba(255, 255, 255, 0.5); }
 }
 
-/* Nombre del juego actual */
 .sync-current-game {
   font-size: 15px;
   color: #ffffff;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Añade los "..." si es muy largo */
-  margin-bottom: 6px;
-  user-select: none; /* Evita seleccionar texto al arrastrar */
+  text-overflow: ellipsis; 
+  user-select: none;
 }
 
-/* Contenedor de la barra de progreso */
+/* Barra de progreso */
 .progress-bar-container {
   width: 100%;
   height: 6px;
@@ -89,16 +96,51 @@
   overflow: hidden;
 }
 
-/* Relleno Neón Morado */
 .progress-bar-fill {
   height: 100%;
   border-radius: 50rem;
-  background: linear-gradient(90deg, #8b5cf6, #d946ef); /* Degradado Premium */
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); /* Efecto Neón/Resplandor */
+  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); 
   transition: width 0.3s ease-out; 
 }
 
-/* Opcional: Quitar contornos feos de Angular CDK al arrastrar */
-.cdk-drag-placeholder {
-  opacity: 0;
+/* 🟢 NUEVO: DISEÑO DEL LISTADO INTERNO (VIRTUAL SCROLL) */
+.sync-body-area {
+  flex: 1; /* Ocupa todo el espacio sobrante hacia abajo */
+  margin-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+  overflow: hidden;
 }
+
+.sync-virtual-viewport {
+  height: 100%; /* Obligatorio para Virtual Scroll */
+  width: 100%;
+  
+  /* Scrollbar estético */
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.5); border-radius: 10px; }
+}
+
+.sync-game-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px; /* DEBE COINCIDIR EXACTAMENTE CON EL itemSize="60" del HTML */
+  padding: 0 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+
+  .game-name {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 15px;
+  }
+}
+
+/* Ocultar rastro de Angular CDK al arrastrar */
+.cdk-drag-placeholder { opacity: 0; }
