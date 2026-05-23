@@ -1,6 +1,8 @@
 <div class="card-wrapper" (click)="verDetalle()" [class.is-leaving]="isLeaving()">
   <div class="game-card">
-    <img class="bg-image" [src]="imageUrl()" [alt]="title()" loading="lazy">
+    <img class="bg-image blur-layer" [src]="imageUrl()" aria-hidden="true" loading="lazy">
+    
+    <img class="bg-image main-layer" [src]="imageUrl()" [alt]="title()" loading="lazy">
     
     <div class="gradient-overlay"></div>
 

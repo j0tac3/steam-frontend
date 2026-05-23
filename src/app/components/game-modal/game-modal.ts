@@ -176,6 +176,22 @@ export class GameModal implements OnInit {
     return '⏳ Pendiente';
   }
 
+  // ==========================================
+  // ⏱️ HELPERS DE TIEMPO DE JUEGO (NUEVO)
+  // ==========================================
+  getPlatPlaytime(platId: number): number {
+    const version = this.myVersions().find(v => v.platform_id === platId);
+    return Number(version?.playtime_minutes) || 0;
+  }
+
+  formatPlaytime(minutes: number): string {
+    if (!minutes) return '';
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  }
+
   get availablePlatforms(): { id: number, name: string, icon: string, family: string }[] {
     const rawPlatforms = this.game()?.platforms || [];
     const mapped = new Map<number, { id: number, name: string, icon: string, family: string }>();

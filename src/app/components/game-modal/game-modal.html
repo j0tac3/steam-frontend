@@ -46,17 +46,25 @@
                     <div class="platform-row" [class.is-owned]="ownedPlatformIds().includes(plat.id)">
             
                       <button class="plat-header-btn" (click)="togglePlatformOwnership(plat.id)">
-                         <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
                             <span class="plat-icon brand-{{plat.family}}"><i class="bi {{ plat.icon }}"></i></span>
                             <span class="fw-bold text-white">{{ plat.name }}</span>
-                         </div>
-                         <div class="plat-action-icon">
+                        </div>
+                        
+                        <div class="plat-action-icon d-flex align-items-center gap-3">
+                            
+                            @if (ownedPlatformIds().includes(plat.id) && getPlatPlaytime(plat.id) > 0) {
+                              <span class="text-white-50 fw-bold" style="font-size: 0.8rem;">
+                                <i class="bi bi-clock-history me-1"></i> {{ formatPlaytime(getPlatPlaytime(plat.id)) }}
+                              </span>
+                            }
+
                             @if (ownedPlatformIds().includes(plat.id)) {
                               <i class="bi bi-check-circle-fill text-success fs-5"></i>
                             } @else {
                               <i class="bi bi-plus-circle text-white-50 fs-5"></i>
                             }
-                         </div>
+                        </div>
                       </button>
             
                       @if (ownedPlatformIds().includes(plat.id)) {
