@@ -1,10 +1,15 @@
 /* ==========================================================================
-   1. VARIABLES GLOBALES Y UTILIDADES
+   1. VARIABLES GLOBALES Y ARQUITECTURA ADAPTATIVA
    ========================================================================== */
 $color-pendiente: #ffc107;
 $color-jugando: #0d6efd;
 $color-completado: #198754;
 $color-abandonado: #dc3545;
+
+:root {
+  /* 🏗️ 1. Unificación de Ancho Máximo (Alineación Perfecta tipo Steam) */
+  --main-content-max-width: 1400px;
+}
 
 .fw-black { font-weight: 900; }
 .tracking-wide { letter-spacing: 1px; }
@@ -16,7 +21,7 @@ $color-abandonado: #dc3545;
 }
 
 /* ==========================================================================
-   2. REGLAS DE RESPONSIVIDAD DINÁMICA (BREAKPOINT 1024PX)
+   2. BREAKPOINTS DE RESPONSIVIDAD (MASTER SWITCH 1024PX)
    ========================================================================== */
 
 /* --- COMPORTAMIENTO MÓVIL POR DEFECTO (< 1024px) --- */
@@ -118,7 +123,7 @@ $color-abandonado: #dc3545;
     top: 0;
     width: 260px;
     height: 100vh;
-    padding: 28px 24px;
+    padding: 28px 20px;
     z-index: 1025;
     box-sizing: border-box;
 
@@ -134,41 +139,56 @@ $color-abandonado: #dc3545;
       color: #9ca3af;
       text-decoration: none;
       padding: 12px 16px;
-      border-radius: 12px;
+      /* 📐 2. Redución Proporcional de Fuentes de Navegación */
+      font-size: 0.92rem;
       font-weight: 600;
-      font-size: 0.95rem;
-      border: 1px solid transparent;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 3px solid transparent;
+      border-radius: 0 8px 8px 0; /* Suave encaje lateral */
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
       &:hover {
         color: #ffffff;
-        background: rgba(139, 92, 246, 0.08);
-        border-color: rgba(139, 92, 246, 0.3);
-        box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
-        transform: translateX(3px);
+        background: rgba(139, 92, 246, 0.05);
+        border-left-color: rgba(139, 92, 246, 0.4);
+        transform: translateX(2px);
       }
 
+      /* 📐 2. Refinamiento del Estado Activo Sutil (Línea Neón Lateral) */
       &.active {
         color: #ffffff;
-        background: #8b5cf6;
-        box-shadow: 0 0 18px rgba(139, 92, 246, 0.45);
-        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(139, 92, 246, 0.12); /* Morado ultratranslúcido */
+        border-left-color: #8b5cf6; /* El indicador de estado puro */
+        box-shadow: inset 5px 0 10px rgba(139, 92, 246, 0.05);
         transform: none;
       }
     }
   }
 
+  /* 🏗️ 1. Control del Layout y Alineación Horizontal de Contenido */
   .main-content {
     margin-left: 260px;
+    margin-right: auto;
     width: calc(100% - 260px);
+    max-width: var(--main-content-max-width);
     padding: 40px;
     padding-bottom: 40px !important; 
   }
 }
 
+/* Contenedor unificado para quitar desfases de Bootstrap */
+.content-section-wrapper {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* ==========================================================================
-   3. PANELES, CABECERAS Y COMPONENTES PREMIUM (GLASSMORPHISM)
+   3. COMPONENTES REFINADOS Y TRATAMIENTO DE CONTRASTE
    ========================================================================== */
+.sidebar-toggle-box {
+  background: rgba(255, 255, 255, 0.02); 
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .btn-slim-icon {
   width: 32px;
   height: 32px;
@@ -183,15 +203,8 @@ $color-abandonado: #dc3545;
   font-size: 0.85rem;
   transition: all 0.2s ease;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-  }
-  &.logout:hover {
-    background: rgba(220, 53, 69, 0.2);
-    border-color: rgba(220, 53, 69, 0.4);
-    color: #ff6b6b;
-  }
+  &:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+  &.logout:hover { background: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.4); color: #ff6b6b; }
 }
 
 .glass-panel {
@@ -204,6 +217,48 @@ $color-abandonado: #dc3545;
 
 .rounded-4 { border-radius: 1.5rem !important; }
 
+/* 🎨 2. Cerrar Sesión Sutil con Hover Rojo Translúcido */
+.btn-logout-sidebar {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ef4444; 
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1); 
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+  &:active { transform: scale(0.97); }
+}
+
+/* 🕹️ 4. ENLACE PROFUNDO AL BUSCADOR (Filtros a la izquierda + Placeholder) */
+::ng-deep app-game-search {
+  .d-flex.justify-content-center.gap-2.mb-3 {
+    justify-content: flex-start !important; /* Filtros alineados a la izquierda */
+    margin-bottom: 0.75rem !important;
+  }
+  /* Estilización de la caja nativa de búsqueda */
+  .form-control {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.3) !important; /* Placeholder nítido integrado */
+    }
+  }
+  /* Ocultar textos flotantes heredados innecesarios */
+  .text-white-50.small {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   4. COMPONENTES EXTRA (KANBAN, PAGINACIÓN, HOJAS)
+   ========================================================================== */
 .pagination-premium {
   background: rgba(30, 32, 38, 0.6);
   backdrop-filter: blur(12px);
@@ -226,13 +281,9 @@ $color-abandonado: #dc3545;
       align-items: center;
       justify-content: center;
 
-      &:hover {
-        background: rgba(139, 92, 246, 0.15);
-        color: #ffffff;
-      }
+      &:hover { background: rgba(139, 92, 246, 0.15); color: #ffffff; }
       &:focus { box-shadow: none; }
     }
-
     &.active .page-link {
       background-color: #8b5cf6;
       color: #ffffff;
@@ -240,7 +291,6 @@ $color-abandonado: #dc3545;
       box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
       transform: scale(1.05);
     }
-
     &.disabled .page-link {
       background: transparent;
       color: #9ca3af;
@@ -249,7 +299,6 @@ $color-abandonado: #dc3545;
       &:hover { background: transparent; transform: none; }
     }
   }
-
   .page-ellipsis {
     display: flex;
     align-items: center;
@@ -272,9 +321,6 @@ $color-abandonado: #dc3545;
   &.bg-warning { background: rgba(255, 193, 7, 0.9) !important; color: #000 !important; }
 }
 
-/* ==========================================================================
-   4. HOJAS DE MENÚ (BOTTOM SHEETS)
-   ========================================================================== */
 .bottom-sheet-overlay {
   position: fixed;
   inset: 0;
@@ -303,21 +349,8 @@ $color-abandonado: #dc3545;
   box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.8);
 
   &.show { transform: translateY(0); }
-
-  .drag-pill {
-    width: 40px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    margin: 0 auto 20px;
-  }
-
-  .bs-thumbnail {
-    width: 50px;
-    height: 75px;
-    object-fit: cover;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  }
+  .drag-pill { width: 40px; height: 5px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; margin: 0 auto 20px; }
+  .bs-thumbnail { width: 50px; height: 75px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
   .action-menu-item {
     background: transparent;
@@ -337,39 +370,20 @@ $color-abandonado: #dc3545;
       height: 1px;
       background-color: rgba(255, 255, 255, 0.06);
     }
-    &:hover, &:focus {
-      background: rgba(255, 255, 255, 0.05);
-      &::after { opacity: 0; }
-    }
+    &:hover, &:focus { background: rgba(255, 255, 255, 0.05); &::after { opacity: 0; } }
   }
 
   @media (min-width: 768px) {
     max-width: 420px;
     left: 50%;
     margin-left: -210px;
-    /* bottom: 20px; */
+    bottom: 20px;
     border-radius: 24px;
     border: 1px solid rgba(139, 92, 246, 0.3);
     .drag-pill { display: none; }
   }
 }
 
-.badge-estado-modal {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 50rem;
-  font-weight: 700;
-  font-size: 0.7rem;
-  &.completado { background-color: $color-completado; color: white; }
-  &.jugando { background-color: $color-jugando; color: white; }
-  &.pendiente { background-color: $color-pendiente; color: black; }
-  &.abandonado { background-color: $color-abandonado; color: white; }
-}
-
-
-/* ==========================================================================
-   5. KANBAN (TRELLO MOD) Y DRAG & DROP FÍSICAS
-   ========================================================================== */
 .kanban-container {
   display: flex;
   overflow-x: auto;
@@ -377,25 +391,14 @@ $color-abandonado: #dc3545;
   &::-webkit-scrollbar { display: none; }
 
   @media (max-width: 1024px) {
-    .kanban-column {
-      min-width: 150px !important;
-      max-width: 160px !important;
-      flex: 0 0 auto;
-    }
+    .kanban-column { min-width: 150px !important; max-width: 160px !important; flex: 0 0 auto; }
   }
   @media (min-width: 1024px) {
-    .kanban-column {
-      flex: 1;
-      min-width: 200px;
-    }
+    .kanban-column { flex: 1; min-width: 200px; }
   }
 }
 
-.kanban-column {
-  display: flex;
-  flex-direction: column;
-}
-
+.kanban-column { display: flex; flex-direction: column; }
 .kanban-list {
   flex: 1; 
   min-height: 200px;
@@ -403,11 +406,9 @@ $color-abandonado: #dc3545;
   overflow-y: auto;
   border-radius: 12px;
   transition: background-color 0.2s ease;
-  
   &::-webkit-scrollbar { width: 5px; }
   &::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
   &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 }
 
 .kanban-item {
@@ -424,97 +425,31 @@ $color-abandonado: #dc3545;
 @media (max-width: 768px) {
   .mobile-drag-handle {
     position: absolute;
-    top: -10px; 
-    left: 50%; 
-    transform: translateX(-50%);
-    z-index: 100;
-    
-    background: rgba(13, 110, 253, 0.95); 
-    backdrop-filter: blur(4px);
-    color: white;
-    width: 48px;
-    height: 24px;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    font-size: 1.2rem;
-    
-    touch-action: none !important; 
-    cursor: grab;
-
-    &:active {
-      cursor: grabbing;
-      transform: translateX(-50%) scale(1.1);
-      background: #0b5ed7; 
-    }
+    top: -10px; left: 50%; transform: translateX(-50%); z-index: 100;
+    background: rgba(13, 110, 253, 0.95); backdrop-filter: blur(4px);
+    color: white; width: 48px; height: 24px; display: flex !important; align-items: center; justify-content: center;
+    border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 1.2rem;
+    touch-action: none !important; cursor: grab;
+    &:active { cursor: grabbing; transform: translateX(-50%) scale(1.1); background: #0b5ed7; }
   }
 }
 
-.cdk-drop-list-receiving {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
+.cdk-drop-list-receiving { background-color: rgba(255, 255, 255, 0.05); }
 .cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 12px;
-  overflow: hidden !important; 
-  box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
-  opacity: 0.95;
-  cursor: grabbing !important;
-  
+  box-sizing: border-box; border-radius: 12px; overflow: hidden !important; 
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important; opacity: 0.95; cursor: grabbing !important;
   &::-webkit-scrollbar { display: none !important; }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  outline: none !important; 
-
-  .card-wrapper {
-    transform: rotate(3deg) scale(1.05);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
-  }
+  scrollbar-width: none; outline: none !important; 
+  .card-wrapper { transform: rotate(3deg) scale(1.05); box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important; }
 }
+.cdk-drag-placeholder { opacity: 0.2; border: 2px dashed rgba(255, 255, 255, 0.4); border-radius: 12px; background: transparent; }
+.cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
+.kanban-list.cdk-drop-list-dragging .kanban-item:not(.cdk-drag-placeholder) { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
 
-.cdk-drag-placeholder {
-  opacity: 0.2;
-  border: 2px dashed rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
-  background: transparent;
-}
-
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.kanban-list.cdk-drop-list-dragging .kanban-item:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-
-/* ==========================================================================
-   6. OTROS ESTILOS PRESERVADOS DE TUS CARDS Y ESTADÍSTICAS
-   ========================================================================== */
 .search-result-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border-radius: 16px;
-  border: none !important;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
-  &:hover {
-    transform: translateY(-8px); 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
-    .main-img { transform: scale(1.08); }
-  }
-
-  .game-card {
-    border: 1px solid rgba(0,0,0,0.05) !important;
-    background: transparent !important;
-    .card-body { padding: 10px; }
-    .card-actions { opacity: 0; transition: opacity 0.2s; }
-    &:hover .card-actions { opacity: 1; }
-  }
-
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 16px; border: none !important; background-color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  &:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important; .main-img { transform: scale(1.08); } }
+  .game-card { border: 1px solid rgba(0,0,0,0.05) !important; background: transparent !important; .card-body { padding: 10px; } .card-actions { opacity: 0; transition: opacity 0.2s; } &:hover .card-actions { opacity: 1; } }
   &[data-status="completado"] { border-bottom: 5px solid $color-completado !important; }
   &[data-status="jugando"] { border-bottom: 5px solid $color-jugando !important; }
   &[data-status="pendiente"] { border-bottom: 5px solid $color-pendiente !important; }
@@ -522,80 +457,11 @@ $color-abandonado: #dc3545;
 }
 
 .img-container {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  background-color: #1a1a1a;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-
-  .main-img {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-
-  &.bg-blur-effect {
-    .blur-layer {
-      position: absolute;
-      inset: -15%;
-      background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
-      filter: blur(15px) brightness(0.6);
-      z-index: 1;
-      display: block;
-    }
-    .main-img {
-      object-fit: contain;
-      padding: 10px;
-    }
-  }
+  width: 100%; aspect-ratio: 2 / 3; background-color: #1a1a1a; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.05);
+  .main-img { position: relative; z-index: 2; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+  &.bg-blur-effect { .blur-layer { position: absolute; inset: -15%; background-image: var(--bg-image); background-size: cover; background-position: center; filter: blur(15px) brightness(0.6); z-index: 1; display: block; } .main-img { object-fit: contain; padding: 10px; } }
 }
 
-.stats-card {
-  border: none;
-  border-radius: 16px;
-  transition: background 0.2s ease;
-  h3 { font-size: 2rem; font-weight: 800; }
-  &:hover { background-color: rgba(0,0,0,0.02); }
-}
-
-.description-scroll {
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; &:hover { background: #999; } }
-}
-
-app-game-search, app-stats-panel {
-  display: block;
-  width: 100%;
-}
-
-/* ==========================================================================
-   BOTÓN DE CERRAR SESIÓN (SIDEBAR PC) - SUTIL Y PREMIUM
-   ========================================================================== */
-.btn-logout-sidebar {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ef4444; /* Rojo sutil elegante */
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: rgba(239, 68, 68, 0.1); /* Fondo rojo translúcido */
-    border-color: rgba(239, 68, 68, 0.3);
-    color: #ef4444;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-}
+.stats-card { border: none; border-radius: 16px; transition: background 0.2s ease; h3 { font-size: 2rem; font-weight: 800; } &:hover { background-color: rgba(0,0,0,0.02); } }
+.description-scroll { &::-webkit-scrollbar { width: 4px; } &::-webkit-scrollbar-track { background: #f1f1f1; } &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; &:hover { background: #999; } } }
+app-game-search, app-stats-panel { display: block; width: 100%; }
