@@ -49,7 +49,36 @@ export class BibliotecaComponent implements OnInit {
   estadisticas = signal({ total: 0, pendientes: 0, jugando: 0, completados: 0, abandonado: 0 });
   totalEncontrados = signal<number>(0);
   totalPaginas = signal<number>(1);
-  paginasArray = computed(() => Array.from({ length: this.totalPaginas() }, (_, i) => i + 1));
+  
+  // 🚀 LÓGICA DE TRUNCADO DINÁMICO (Ellipsis)
+  paginasArray = computed(() => {
+    const current = this.filtros().page;
+    const total = this.totalPaginas();
+    const delta = 1; // Cuántas páginas mostrar a la izquierda y derecha de la actual
+    const range = [];
+    const rangeWithDots = [];
+    let l: number = 0; // 🚀 EL FIX: Inicializamos a 0 para contentar a TypeScript
+
+    for (let i = 1; i <= total; i++) {
+      if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+        range.push(i);
+      }
+    }
+
+    for (let i of range) {
+      if (l) { // En la primera vuelta 'l' es 0 (falso). En las siguientes ya tendrá el número de página.
+        if (i - l === 2) {
+          rangeWithDots.push(l + 1);
+        } else if (i - l !== 1) {
+          rangeWithDots.push('...');
+        }
+      }
+      rangeWithDots.push(i);
+      l = i;
+    }
+
+    return rangeWithDots;
+  });
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -224,7 +253,16 @@ export class BibliotecaComponent implements OnInit {
   actualizarFiltroPlataforma(p: string) { this.filtros.update(f => ({ ...f, platform: p, page: 1 })); }
   actualizarFiltroEstado(e: string) { this.filtros.update(f => ({ ...f, status: e, page: 1 })); }
   actualizarFiltroTexto(t: string) { this.filtros.update(f => ({ ...f, search: t, page: 1 })); }
-  actualizarPagina(p: number) { this.filtros.update(f => ({ ...f, page: p })); }
+  
+  actualizarPagina(p: number | string) {
+    if (typeof p === 'string') return; // Ignora los clics en los puntos suspensivos
+    if (p === this.filtros().page) return; // No hace nada si pulsas la página actual
+
+    this.filtros.update(f => ({ ...f, page: p }));
+    
+    // Autoscroll suave al top de la página al cambiar
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   guardarJuegoDesdeModal(payload: any) {
     // Como ahora somos puristas, sabemos el ID real del juego que está abierto

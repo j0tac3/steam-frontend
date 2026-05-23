@@ -123,13 +123,31 @@
           </div>
 
           @if (totalPaginas() > 1) {
-            <nav class="d-flex justify-content-center mt-5 mb-2">
-              <ul class="pagination pagination-premium">
-                <li class="page-item" [class.disabled]="filtros().page === 1"><a class="page-link" (click)="filtros().page > 1 && actualizarPagina(filtros().page - 1)"><i class="bi bi-chevron-left"></i> Anterior</a></li>
-                @for (pagina of paginasArray(); track pagina) {
-                  <li class="page-item" [class.active]="filtros().page === pagina"><a class="page-link" (click)="actualizarPagina(pagina)">{{ pagina }}</a></li>
+            <nav class="d-flex justify-content-center mt-5 mb-4">
+              <ul class="pagination pagination-premium m-0 p-2 d-flex align-items-center gap-2">
+                
+                <li class="page-item" [class.disabled]="filtros().page === 1">
+                  <a class="page-link d-flex align-items-center gap-1" (click)="filtros().page > 1 && actualizarPagina(filtros().page - 1)">
+                    <i class="bi bi-chevron-left"></i> <span class="d-none d-sm-inline">Anterior</span>
+                  </a>
+                </li>
+
+                @for (pagina of paginasArray(); track $index) {
+                  @if (pagina === '...') {
+                    <li class="page-item disabled px-1"><span class="page-ellipsis text-white-50">...</span></li>
+                  } @else {
+                    <li class="page-item" [class.active]="filtros().page === pagina">
+                      <a class="page-link" (click)="actualizarPagina(pagina)">{{ pagina }}</a>
+                    </li>
+                  }
                 }
-                <li class="page-item" [class.disabled]="filtros().page === totalPaginas()"><a class="page-link" (click)="filtros().page < totalPaginas() && actualizarPagina(filtros().page + 1)">Siguiente <i class="bi bi-chevron-right"></i></a></li>
+
+                <li class="page-item" [class.disabled]="filtros().page === totalPaginas()">
+                  <a class="page-link d-flex align-items-center gap-1" (click)="filtros().page < totalPaginas() && actualizarPagina(filtros().page + 1)">
+                    <span class="d-none d-sm-inline">Siguiente</span> <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+                
               </ul>
             </nav>
           }

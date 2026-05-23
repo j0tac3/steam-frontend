@@ -73,6 +73,23 @@ export class SteamSyncService {
   }
 
   private processQueue(games: SteamGamePayload[]): void {
+    
+    // 🚀 1. EL FILTRO HÍBRIDO: Ordenamos la lista antes de procesarla
+    games.sort((a, b) => {
+      // Nos aseguramos de tener un número (por si acaso viene un undefined o null)
+      const horasA = a.playtime_minutes || 0;
+      const horasB = b.playtime_minutes || 0;
+
+      // Condición A: Primero por horas jugadas (de mayor a menor)
+      if (horasB !== horasA) {
+        return horasB - horasA;
+      }
+      
+      // Condición B: Si empatan en horas (ej: 0 horas), orden alfabético estricto (A-Z)
+      return a.name.localeCompare(b.name);
+    });
+
+    // Empezamos a procesar la cola ya ordenada
     from(games).pipe(
       concatMap(game => {
         this.currentGameName.set(game.name);
@@ -88,6 +105,7 @@ export class SteamSyncService {
       })
     ).subscribe({
       next: (result) => {
+        
         this.processedGames.update(count => count + 1);
         
         // 🚀 3. EVALUAMOS EL RESULTADO Y PONEMOS CHECK VERDE O ASPA ROJA

@@ -336,24 +336,37 @@ header.container {
 
 
 /* ==========================================================================
-   PAGINACIÓN PREMIUM (GLASSMORPHISM) PARA LA BIBLIOTECA
+   💎 PAGINACIÓN "PREMIUM DARK" (UI/UX)
    ========================================================================== */
 .pagination-premium {
+  /* 🌫️ 1. Contenedor Base Glassmorphism */
+  background: rgba(30, 32, 38, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px; /* Contenedor redondeado */
+  
   .page-item {
     .page-link {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #94a3b8; /* text-muted */
+      /* 🖱️ 4. Reposo Discreto */
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      /* 📐 2. Geometría Squircles */
       border-radius: 8px;
       padding: 6px 14px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
+      /* 🖱️ 4. Feedback al Hover */
       &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
+        background: rgba(139, 92, 246, 0.15); /* Morado muy suave */
+        color: #ffffff;
       }
       
       &:focus {
@@ -361,18 +374,41 @@ header.container {
       }
     }
 
+    /* 🟣 3. El Estado Activo (Protagonismo Neón) */
     &.active .page-link {
-      background: white;
-      color: black;
-      border-color: white;
+      background-color: #8b5cf6;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6); /* Resplandor exterior */
+      transform: scale(1.05); /* Microinteracción de elevación */
     }
 
-    &.disabled .page-link {
-      background: rgba(0, 0, 0, 0.2);
-      color: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.05);
-      cursor: not-allowed;
+    /* 🚫 5. Gestión de Extremos (Disabled) */
+    &.disabled {
+      .page-link {
+        background: transparent;
+        color: #9ca3af;
+        opacity: 0.3;
+        cursor: not-allowed;
+        
+        &:hover {
+          background: transparent;
+          color: #9ca3af;
+          transform: none;
+        }
+      }
     }
+  }
+
+  /* ↔️ 5. Truncado Dinámico */
+  .page-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    user-select: none;
   }
 }
 
