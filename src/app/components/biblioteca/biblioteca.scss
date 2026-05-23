@@ -1,406 +1,255 @@
-/* MANTENER TUS VARIABLES ORIGINALES */
+/* ==========================================================================
+   1. VARIABLES GLOBALES Y UTILIDADES
+   ========================================================================== */
 $color-pendiente: #ffc107;
 $color-jugando: #0d6efd;
 $color-completado: #198754;
 $color-abandonado: #dc3545;
 
 .fw-black { font-weight: 900; }
+.tracking-wide { letter-spacing: 1px; }
 
-
-/* --- CARDS: MEJORA DE ELEVACIÓN Y DISEÑO --- */
-.search-result-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border-radius: 16px; // Bordes más modernos
-  border: none !important;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
-  &:hover {
-    transform: translateY(-8px); // Elevación más pronunciada
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
-    
-    .main-img { 
-      transform: scale(1.08); 
-    }
-  }
-
-  .game-card {
-  border: 1px solid rgba(0,0,0,0.05) !important; // Borde sutil en lugar de sombra pesada
-  background: transparent !important; // Fondo limpio
-  
-  .card-body {
-    padding: 10px; // Menos relleno para que sea más compacto
-  }
-  
-  // Ocultar acciones hasta el hover
-  .card-actions { 
-    opacity: 0; 
-    transition: opacity 0.2s; 
-  }
-  
-  &:hover .card-actions { 
-    opacity: 1; 
-  }
+.main-container {
+  background-color: transparent;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-  /* Indicadores de estado más sutiles pero elegantes */
-  &[data-status="completado"] { border-bottom: 5px solid $color-completado !important; }
-  &[data-status="jugando"] { border-bottom: 5px solid $color-jugando !important; }
-  &[data-status="pendiente"] { border-bottom: 5px solid $color-pendiente !important; }
-  &[data-status="abandonado"] { border-bottom: 5px solid $color-abandonado !important; }
+/* ==========================================================================
+   2. REGLAS DE RESPONSIVIDAD DINÁMICA (BREAKPOINT 1024PX)
+   ========================================================================== */
+
+/* --- COMPORTAMIENTO MÓVIL POR DEFECTO (< 1024px) --- */
+.sidebar-pc { display: none; }
+
+.slim-header {
+  display: flex !important;
+  height: 55px;
+  padding: 0 16px;
+  background: rgba(18, 20, 25, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  z-index: 1020;
 }
 
-/* --- IMÁGENES (MANTENIENDO TU LÓGICA DE BLUR) --- */
-.img-container {
+.bottom-nav-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  aspect-ratio: 2 / 3;
-  background-color: #1a1a1a;
-  overflow: hidden;
-  position: relative;
+  height: 70px;
   display: flex;
+  justify-content: space-around;
   align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  z-index: 1030;
+  padding-bottom: env(safe-area-inset-bottom);
+  
+  background: rgba(18, 20, 25, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
 
-  .main-img {
-    position: relative;
-    z-index: 2;
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    text-decoration: none;
     width: 100%;
     height: 100%;
-    object-fit: cover; // Cambiado a cover para que rellene bien la card en PC
-    transition: transform 0.5s ease;
-  }
+    position: relative;
 
-  &.bg-blur-effect {
-    .blur-layer {
-      position: absolute;
-      inset: -15%;
-      background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
-      filter: blur(15px) brightness(0.6);
-      z-index: 1;
-      display: block;
+    .nav-icon {
+      font-size: 1.3rem;
+      margin-bottom: 2px;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s ease;
     }
-    .main-img {
-      object-fit: contain; // Si hay blur, la imagen principal no debe cortarse
-      padding: 10px;
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 600;
     }
-  }
-}
 
-/* --- PANEL DE ESTADÍSTICAS --- */
-.stats-card {
-  border: none;
-  border-radius: 16px;
-  transition: background 0.2s ease;
-  
-  h3 { 
-    font-size: 2rem; 
-    font-weight: 800;
-  }
+    &.active {
+      color: #8b5cf6;
+      .nav-icon {
+        transform: scale(1.15) translateY(-2px); 
+        filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+      }
+      .nav-label { color: #ffffff; }
 
-  &:hover {
-    background-color: rgba(0,0,0,0.02);
-  }
-}
-
-/* --- SCROLL PERSONALIZADO --- */
-.description-scroll {
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: #f1f1f1; }
-  &::-webkit-scrollbar-thumb { 
-    background: #ccc; 
-    border-radius: 10px; 
-    &:hover { background: #999; }
-  }
-}
-
-/* --- AJUSTES PARA CABECERA PROFESIONAL --- */
-
-.rounded-4 { border-radius: 1.25rem !important; }
-
-// Para que los componentes internos no traigan sus propios márgenes/sombras
-app-game-search, app-stats-panel {
-  display: block;
-  width: 100%;
-}
-
-// Estilo para los contenedores de la cabecera
-.header-card-container {
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.05);
-  transition: box-shadow 0.3s ease;
-  
-  &:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
-  }
-}
-
-/* --- OPTIMIZACIÓN DE ESPACIO EN PC --- */
-@media (min-width: 992px) {
-  .main-container {
-    padding-bottom: 50px;
-  }
-  
-  // Reducimos el tamaño de los títulos en el buscador para que no empujen hacia abajo
-  ::ng-deep .search-container h1, 
-  ::ng-deep .search-container h2 {
-    font-size: 1.5rem !important;
-    margin-bottom: 1rem !important;
-  }
-}
-
-// Forzar que los componentes hijos ocupen todo el espacio
-app-game-search, app-stats-panel {
-  width: 100%;
-  display: block;
-}
-
-// Estilo unificado para los bloques blancos
-.rounded-4 {
-  border-radius: 1.5rem !important;
-}
-
-// Ajuste para el panel de estadísticas en PC
-@media (min-width: 992px) {
-  ::ng-deep app-stats-panel {
-    .stats-container {
-      margin-top: 10px; // Pequeño ajuste para centrar visualmente con el buscador
-    }
-  }
-}
-
-/* --- LIMPIEZA TOTAL DE LA CABECERA --- */
-
-.main-header-box {
-  background: #ffffff;
-  border-radius: 1.5rem;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  padding: 1.5rem;
-  
-  /* Esto elimina los fondos y bordes de los componentes internos */
-  ::ng-deep {
-    app-game-search, app-stats-panel {
-      .card, .container, .bg-white, .shadow-sm, .border {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
+      &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background: #8b5cf6;
+        border-radius: 0 0 4px 4px;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.8);
       }
     }
   }
 }
 
-::ng-deep app-stats-panel {
-  //padding: 0 10px !important;
+.pb-mobile-nav { padding-bottom: 90px !important; }
+.main-content {
+  width: 100%;
+  padding: 16px;
+  padding-bottom: 95px; 
 }
 
-/* ==========================================================================
-   NAVBAR PREMIUM (GLASSMORPHISM & STICKY)
-   ========================================================================== */
-.glass-navbar {
-  background: var(--glass-bg-nav) !important; 
-  backdrop-filter: var(--glass-blur-heavy);
-  -webkit-backdrop-filter: var(--glass-blur-heavy);
-  border-bottom: 1px solid var(--glass-border-light);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
 
-  .brand-container {
-    cursor: default;
-    
-    .brand-icon {
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-      transition: transform 0.3s ease;
+/* --- SWITCH COMPORTAMIENTO DESKTOP (>= 1024px) --- */
+@media (min-width: 1024px) {
+  .slim-header { display: none !important; }
+  .bottom-nav-mobile { display: none !important; }
+
+  .sidebar-pc {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    padding: 28px 24px;
+    z-index: 1025;
+    box-sizing: border-box;
+
+    background: rgba(18, 20, 25, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(139, 92, 246, 0.2);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      color: #9ca3af;
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        color: #ffffff;
+        background: rgba(139, 92, 246, 0.08);
+        border-color: rgba(139, 92, 246, 0.3);
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        transform: translateX(3px);
+      }
+
+      &.active {
+        color: #ffffff;
+        background: #8b5cf6;
+        box-shadow: 0 0 18px rgba(139, 92, 246, 0.45);
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: none;
+      }
     }
-    
-    .brand-text {
-      text-shadow: 0 2px 10px rgba(255,255,255,0.1);
-    }
-    
-    &:hover .brand-icon {
-      transform: scale(1.1) rotate(-5deg);
-    }
+  }
+
+  .main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    padding: 40px;
+    padding-bottom: 40px !important; 
   }
 }
 
 /* ==========================================================================
-   BOTÓN CIRCULAR DE CERRAR SESIÓN
+   3. PANELES, CABECERAS Y COMPONENTES PREMIUM (GLASSMORPHISM)
    ========================================================================== */
-.btn-logout-icon {
-  width: 42px;
-  height: 42px;
+.btn-slim-icon {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--glass-bg-btn);
-  border: 1px solid var(--glass-border-light);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f3f4f6;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: var(--glass-blur-light);
   cursor: pointer;
-  padding: 0;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    transition: transform 0.3s ease;
-  }
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
 
   &:hover {
-    background: var(--glass-bg-btn-hover);
-    border-color: rgba(220, 53, 69, 0.5);
-    color: #ff6b6b;
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.25);
-    
-    svg {
-      transform: translateX(2px);
-    }
   }
-  
-  &:active {
-    transform: scale(0.95);
+  &.logout:hover {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.4);
+    color: #ff6b6b;
   }
 }
 
-.transition-all {
-  transition: all 0.2s ease-in-out;
-  &:hover {
-    transform: scale(1.05);
-    background-color: #dc3545;
-    color: white !important;
-  }
-}
-
-/* AJUSTE DE MARGENES PARA QUE TODO CUADRE */
-.main-container {
-  // Aseguramos que el fondo gris no se vea "cortado"
-  padding-bottom: 3rem;
-}
-
-// Opcional: Si quieres que las cajas de arriba (buscador/stats) 
-// no estén tan pegadas al navbar
-header.container {
-  margin-top: 2.5rem !important;
-}
-
-/* Contenedor Principal */
-.main-container {
-  background-color: transparent;
-  min-height: 100vh;
-}
-
-/* Panel estilo cristal (Glassmorphism) para los bloques agrupadores */
 .glass-panel {
-  background: var(--glass-bg-panel);
-  backdrop-filter: var(--glass-blur-medium);
-  -webkit-backdrop-filter: var(--glass-blur-medium);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-/* Tipografía de ayuda */
-.tracking-wide {
-  letter-spacing: 1px;
-}
+.rounded-4 { border-radius: 1.5rem !important; }
 
-/* ==========================================================================
-   SIDEBAR STICKY (Solo activo en pantallas grandes PC)
-   ========================================================================== */
-@media (min-width: 992px) {
-  .sidebar-sticky-tools {
-    position: sticky;
-    top: 20px; /* Margen desde arriba al hacer scroll */
-    z-index: 10;
-    
-    /* Pequeña animación de entrada para el sidebar */
-    animation: slideInSidebar 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-}
-
-@keyframes slideInSidebar {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-
-/* ==========================================================================
-   💎 PAGINACIÓN "PREMIUM DARK" (UI/UX)
-   ========================================================================== */
 .pagination-premium {
-  /* 🌫️ 1. Contenedor Base Glassmorphism */
   background: rgba(30, 32, 38, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px; /* Contenedor redondeado */
+  border-radius: 12px;
   
   .page-item {
     .page-link {
-      /* 🖱️ 4. Reposo Discreto */
       background: transparent;
       border: none;
       color: #9ca3af;
-      /* 📐 2. Geometría Squircles */
       border-radius: 8px;
       padding: 6px 14px;
       font-size: 0.9rem;
       font-weight: 600;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.25s ease;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
 
-      /* 🖱️ 4. Feedback al Hover */
       &:hover {
-        background: rgba(139, 92, 246, 0.15); /* Morado muy suave */
+        background: rgba(139, 92, 246, 0.15);
         color: #ffffff;
       }
-      
-      &:focus {
-        box-shadow: none;
-      }
+      &:focus { box-shadow: none; }
     }
 
-    /* 🟣 3. El Estado Activo (Protagonismo Neón) */
     &.active .page-link {
       background-color: #8b5cf6;
       color: #ffffff;
       font-weight: 700;
-      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6); /* Resplandor exterior */
-      transform: scale(1.05); /* Microinteracción de elevación */
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+      transform: scale(1.05);
     }
 
-    /* 🚫 5. Gestión de Extremos (Disabled) */
-    &.disabled {
-      .page-link {
-        background: transparent;
-        color: #9ca3af;
-        opacity: 0.3;
-        cursor: not-allowed;
-        
-        &:hover {
-          background: transparent;
-          color: #9ca3af;
-          transform: none;
-        }
-      }
+    &.disabled .page-link {
+      background: transparent;
+      color: #9ca3af;
+      opacity: 0.3;
+      cursor: not-allowed;
+      &:hover { background: transparent; transform: none; }
     }
   }
 
-  /* ↔️ 5. Truncado Dinámico */
   .page-ellipsis {
     display: flex;
     align-items: center;
@@ -412,96 +261,167 @@ header.container {
   }
 }
 
-/* ==========================================================================
-   TOAST NOTIFICATIONS (GLASSMORPHISM)
-   ========================================================================== */
 .glass-toast {
-  backdrop-filter: var(--glass-blur-medium);
-  -webkit-backdrop-filter: var(--glass-blur-medium);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
-  animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  border: 1px solid var(--glass-border);
-  
+  border: 1px solid rgba(255, 255, 255, 0.1);
   &.bg-success { background: rgba(25, 135, 84, 0.85) !important; }
   &.bg-danger { background: rgba(220, 53, 69, 0.85) !important; }
-  &.bg-warning { 
-    background: rgba(255, 193, 7, 0.9) !important; 
-    color: #000 !important; 
-  }
-}
-
-@keyframes slideInToast {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  &.bg-warning { background: rgba(255, 193, 7, 0.9) !important; color: #000 !important; }
 }
 
 /* ==========================================================================
-   MODO KANBAN (TRELLO) - AJUSTES COMPACTOS
+   4. HOJAS DE MENÚ (BOTTOM SHEETS)
    ========================================================================== */
-.kanban-container {
-  /* 1. Hacemos que las columnas sean más finas y se repartan el espacio */
-  .kanban-column {
-    min-width: 160px !important; /* 📉 Estrechamos mucho la columna base */
-    max-width: 200px !important; /* 📏 Límite estricto: la tarjeta nunca pasará de este ancho */
-    flex: 1; 
+.bottom-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-out;
+  &.show { opacity: 1; visibility: visible; }
+}
+
+.bottom-sheet-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1045;
+  background: rgba(18, 20, 25, 0.96);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.8);
+
+  &.show { transform: translateY(0); }
+
+  .drag-pill {
+    width: 40px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin: 0 auto 20px;
   }
 
-  /* 2. Compactamos la tarjeta solo cuando está dentro del Kanban */
-  .kanban-item {
-    ::ng-deep .game-card {
-      /* Reducimos márgenes y textos internos de la tarjeta */
-      .card-body { padding: 10px !important; }
-      h6 { font-size: 0.8rem !important; margin-bottom: 2px !important; }
-      .text-warning { font-size: 0.7rem !important; margin-bottom: 0.5rem !important; }
-      
-      select.form-select { display: none !important; }
+  .bs-thumbnail {
+    width: 50px;
+    height: 75px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .action-menu-item {
+    background: transparent;
+    border: none;
+    position: relative;
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 5%;
+      width: 90%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+    &:hover, &:focus {
+      background: rgba(255, 255, 255, 0.05);
+      &::after { opacity: 0; }
+    }
+  }
+
+  @media (min-width: 768px) {
+    max-width: 420px;
+    left: 50%;
+    margin-left: -210px;
+    /* bottom: 20px; */
+    border-radius: 24px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    .drag-pill { display: none; }
+  }
+}
+
+.badge-estado-modal {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50rem;
+  font-weight: 700;
+  font-size: 0.7rem;
+  &.completado { background-color: $color-completado; color: white; }
+  &.jugando { background-color: $color-jugando; color: white; }
+  &.pendiente { background-color: $color-pendiente; color: black; }
+  &.abandonado { background-color: $color-abandonado; color: white; }
+}
+
+
+/* ==========================================================================
+   5. KANBAN (TRELLO MOD) Y DRAG & DROP FÍSICAS
+   ========================================================================== */
+.kanban-container {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar { display: none; }
+
+  @media (max-width: 1024px) {
+    .kanban-column {
+      min-width: 150px !important;
+      max-width: 160px !important;
+      flex: 0 0 auto;
+    }
+  }
+  @media (min-width: 1024px) {
+    .kanban-column {
+      flex: 1;
+      min-width: 200px;
     }
   }
 }
 
-/* ==========================================================================
-   OPTIMIZACIÓN MÓVIL Y TÁCTIL (MOBILE-FIRST)
-   ========================================================================== */
-  /* NOTA: Asegúrate de que esta clase coincida con el div que envuelve tus columnas. 
-     Si se llama diferente (ej: .tablero, .kanban-board), cámbiala aquí. */
-/* ==========================================================================
-   OPTIMIZACIÓN MÓVIL Y TÁCTIL (MOBILE-FIRST)
-   ========================================================================== */
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-list {
+  flex: 1; 
+  min-height: 200px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+}
+
+.kanban-item {
+  position: relative;
+  touch-action: auto !important; 
+  ::ng-deep .game-card {
+    .card-body { padding: 10px !important; }
+    h6 { font-size: 0.8rem !important; margin-bottom: 2px !important; }
+    .text-warning { font-size: 0.7rem !important; margin-bottom: 0.5rem !important; }
+    select.form-select { display: none !important; }
+  }
+}
+
 @media (max-width: 768px) {
-  .kanban-container { 
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 1.5rem;
-    -webkit-overflow-scrolling: touch;
-    
-    &::-webkit-scrollbar { display: none; }
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .kanban-column {
-    /* 📉 Adiós al 75vw. Le damos un tamaño fijo de móvil profesional */
-    min-width: 130px !important; 
-    max-width: 140px !important;
-    margin-right: 0.5rem; /* 📉 Reducimos el margen derecho a la mitad */
-    flex: 0 0 auto;
-  }
-
-  .kanban-item {
-    position: relative;
-    touch-action: auto !important; 
-  }
-
-  /* El tirador profesional se mantiene igual... */
   .mobile-drag-handle {
     position: absolute;
     top: -10px; 
@@ -532,45 +452,14 @@ header.container {
   }
 }
 
-/* ==========================================================================
-   FÍSICAS DEL DRAG & DROP (CDK)
-   ========================================================================== */
-
-/* 1. Evitar que las listas vacías desaparezcan */
-.kanban-column {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 1. Evitar que las listas vacías desaparezcan y añadir SCROLL INTERNO */
-.kanban-list {
-  flex: 1; 
-  min-height: 150px; 
-  
-  /* 🚀 LA MAGIA DEL SCROLL ESTILO TRELLO */
-  max-height: calc(100vh - 320px); /* El 320px es el espacio de tu cabecera/menús. Puedes ajustarlo */
-  overflow-y: auto; /* Solo hace scroll la lista, no la página entera */
-  
-  border-radius: 12px;
-  transition: background-color 0.2s ease;
-  
-  /* Scrollbar bonita y fina (Glassmorphism) para las columnas */
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
-  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
-  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-}
-
-/* Efecto cuando pasas una tarjeta por encima de una lista vacía */
 .cdk-drop-list-receiving {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* 2. El clon visual que arrastras por la pantalla */
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 12px;
-  overflow: hidden !important; /* MATA cualquier barra de scroll */
+  overflow: hidden !important; 
   box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
   opacity: 0.95;
   cursor: grabbing !important;
@@ -578,8 +467,6 @@ header.container {
   &::-webkit-scrollbar { display: none !important; }
   -ms-overflow-style: none;
   scrollbar-width: none;
-
-  /* Quitar el borde de edición de Angular si se pone tonto */
   outline: none !important; 
 
   .card-wrapper {
@@ -588,7 +475,6 @@ header.container {
   }
 }
 
-/* 3. El hueco fantasma que deja la tarjeta en la lista origen */
 .cdk-drag-placeholder {
   opacity: 0.2;
   border: 2px dashed rgba(255, 255, 255, 0.4);
@@ -596,7 +482,6 @@ header.container {
   background: transparent;
 }
 
-/* 4. Transición suave al reorganizar */
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
@@ -605,136 +490,112 @@ header.container {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
+
 /* ==========================================================================
-   BOTTOM SHEET (MENÚ RÁPIDO NATIVO)
+   6. OTROS ESTILOS PRESERVADOS DE TUS CARDS Y ESTADÍSTICAS
    ========================================================================== */
-.bottom-sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
-  z-index: 1040;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease-out;
+.search-result-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 16px;
+  border: none !important;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 
-  &.show {
-    opacity: 1;
-    visibility: visible;
+  &:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
+    .main-img { transform: scale(1.08); }
   }
+
+  .game-card {
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    background: transparent !important;
+    .card-body { padding: 10px; }
+    .card-actions { opacity: 0; transition: opacity 0.2s; }
+    &:hover .card-actions { opacity: 1; }
+  }
+
+  &[data-status="completado"] { border-bottom: 5px solid $color-completado !important; }
+  &[data-status="jugando"] { border-bottom: 5px solid $color-jugando !important; }
+  &[data-status="pendiente"] { border-bottom: 5px solid $color-pendiente !important; }
+  &[data-status="abandonado"] { border-bottom: 5px solid $color-abandonado !important; }
 }
 
-.bottom-sheet-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+.img-container {
   width: 100%;
-  z-index: 1050;
-  
-  /* 💜 1. EL TOQUE DE IDENTIDAD: Background y Glow morado */
-  background: rgba(18, 20, 25, 0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(111, 66, 193, 0.3);
-  border-left: 1px solid rgba(111, 66, 193, 0.15);
-  border-right: 1px solid rgba(111, 66, 193, 0.15);
-  border-radius: 24px 24px 0 0;
-  padding: 24px 20px;
-  
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.8), 0 -5px 30px rgba(111, 66, 193, 0.2);
+  aspect-ratio: 2 / 3;
+  background-color: #1a1a1a;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 
-  &.show {
-    transform: translateY(0);
-  }
-
-  .bs-header {
+  .main-img {
     position: relative;
-    
-    .drag-pill {
-      width: 40px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      margin: 0 auto 20px;
-    }
-
-    .bs-thumbnail {
-      width: 50px;
-      height: 75px;
-      object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
   }
 
-  /* Efecto Hover para los botones de la lista */
-  .list-group-item-action {
-    border-radius: 12px;
-    margin-bottom: 4px;
-    transition: background-color 0.2s;
-    
-    &:hover, &:focus {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      color: white !important;
-    }
-  }
-
-  /* 📏 3. LIMPIEZA DE SEPARADORES: Botones elegantes en el menú */
-  .action-menu-item {
-    background: transparent;
-    border: none;
-    position: relative;
-    padding: 1rem 1rem;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-
-    /* Línea divisoria suave (10% opacidad y margen interno) */
-    &:not(:last-child)::after {
-      content: '';
+  &.bg-blur-effect {
+    .blur-layer {
       position: absolute;
-      bottom: 0;
-      left: 5%;
-      width: 90%;
-      height: 1px;
-      background-color: rgba(255, 255, 255, 0.08);
+      inset: -15%;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      filter: blur(15px) brightness(0.6);
+      z-index: 1;
+      display: block;
     }
-
-    &:hover, &:focus {
-      background: rgba(255, 255, 255, 0.05);
-      /* Ocultamos la línea al hacer hover para limpieza visual */
-      &::after { opacity: 0; }
+    .main-img {
+      object-fit: contain;
+      padding: 10px;
     }
-  }
-
-  /* Optimización para Pantallas Grandes (PC) */
-  @media (min-width: 768px) {
-    max-width: 450px;
-    left: 50%;
-    margin-left: -225px; /* Centrado perfecto */
-    bottom: 20px;
-    border-radius: 24px;
-    /* En PC cerramos el borde morado por completo (Rim Light) */
-    border: 1px solid rgba(111, 66, 193, 0.3);
-    
-    /* En PC la pill de arrastre no hace falta */
-    .drag-pill { display: none; }
   }
 }
 
-.badge-estado-modal {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 50rem;
-  font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  margin-top: 4px;
-
-  &.completado { background-color: $color-completado; color: white; }
-  &.jugando { background-color: $color-jugando; color: white; }
-  &.pendiente { background-color: $color-pendiente; color: black; }
-  &.abandonado { background-color: $color-abandonado; color: white; }
+.stats-card {
+  border: none;
+  border-radius: 16px;
+  transition: background 0.2s ease;
+  h3 { font-size: 2rem; font-weight: 800; }
+  &:hover { background-color: rgba(0,0,0,0.02); }
 }
 
+.description-scroll {
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: #f1f1f1; }
+  &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; &:hover { background: #999; } }
+}
+
+app-game-search, app-stats-panel {
+  display: block;
+  width: 100%;
+}
+
+/* ==========================================================================
+   BOTÓN DE CERRAR SESIÓN (SIDEBAR PC) - SUTIL Y PREMIUM
+   ========================================================================== */
+.btn-logout-sidebar {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ef4444; /* Rojo sutil elegante */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1); /* Fondo rojo translúcido */
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
