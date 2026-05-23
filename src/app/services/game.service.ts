@@ -128,4 +128,20 @@ export class GameService {
       headers: this.getHeaders() 
     });
   }
+
+  // 🏆 Obtener logros de un juego (con Pase VIP/Caché en el backend)
+  getGameAchievements(gameId: number | string) {
+    // 🚀 Intentamos recuperar el steam_id si lo usas en el localStorage
+    const steamId = localStorage.getItem('steam_id'); 
+    
+    let params = new HttpParams();
+    if (steamId) {
+      params = params.set('steam_id', steamId);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/games/${gameId}/achievements`, {
+      headers: this.getHeaders(),
+      params: params
+    });
+  }
 }

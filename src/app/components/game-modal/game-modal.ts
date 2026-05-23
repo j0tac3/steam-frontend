@@ -28,7 +28,9 @@ export class GameModal implements OnInit {
   public game = signal<Game | null>(null); 
   public loading = signal<boolean>(true);
   public isFavorite = signal<boolean>(false);
-  public activeTab = signal<'tech' | 'experience'>('tech');
+  public activeTab = signal<'tech' | 'experience' | 'logros'>('tech');
+  public achievementsData = signal<any>(null);
+  public isLoadingAchievements = signal<boolean>(false);
   public currentImageIndex = signal<number>(0);
   public modalMode: 'read' | 'action' = 'read';
   public toastMessage = signal<string | null>(null);
@@ -57,6 +59,8 @@ export class GameModal implements OnInit {
 
   private gameService = inject(GameService);
   private journalService = inject(JournalService); 
+  // 🏆 Logro Seleccionado (Para el Modo Foco)
+  public selectedAchievement = signal<any>(null);
 
   constructor() {
     effect(() => {
@@ -364,6 +368,28 @@ export class GameModal implements OnInit {
   getFormattedDate(dateString?: string): string {
     if (!dateString) return 'Fecha de salida sin confirmar';
     return new Date(dateString).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  cambiarPestana(pestana: 'tech' | 'experience' | 'logros') {
+    this.activeTab.set(pestana);
+
+    // Lazy Loading: Solo pedimos los logros a la API si entramos a la pestaña y no los hemos cargado aún
+    if (pestana === 'logros' && !this.achievementsData() && this.gameId()) {
+      this.isLoadingAchievements.set(true);
+      
+      this.gameService.getGameAchievements(this.gameId()).subscribe({
+        next: (res) => {
+          this.achievementsData.set(res);
+          this.isLoadingAchievements.set(false);
+        },
+        error: (err) => {
+          console.error('Error cargando logros:', err);
+          // Prevenimos que se quede cargando infinito si el backend da 404
+          this.achievementsData.set({ stats: { total: 0, unlocked: 0, percentage: 0 }, achievements: [] });
+          this.isLoadingAchievements.set(false);
+        }
+      });
+    }
   }
 
   cerrar() { this.close.emit(); }

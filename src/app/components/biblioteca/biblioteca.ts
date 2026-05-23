@@ -30,7 +30,7 @@ import { SteamSyncBannerComponent } from "../steam-sync-banner/steam-sync-banner
   imports: [
     CommonModule, StatsPanelComponent, GameSearchComponent, GameFiltersComponent,
     IconComponent, DragDropModule, RouterModule,
-    GameModal, CardCleanComponent, ScrollingModule, UserProfileCardComponent, SteamSyncButtonComponent,
+    GameModal, CardCleanComponent, ScrollingModule, SteamSyncButtonComponent,
     SteamSyncBannerComponent
 ],
   templateUrl: './biblioteca.html',

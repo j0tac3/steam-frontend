@@ -132,13 +132,17 @@
           </div>
           
           <div class="custom-tabs mb-4">
-            <button class="tab-btn" [class.active]="activeTab() === 'tech'" (click)="activeTab.set('tech')">
+            <button class="tab-btn" [class.active]="activeTab() === 'tech'" (click)="cambiarPestana('tech')">
               <i class="bi bi-info-circle"></i> Ficha Técnica
             </button>
             
             @if (enBiblioteca()) {
-              <button class="tab-btn" [class.active]="activeTab() === 'experience'" (click)="activeTab.set('experience')">
+              <button class="tab-btn" [class.active]="activeTab() === 'experience'" (click)="cambiarPestana('experience')">
                 <i class="bi bi-journal-text"></i> Mi Experiencia
+              </button>
+              
+              <button class="tab-btn" [class.active]="activeTab() === 'logros'" (click)="cambiarPestana('logros')">
+                <i class="bi bi-trophy-fill"></i> Logros
               </button>
             }
           </div>
@@ -329,6 +333,81 @@
                 }
               </div>
             }
+
+            @if (activeTab() === 'logros') {
+              <div class="tab-pane-anim achievements-section">
+                <h3 class="text-white-50 mb-4 fs-5">Vitrina de Trofeos</h3>
+                
+                @if (isLoadingAchievements()) {
+                  <div class="d-flex flex-column align-items-center justify-content-center py-5 text-white-50">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p class="fw-bold tracking-wide">Sincronizando logros con Steam...</p>
+                  </div>
+                } @else if (achievementsData()) {
+                  
+                  @if (achievementsData().stats.total > 0) {
+                      <div class="achievement-stats mb-4 p-3 rounded-4 glass-panel">
+                        <div class="d-flex justify-content-between align-items-end mb-2">
+                          <div>
+                            <h5 class="text-white fw-bold m-0">Progreso Total</h5>
+                            <span class="text-white-50 small">{{ achievementsData().stats.unlocked }} de {{ achievementsData().stats.total }} completados</span>
+                          </div>
+                          <h3 class="text-primary fw-black m-0">{{ achievementsData().stats.percentage }}%</h3>
+                        </div>
+                        <div class="progress" style="height: 8px; background: rgba(255,255,255,0.05);">
+                          <div class="progress-bar bg-primary" role="progressbar" 
+                               [style.width.%]="achievementsData().stats.percentage" 
+                               style="box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);">
+                          </div>
+                        </div>
+                      </div>
+              
+                      <div class="row row-cols-1 row-cols-md-2 g-3 pb-4">
+                        @for (ach of achievementsData().achievements; track ach.id) {
+                          <div class="col">
+                            <div class="achievement-card p-3 rounded-3 d-flex gap-3 align-items-center h-100" 
+                              [class.unlocked]="ach.unlocked" [class.locked]="!ach.unlocked"
+                              (click)="selectedAchievement.set(ach)" style="cursor: pointer;" title="Ver detalles del logro">
+                              
+                              <div class="ach-icon-wrapper position-relative flex-shrink-0">
+                                <img [src]="ach.unlocked ? ach.icon_url : (ach.icon_gray_url || ach.icon_url)" 
+                                     [alt]="ach.name" class="ach-icon rounded">
+                                @if (!ach.unlocked) {
+                                  <div class="lock-overlay"><i class="bi bi-lock-fill"></i></div>
+                                }
+                              </div>
+              
+                              <div class="ach-info flex-grow-1">
+                                <h6 class="ach-title fw-bold mb-1" [class.text-white]="ach.unlocked" [class.text-white-50]="!ach.unlocked">
+                                  {{ ach.name }}
+                                </h6>
+                                <p class="small text-white-50 mb-1" style="font-size: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                  {{ ach.is_hidden && !ach.unlocked ? 'Logro oculto. Sigue jugando para descubrirlo.' : ach.description }}
+                                </p>
+                                @if (ach.unlocked) {
+                                  <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 mt-1" style="font-size: 0.65rem;">
+                                    <i class="bi bi-check2-circle me-1"></i> {{ ach.unlocked_at }}
+                                  </span>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                  } @else {
+                      <div class="empty-state">
+                        @if (achievementsData().is_supported === false) {
+                          <i class="bi bi-controller fs-1 text-white-25"></i>
+                          <p class="text-white-50 mt-3">Actualmente, la sincronización automática de logros solo está disponible para juegos vinculados a Steam.</p>
+                        } @else {
+                          <i class="bi bi-trophy fs-1 text-white-25"></i>
+                          <p class="text-white-50 mt-3">Este juego no tiene logros registrados en Steam, o tu perfil de Steam es privado.</p>
+                        }
+                      </div>
+                  }
+                }
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -338,6 +417,49 @@
       <div class="custom-toast animate__animated animate__fadeInUp">
         <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
         <span>{{ toastMessage() }}</span>
+      </div>
+    }
+    @if (selectedAchievement()) {
+      <div class="ach-focus-backdrop animate__animated animate__fadeIn animate__faster" 
+           (click)="$event.stopPropagation(); selectedAchievement.set(null)">
+        <div class="ach-focus-card" (click)="$event.stopPropagation()">
+          
+          <button class="close-focus-ghost-btn" (click)="selectedAchievement.set(null)" title="Cerrar detalles">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          
+          <div class="ach-focus-content">
+            <div class="ach-rim-light-container" [class.unlocked]="selectedAchievement().unlocked" [class.locked]="!selectedAchievement().unlocked">
+              <div class="ach-rim-light-pedestal">
+                <img [src]="selectedAchievement().unlocked ? selectedAchievement().icon_url : (selectedAchievement().icon_gray_url || selectedAchievement().icon_url)" 
+                     [alt]="selectedAchievement().name" class="ach-focus-img">
+                @if (!selectedAchievement().unlocked) {
+                  <div class="lock-overlay-large"><i class="bi bi-lock-fill"></i></div>
+                }
+              </div>
+            </div>
+            
+            <h3 class="ach-focus-title text-white">{{ selectedAchievement().name }}</h3>
+            
+            <p class="ach-focus-description">
+              {{ selectedAchievement().is_hidden && !selectedAchievement().unlocked ? 'Logro oculto. Sigue jugando para descubrirlo.' : selectedAchievement().description }}
+            </p>
+            
+            <div class="ach-status-pill-wrapper">
+              @if (selectedAchievement().unlocked) {
+                <span class="ach-badge-pill unlocked-pill animate__animated animate__pulse">
+                  <i class="bi bi-check2-circle me-2"></i> Desbloqueado
+                </span>
+                <span class="ach-date-subtext">Obtenido el {{ selectedAchievement().unlocked_at }}</span>
+              } @else {
+                <span class="ach-badge-pill locked-pill">
+                  <i class="bi bi-lock-fill me-2"></i> Bloqueado
+                </span>
+              }
+            </div>
+          </div>
+
+        </div>
       </div>
     }
 </div>

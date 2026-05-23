@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1060; /* 🚀 SOLUCIÓN: Subimos de 1000 a 1060 para superar al menú lateral (1025) y al menú móvil (1030) */
   padding: 20px;
 
   @media (max-width: 768px) {
@@ -467,18 +467,26 @@
 
 /* Navegación de Pestañas */
 .custom-tabs {
-  display: flex;             /* 1. Para que vivan juntos horizontalmente */
-  background: rgba(255, 255, 255, 0.05); /* 1. El Contenedor "Carril" gris sutil */
-  padding: 4px;              /* Espacio interno para que la pastilla no toque los bordes */
-  border-radius: 100px;      /* 1. Estilo píldora gigante */
+  display: flex;             
+  background: rgba(255, 255, 255, 0.05); 
+  padding: 4px;              
+  border-radius: 100px;      
   border: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 20px;
   gap: 4px;
 
+  /* 🚀 FIX: Añadimos scroll horizontal táctil y ocultamos la barra */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Hace que el scroll sea suave en iOS */
+  scrollbar-width: none; /* Oculta la barra en Firefox */
+  &::-webkit-scrollbar { display: none; } /* Oculta la barra en Chrome/Safari */
+
   .tab-btn {
-    flex: 1;                 /* 2. Se reparten el espacio al 50% */
+    flex: 1;                 
+    flex-shrink: 0; /* 🚀 FIX: Evita que el botón se aplaste, forzando el scroll si no cabe */
+    
     display: flex;
-    flex-direction: row;     /* 2. Icono y Texto en la misma línea */
+    flex-direction: row;     
     align-items: center;
     justify-content: center;
     gap: 8px;
@@ -1462,4 +1470,245 @@
   font-weight: 500;
   z-index: 2000;
   white-space: nowrap;
+}
+
+/* =========================================
+   12. VITRINA DE LOGROS (STEAM)
+   ========================================= */
+.achievement-stats {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
+}
+
+.achievement-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+
+  .ach-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    
+    .ach-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+  }
+
+  /* Logro Conseguido */
+  &.unlocked {
+    background: linear-gradient(145deg, rgba(139, 92, 246, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-color: rgba(139, 92, 246, 0.2);
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      border-color: rgba(139, 92, 246, 0.4);
+      .ach-icon { box-shadow: 0 0 15px rgba(139, 92, 246, 0.6); }
+    }
+    .ach-info {
+      min-width: 0; /* Obliga a la columna flex a respetar el ancho de su padre y no expandirse al infinito */
+      
+      .ach-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Permite al título respirar y ocupar hasta 2 líneas si es largo */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  /* Logro Bloqueado */
+  &.locked {
+    opacity: 0.6;
+    
+    .ach-icon {
+      filter: grayscale(100%) brightness(0.6);
+    }
+    
+    .lock-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 1.2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+  }
+}
+/* =========================================
+   13. MINI-MODAL DE LOGROS "ELITE"
+   ========================================= */
+.ach-focus-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6); /* Transparencia exacta del brief */
+  backdrop-filter: blur(16px);    /* Doble desenfoque Pro */
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  padding: 24px;
+}
+
+.ach-focus-card {
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Sombra de contacto con Glow Violeta de marca */
+  box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3); 
+  border-radius: 24px; /* Esquina proporcional superior al modal base */
+  width: 100%;
+  max-width: 360px;    /* Dimensiones reducidas y más esbeltas */
+  padding: 45px 24px 35px;
+  position: relative;
+  text-align: center;
+  animation: popInElite 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popInElite {
+  from { opacity: 0; transform: scale(0.93) translateY(15px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Botón de Cierre Ghost ultraligero */
+.close-focus-ghost-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5; /* Opacidad reducida por defecto */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 1; /* Brillo completo en hover */
+    transform: scale(1.05);
+  }
+}
+
+/* El Icono como Protagonista + Pedestal Rim Light */
+.ach-rim-light-container {
+  width: 106px;
+  height: 106px;
+  margin: 0 auto;
+  border-radius: 20px;
+  padding: 3px; /* Espacio para el anillo de luz */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .ach-rim-light-pedestal {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 17px;
+    overflow: hidden;
+    
+    .ach-focus-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+  }
+
+  /* Rim Light Dinámico según estado */
+  &.unlocked {
+    background: linear-gradient(135deg, #8b5cf6 0%, rgba(139, 92, 246, 0.2) 100%);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+  }
+  
+  &.locked {
+    background: rgba(255, 255, 255, 0.1);
+    
+    .ach-focus-img { 
+      filter: grayscale(100%) brightness(0.5); 
+    }
+    .lock-overlay-large {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-shadow: 0 4px 8px rgba(0,0,0,0.8);
+    }
+  }
+}
+
+/* Tipografía de Contraste */
+.ach-focus-title {
+  font-weight: 800; /* Peso robusto blanco puro */
+  font-size: 1.35rem;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.ach-focus-description {
+  color: #d1d5db; /* Gris plata suave */
+  line-height: 1.6; /* Buen interlineado de lectura */
+  font-size: 0.88rem;
+  padding: 0 12px;
+  margin-bottom: 28px;
+}
+
+/* Refinamiento de Estados a Formato "Badge Pill" */
+.ach-status-pill-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  .ach-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 100px; /* Estilo píldora */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Estado Desbloqueado: Verde translúcido y neón */
+    &.unlocked-pill {
+      background: rgba(74, 222, 128, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+    }
+
+    /* Estado Bloqueado: Neutro translúcido */
+    &.locked-pill {
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  /* Jerarquía de Fecha Secundaria */
+  .ach-date-subtext {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    font-weight: 500;
+  }
 }
