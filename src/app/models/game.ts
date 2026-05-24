@@ -62,6 +62,7 @@ export interface Game {
   release_date?: string;
   rating?: number;
   igdb_user_rating: number;
+  metacritic_score?: number;
   media?: GameMedia[];
   platforms?: Platform[];
   genres?: Genre[];
