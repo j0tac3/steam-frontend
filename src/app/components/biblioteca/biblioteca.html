@@ -51,6 +51,13 @@
           </div>
         </div>
         
+        @if (profileOwner()?.steam_id) {
+          <button class="btn btn-sm btn-outline-danger rounded-pill w-100 py-2 mt-1 mb-1 d-flex align-items-center justify-content-center gap-2" 
+                  (click)="desvincularSteam()">
+            <i class="bi bi-steam"></i> <span class="fw-bold small">Desvincular Steam</span>
+          </button>
+        }
+        
         <button class="btn btn-logout-sidebar w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2" (click)="cerrarSesion()">
           <i class="bi bi-box-arrow-right"></i> <span class="fw-bold small">Cerrar Sesión</span>
         </button>
@@ -134,7 +141,7 @@
       </div>
 
       @if (vistaActual() === 'cuadricula') {
-        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 g-md-4">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 row-cols-xxl-7 g-3 g-md-4">
           @for (game of myLibrary(); track game.id) {
             <div class="col">
               <app-card-clean 

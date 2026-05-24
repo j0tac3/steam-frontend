@@ -470,4 +470,20 @@ export class BibliotecaComponent implements OnInit {
     this.profileOwner.update(user => user ? { ...user, is_public: nuevoEstado } : null);
     this.gameService.updateUserPreferences({ is_public: nuevoEstado }).subscribe();
   }
+
+  desvincularSteam() {
+    if (confirm('¿Estás seguro de que deseas desvincular tu cuenta de Steam? Tus juegos sincronizados se mantendrán en tu colección.')) {
+      this.gameService.unlinkSteam().subscribe({
+        next: () => {
+          this.mostrarNotificacion('Cuenta de Steam desvinculada correctamente', 'success');
+          
+          // 🚀 Actualizamos el estado local para que Angular oculte el botón al instante
+          this.profileOwner.update(user => user ? { ...user, steam_id: null } : null);
+        },
+        error: () => {
+          this.mostrarNotificacion('Hubo un problema al desvincular la cuenta', 'error');
+        }
+      });
+    }
+  }
 }

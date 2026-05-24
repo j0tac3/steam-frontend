@@ -465,3 +465,20 @@ $color-abandonado: #dc3545;
 .stats-card { border: none; border-radius: 16px; transition: background 0.2s ease; h3 { font-size: 2rem; font-weight: 800; } &:hover { background-color: rgba(0,0,0,0.02); } }
 .description-scroll { &::-webkit-scrollbar { width: 4px; } &::-webkit-scrollbar-track { background: #f1f1f1; } &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; &:hover { background: #999; } } }
 app-game-search, app-stats-panel { display: block; width: 100%; }
+
+/* ==========================================================================
+   5. EXTENSIÓN DE CUADRÍCULA BOOTSTRAP (PANTALLAS GIGANTES)
+   ========================================================================== */
+@media (min-width: 1400px) {
+  .row-cols-xxl-7 > * {
+    flex: 0 0 auto;
+    width: 14.2857%; /* 7 columnas exactas */
+  }
+}
+
+/* Para monitores Ultrawide o 4K */
+@media (min-width: 1600px) {
+  .row-cols-xxl-7 > * {
+    width: 12.5%; /* 8 columnas exactas */
+  }
+}

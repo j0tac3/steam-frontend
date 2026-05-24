@@ -144,4 +144,8 @@ export class GameService {
       params: params
     });
   }
+
+  unlinkSteam() {
+    return this.http.post(`${this.apiUrl}/user/unlink-steam`, {});
+  }
 }
