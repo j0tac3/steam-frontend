@@ -145,6 +145,22 @@
                   </div>
                 }
 
+                @if (game()?.steam_rating) {
+                  <div class="badge rounded-pill d-flex align-items-center justify-content-between py-2 px-3 w-100" 
+                      style="background: rgba(30, 40, 56, 0.5); border: 1px solid rgba(102, 192, 244, 0.3); color: #66c0f4;">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-steam"></i>
+                      <div class="d-flex flex-column text-start">
+                        <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;">Comunidad Steam</span>
+                        <span style="font-size: 0.65rem; font-weight: normal; opacity: 0.7;">{{ game()?.steam_rating?.summary }}</span>
+                      </div>
+                    </div>
+                    <div style="font-size: 0.95rem; font-weight: 800;">
+                      {{ game()?.steam_rating?.score }} <span style="font-size: 0.7rem; font-weight: normal; opacity: 0.7;">%</span>
+                    </div>
+                  </div>
+                }
+
               </div>
 
             </div>

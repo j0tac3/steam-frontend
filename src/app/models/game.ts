@@ -63,6 +63,7 @@ export interface Game {
   rating?: number;
   igdb_user_rating: number;
   metacritic_score?: number;
+  steam_rating?: SteamRating;
   media?: GameMedia[];
   platforms?: Platform[];
   genres?: Genre[];
@@ -75,4 +76,9 @@ export interface LibraryGame extends Game {
   inventory_entries: UserGameVersion[]; 
   has_notes: boolean;
   has_featured_notes: boolean;
+}
+
+export interface SteamRating {
+  score: number;
+  summary: string;
 }
