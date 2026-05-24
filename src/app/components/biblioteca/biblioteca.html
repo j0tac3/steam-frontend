@@ -95,6 +95,7 @@
       </div>
     }
 
+    <div class="main-content-wrapper">
     <section class="container-fluid mb-4 content-section-wrapper">
       <div class="glass-panel p-4 rounded-4 search-premium-container">
         @if (!isReadOnly()) {
@@ -124,20 +125,33 @@
 
     <main class="container-fluid">
       
-      <div class="row g-3 mb-4 align-items-stretch">
+      <div class="glass-panel rounded-4 px-3 px-md-4 py-3 mb-4 w-100 position-relative d-flex flex-wrap align-items-center justify-content-between gap-3" style="z-index: 10;">
         
-        <!-- <div class="col-12 col-lg-5 col-xl-3">
-          <app-user-profile-card class="d-block h-100" [usuario]="usuarioPerfil()" [isPublic]="profileOwner()?.is_public || false" (privacyToggled)="togglePrivacidadDirecto($event)" (shareClicked)="compartirPerfil()"></app-user-profile-card>
-        </div> -->
-        
-        <div class="col-12 col-lg-7 col-xl-4">
-          <app-stats-panel class="d-block h-100" [total]="estadisticas().total" [pendientes]="estadisticas().pendientes" [jugando]="estadisticas().jugando" [completados]="estadisticas().completados" [abandonados]="estadisticas().abandonado" [filtroActual]="filtros().status" (filtroSeleccionado)="actualizarFiltroEstado($event)"></app-stats-panel>
+        <div class="action-bar-left" style="flex: 1 1 260px; max-width: 100%;">
+          <app-stats-panel 
+            [total]="estadisticas().total" 
+            [pendientes]="estadisticas().pendientes" 
+            [jugando]="estadisticas().jugando" 
+            [completados]="estadisticas().completados" 
+            [abandonados]="estadisticas().abandonado" 
+            [filtroActual]="filtros().status" 
+            (filtroSeleccionado)="actualizarFiltroEstado($event)">
+          </app-stats-panel>
         </div>
 
-        <div class="col-12 col-xl-5">
-          <app-game-filters class="d-block h-100" [filtroTexto]="filtros().search" [filtroEstado]="filtros().status" [filtroPlataforma]="filtros().platform" [totalMostrados]="totalEncontrados()" [vistaActual]="vistaActual()" (textoCambiado)="actualizarFiltroTexto($event)" (estadoCambiado)="actualizarFiltroEstado($event)" (plataformaCambiada)="actualizarFiltroPlataforma($event)" (vistaCambiada)="vistaActual.set($event)"></app-game-filters>
+        <div class="action-bar-right d-flex justify-content-end" style="flex: 1 1 500px; max-width: 100%;">
+          <app-game-filters class="w-100"
+            [filtroTexto]="filtros().search" 
+            [filtroEstado]="filtros().status" 
+            [filtroPlataforma]="filtros().platform" 
+            [totalMostrados]="totalEncontrados()" 
+            [vistaActual]="vistaActual()" 
+            (textoCambiado)="actualizarFiltroTexto($event)" 
+            (estadoCambiado)="actualizarFiltroEstado($event)" 
+            (plataformaCambiada)="actualizarFiltroPlataforma($event)" 
+            (vistaCambiada)="vistaActual.set($event)">
+          </app-game-filters>
         </div>
-        
       </div>
 
       @if (vistaActual() === 'cuadricula') {
@@ -226,6 +240,8 @@
         </div>
       }
     </main>
+
+    </div>
 
     <app-steam-sync-banner></app-steam-sync-banner>
   </div>

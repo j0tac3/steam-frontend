@@ -9,7 +9,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-stats-panel',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule],
   templateUrl: './stats-panel.html',
   styleUrl: './stats-panel.scss'
 })

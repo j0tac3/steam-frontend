@@ -167,11 +167,16 @@ $color-abandonado: #dc3545;
   /* 🏗️ 1. Control del Layout y Alineación Horizontal de Contenido */
   .main-content {
     margin-left: 260px;
-    margin-right: auto;
     width: calc(100% - 260px);
-    max-width: var(--main-content-max-width);
+    /* 🚀 FIX: Hemos eliminado max-width y margin-right de aquí para que ocupe todo */
     padding: 40px;
     padding-bottom: 40px !important; 
+  }
+
+  .main-content-wrapper {
+    max-width: var(--main-content-max-width); /* Utiliza los 1400px que definiste en :root */
+    margin: 0 auto; /* Lo centra perfectamente en el espacio sobrante */
+    width: 100%;
   }
 }
 
