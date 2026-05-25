@@ -123,14 +123,13 @@
 .search-responsive {
   @media (min-width: 768px) {
     max-width: 260px;
-    /* 🚀 FIX: Bajamos de 220px a 150px. Así cede espacio antes de romper el layout */
     min-width: 150px; 
   }
 }
 
 .actions-responsive {
-  @media (min-width: 768px) {
+  justify-content: space-between !important;
+  @media (min-width: 910px) {
     width: auto !important;
-    justify-content: space-between !important;
   }
 }

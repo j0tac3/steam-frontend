@@ -1,4 +1,4 @@
-<div class="slim-filters-container d-flex flex-column flex-md-row align-items-md-center justify-content-md-end gap-3 position-relative w-100">
+<div class="slim-filters-container d-flex flex-column flex-md-row align-items-md-end justify-content-md-end gap-3 position-relative w-100">
   
   <div class="search-wrapper position-relative w-100 search-responsive flex-shrink-1">
     <span class="search-icon"><app-icon name="icon-search"></app-icon></span>
@@ -9,9 +9,9 @@
     }
   </div>
 
-  <div class="d-flex align-items-center justify-content-between gap-2 w-100 actions-responsive">
+  <div class="d-flex align-items-end justify-content-between gap-2 w-100 actions-responsive">
     
-    <div class="view-switcher-container d-flex align-items-center">
+    <div class="view-switcher-container d-grid align-items-center">
       <span class="text-white-50 small fw-bold me-2 d-none d-md-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">VISTA</span>
       <div class="switcher-bg d-flex">
         <button class="view-btn" [class.active]="vistaActual() === 'cuadricula'" (click)="vistaCambiada.emit('cuadricula')">

@@ -1,65 +1,87 @@
-<div class="main-container min-vh-100"> 
+<div class="main-container min-vh-100" [class.layout-collapsed]="!isSidebarExpanded()"> 
 
   <aside class="sidebar-pc">
     <div class="sidebar-top">
-      <div class="brand-container d-flex align-items-center gap-3 mb-4">
-        <span class="brand-icon text-primary" style="font-size: 2rem;"><app-icon name="icon-gamepad"></app-icon></span>
-        <h2 class="text-white m-0 fw-black tracking-wide brand-text" style="font-size: 1.35rem;">ADN Gamer</h2>
+      <div class="d-flex align-items-center mb-4 ps-2" [class.justify-content-center]="!isSidebarExpanded()">
+        <button class="btn btn-link text-white-50 p-0 fs-4 text-decoration-none" 
+                [class.me-3]="isSidebarExpanded()" 
+                (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        
+        @if (isSidebarExpanded()) {
+          <div class="brand-container d-flex align-items-center gap-2 text-nowrap overflow-hidden">
+            <span class="brand-icon text-primary fs-5"><app-icon name="icon-gamepad"></app-icon></span>
+            <h2 class="text-white m-0 fw-black tracking-wide brand-text fs-5">ADN Gamer</h2>
+          </div>
+        }
       </div>
       
       @if (!isReadOnly()) {
-        <div class="mt-2 w-100">
-          <app-steam-sync-button></app-steam-sync-button>
+        <div class="mt-2 mb-2 w-100 steam-btn-wrapper">
+          @if (isSidebarExpanded()) {
+            <app-steam-sync-button></app-steam-sync-button>
+          } @else {
+            <button class="btn sidebar-action-btn w-100 py-2 d-flex align-items-center justify-content-center" style="border-radius: 12px;" title="Sincronizar Steam">
+              <i class="bi bi-steam text-primary fs-5 m-0"></i>
+            </button>
+          }
         </div>
       }
     </div>
 
     <div class="sidebar-center flex-grow-1 mt-4">
-      <ul class="nav flex-column gap-3 p-0">
+      <ul class="nav flex-column gap-2 p-0">
         <li class="nav-item-pc">
-          <a routerLink="/biblioteca" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar-link">
-            <i class="bi bi-collection-play-fill me-3 fs-5"></i> Colección
+          <a routerLink="/biblioteca" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar-link" title="Colección">
+            <i class="bi bi-collection-play-fill fs-5" [class.me-3]="isSidebarExpanded()"></i> 
+            <span class="label-text text-nowrap">Colección</span>
           </a>
         </li>
         <li class="nav-item-pc">
-          <a routerLink="/descubrir" routerLinkActive="active" class="sidebar-link">
-            <i class="bi bi-compass-fill me-3 fs-5"></i> Descubrir
+          <a routerLink="/descubrir" routerLinkActive="active" class="sidebar-link" title="Descubrir">
+            <i class="bi bi-compass-fill fs-5" [class.me-3]="isSidebarExpanded()"></i> 
+            <span class="label-text text-nowrap">Descubrir</span>
           </a>
         </li>
         <li class="nav-item-pc">
-          <a routerLink="/estadisticas" routerLinkActive="active" class="sidebar-link">
-            <i class="bi bi-pie-chart-fill me-3 fs-5"></i> Mi ADN
+          <a routerLink="/estadisticas" routerLinkActive="active" class="sidebar-link" title="Mi ADN">
+            <i class="bi bi-pie-chart-fill fs-5" [class.me-3]="isSidebarExpanded()"></i> 
+            <span class="label-text text-nowrap">Mi ADN</span>
           </a>
         </li>
       </ul>
     </div>
 
-    <div class="sidebar-bottom d-flex flex-column gap-2 mt-auto">
-      <button class="btn btn-sm btn-outline-light rounded-pill w-100 py-2 d-flex align-items-center justify-content-center gap-2" 
-              style="background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.08);"
-              (click)="compartirPerfil()">
-        <i class="bi bi-share-fill text-primary"></i> <span class="fw-bold text-white-50 small">Compartir Perfil</span>
+    <div class="sidebar-bottom d-flex flex-column gap-2 mt-auto" [class.pe-3]="isSidebarExpanded()">
+      <button class="btn sidebar-action-btn w-100 py-2 d-flex align-items-center" [class.justify-content-center]="!isSidebarExpanded()" [class.gap-2]="isSidebarExpanded()" (click)="compartirPerfil()" title="Compartir Perfil">
+        <i class="bi bi-share-fill text-primary"></i> <span class="fw-bold small label-text text-nowrap">Compartir Perfil</span>
       </button>
 
       @if (!isReadOnly()) {
-        <div class="d-flex align-items-center justify-content-between p-2 rounded-3 my-1 sidebar-toggle-box">
-          <span class="text-white-50 small fw-bold">
-            <i class="bi" [ngClass]="profileOwner()?.is_public ? 'bi-globe-americas text-primary' : 'bi-lock-fill text-secondary'"></i> Perfil Público
-          </span>
-          <div class="form-check form-switch m-0 d-flex align-items-center">
-            <input class="form-check-input custom-switch m-0" type="checkbox" style="cursor: pointer;" [checked]="profileOwner()?.is_public" (change)="togglePrivacidad($event)">
+        @if (isSidebarExpanded()) {
+          <div class="sidebar-toggle-box d-flex align-items-center justify-content-between p-3 rounded-4 my-1">
+            <span class="text-white-50 small fw-bold d-flex align-items-center gap-2">
+              <i class="bi fs-6" [ngClass]="profileOwner()?.is_public ? 'bi-unlock-fill text-secondary' : 'bi-lock-fill text-secondary'"></i> Perfil Público
+            </span>
+            <div class="form-check form-switch m-0 d-flex align-items-center">
+              <input class="form-check-input custom-switch m-0" type="checkbox" style="cursor: pointer;" [checked]="profileOwner()?.is_public" (change)="togglePrivacidad($event)">
+            </div>
           </div>
-        </div>
-        
-        @if (profileOwner()?.steam_id) {
-          <button class="btn btn-sm btn-outline-danger rounded-pill w-100 py-2 mt-1 mb-1 d-flex align-items-center justify-content-center gap-2" 
-                  (click)="desvincularSteam()">
-            <i class="bi bi-steam"></i> <span class="fw-bold small">Desvincular Steam</span>
+        } @else {
+          <button class="btn sidebar-action-btn w-100 py-2 d-flex align-items-center justify-content-center my-1" style="border-radius: 12px;" (click)="togglePrivacidadDirecto(!profileOwner()?.is_public)" title="Alternar Privacidad">
+            <i class="bi fs-5" [ngClass]="profileOwner()?.is_public ? 'bi-unlock-fill text-secondary' : 'bi-lock-fill text-secondary'"></i>
           </button>
         }
         
-        <button class="btn btn-logout-sidebar w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2" (click)="cerrarSesion()">
-          <i class="bi bi-box-arrow-right"></i> <span class="fw-bold small">Cerrar Sesión</span>
+        @if (profileOwner()?.steam_id) {
+          <button class="btn sidebar-danger-btn w-100 py-2 d-flex align-items-center" [class.justify-content-center]="!isSidebarExpanded()" [class.gap-2]="isSidebarExpanded()" (click)="desvincularSteam()" title="Desvincular Steam">
+            <i class="bi bi-steam"></i> <span class="fw-bold small label-text text-nowrap">Desvincular</span>
+          </button>
+        }
+        
+        <button class="btn sidebar-danger-btn w-100 py-2 d-flex align-items-center" [class.justify-content-center]="!isSidebarExpanded()" [class.gap-2]="isSidebarExpanded()" (click)="cerrarSesion()" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i> <span class="fw-bold small label-text text-nowrap">Cerrar Sesión</span>
         </button>
       }
     </div>
@@ -125,7 +147,7 @@
 
     <main class="container-fluid">
       
-      <div class="glass-panel rounded-4 px-3 px-md-4 py-3 mb-4 w-100 position-relative d-flex flex-wrap align-items-center justify-content-between gap-3" style="z-index: 10;">
+      <div class="glass-panel rounded-4 px-3 px-md-4 py-3 mb-4 w-100 position-relative d-flex flex-wrap align-items-end justify-content-between gap-3" style="z-index: 10;">
         
         <div class="action-bar-left" style="flex: 1 1 260px; max-width: 100%;">
           <app-stats-panel 
@@ -139,7 +161,7 @@
           </app-stats-panel>
         </div>
 
-        <div class="action-bar-right d-flex justify-content-end" style="flex: 1 1 500px; max-width: 100%;">
+        <div class="action-bar-right d-flex justify-content-end align-items-end" style="flex: 1 1 500px; max-width: 100%;">
           <app-game-filters class="w-100"
             [filtroTexto]="filtros().search" 
             [filtroEstado]="filtros().status" 

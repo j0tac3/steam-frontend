@@ -43,6 +43,7 @@ export class BibliotecaComponent implements OnInit {
   private route = inject(ActivatedRoute);
   public isReadOnly = signal<boolean>(false);
   public profileOwner = signal<any>(null);
+  public isSidebarExpanded = signal<boolean>(true);
 
   filtros = signal({ status: 'todos', platform: 'todas', search: '', page: 1, _t: Date.now() });
 
@@ -217,6 +218,21 @@ export class BibliotecaComponent implements OnInit {
     if (!this.isReadOnly()) {
       this.cargarEstadisticas();
       this.authService.getUser().subscribe({ next: (userData) => this.profileOwner.set(userData) });
+    }
+
+    // 🚀 AL INICIAR: Leemos la preferencia guardada
+    if (typeof window !== 'undefined') {
+      const storedSidebar = localStorage.getItem('sidebarExpanded');
+      if (storedSidebar !== null) {
+        this.isSidebarExpanded.set(storedSidebar === 'true');
+      }
+    }
+  }
+
+  toggleSidebar() {
+    this.isSidebarExpanded.update(v => !v);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarExpanded', String(this.isSidebarExpanded()));
     }
   }
 

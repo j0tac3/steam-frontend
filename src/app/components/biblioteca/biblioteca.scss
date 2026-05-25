@@ -115,6 +115,7 @@ $color-abandonado: #dc3545;
   .slim-header { display: none !important; }
   .bottom-nav-mobile { display: none !important; }
 
+  /* 📌 1. ESTADO POR DEFECTO (EXPANDIDO) */
   .sidebar-pc {
     display: flex !important;
     flex-direction: column;
@@ -123,60 +124,96 @@ $color-abandonado: #dc3545;
     top: 0;
     width: 260px;
     height: 100vh;
-    padding: 28px 20px;
+    padding: 28px 0 28px 20px;
     z-index: 1025;
     box-sizing: border-box;
-
-    background: rgba(18, 20, 25, 0.75);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(139, 92, 246, 0.2);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-
+    background: #11131a; 
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 5px 0 20px rgba(0,0,0,0.3);
+    
+    /* Animaciones suaves */
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
+    overflow-x: hidden;
+    
     .sidebar-link {
       display: flex;
       align-items: center;
-      color: #9ca3af;
+      color: #7b8395;
       text-decoration: none;
-      padding: 12px 16px;
-      /* 📐 2. Redución Proporcional de Fuentes de Navegación */
-      font-size: 0.92rem;
+      padding: 14px 20px;
+      margin: 2px 16px 2px 0;
+      font-size: 0.95rem;
       font-weight: 600;
-      border-left: 3px solid transparent;
-      border-radius: 0 8px 8px 0; /* Suave encaje lateral */
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 4px solid transparent;
+      border-radius: 0 12px 12px 0;
+      transition: all 0.2s ease;
 
-      &:hover {
-        color: #ffffff;
-        background: rgba(139, 92, 246, 0.05);
-        border-left-color: rgba(139, 92, 246, 0.4);
-        transform: translateX(2px);
-      }
+      &:hover { color: #ffffff; background: rgba(255, 255, 255, 0.03); }
+      &.active { color: #ffffff; background: #242235; border-left-color: #8a3aff; }
+    }
 
-      /* 📐 2. Refinamiento del Estado Activo Sutil (Línea Neón Lateral) */
-      &.active {
-        color: #ffffff;
-        background: rgba(139, 92, 246, 0.12); /* Morado ultratranslúcido */
-        border-left-color: #8b5cf6; /* El indicador de estado puro */
-        box-shadow: inset 5px 0 10px rgba(139, 92, 246, 0.05);
-        transform: none;
-      }
+    ::ng-deep .steam-btn-wrapper button {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: 50rem !important;
+      padding: 10px 0 !important;
+      color: #fff !important;
+      width: calc(100% - 16px);
+      white-space: nowrap;
+      &:hover { background: rgba(255, 255, 255, 0.08) !important; }
     }
   }
 
-  /* 🏗️ 1. Control del Layout y Alineación Horizontal de Contenido */
   .main-content {
     margin-left: 260px;
     width: calc(100% - 260px);
-    /* 🚀 FIX: Hemos eliminado max-width y margin-right de aquí para que ocupe todo */
     padding: 40px;
     padding-bottom: 40px !important; 
+    transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .main-content-wrapper {
-    max-width: var(--main-content-max-width); /* Utiliza los 1400px que definiste en :root */
-    margin: 0 auto; /* Lo centra perfectamente en el espacio sobrante */
+    max-width: var(--main-content-max-width);
+    margin: 0 auto;
     width: 100%;
+    transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 💥 2. ESTADO PLEGADO (Control absoluto desde el padre) */
+  .main-container.layout-collapsed {
+    
+    /* 2.1 El menú se encoge */
+    .sidebar-pc {
+      width: 80px;
+      padding-left: 14px;
+      padding-right: 14px;
+      
+      .label-text { display: none; }
+      
+      .sidebar-link {
+        padding: 14px 0;
+        margin: 2px 0;
+        justify-content: center;
+        border-radius: 12px;
+        border-left: none;
+      }
+      .sidebar-bottom .sidebar-action-btn, 
+      .sidebar-bottom .sidebar-danger-btn {
+        padding: 12px 0 !important;
+        border-radius: 12px;
+      }
+    }
+
+    /* 2.2 El contenido se mueve a la izquierda (Ocupando el sitio libre) */
+    .main-content {
+      margin-left: 80px;
+      width: calc(100% - 80px);
+    }
+
+    /* 2.3 El grid de juegos absorbe esos píxeles extra para que quepan más carátulas */
+    .main-content-wrapper {
+      max-width: calc(var(--main-content-max-width) + 180px);
+    }
   }
 }
 
@@ -213,7 +250,7 @@ $color-abandonado: #dc3545;
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
