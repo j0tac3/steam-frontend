@@ -163,6 +163,7 @@
 
         <div class="action-bar-right d-flex justify-content-end align-items-end" style="flex: 1 1 500px; max-width: 100%;">
           <app-game-filters class="w-100"
+            [refreshTrigger]="filtros()._t"
             [filtroTexto]="filtros().search" 
             [filtroEstado]="filtros().status" 
             [filtroPlataforma]="filtros().platform" 

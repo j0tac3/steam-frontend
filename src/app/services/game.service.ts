@@ -145,6 +145,13 @@ export class GameService {
     });
   }
 
+  // 🚀 NUEVA FUNCIÓN: Obtener las plataformas únicas del usuario
+  getUserPlatforms(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/platforms`, {
+      headers: this.getHeaders()
+    });
+  }
+
   unlinkSteam() {
     return this.http.post(`${this.apiUrl}/user/unlink-steam`, {});
   }

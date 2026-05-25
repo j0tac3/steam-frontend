@@ -197,11 +197,37 @@ $color-abandonado: #dc3545;
         border-radius: 12px;
         border-left: none;
       }
-      .sidebar-bottom .sidebar-action-btn, 
-      .sidebar-bottom .sidebar-danger-btn {
-        padding: 12px 0 !important;
-        border-radius: 12px;
-      }
+      .sidebar-action-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50rem;
+  color: #9ca3af !important; /* 🚀 FIX: Forzamos el gris claro visible */
+  transition: all 0.2s ease;
+  
+  i { color: inherit; } /* 🚀 FIX: Obligamos al icono a usar el color del texto */
+  
+  &:hover { 
+    background: rgba(255, 255, 255, 0.08); 
+    color: #ffffff !important; 
+  }
+}
+
+.sidebar-danger-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 50rem;
+  color: #ef4444 !important; /* 🚀 FIX: Forzamos el rojo intenso */
+  transition: all 0.2s ease;
+
+  i { color: inherit; } /* 🚀 FIX: Obligamos al icono a heredar el rojo */
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1); 
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ff6b6b !important;
+    transform: translateY(-2px);
+  }
+}
     }
 
     /* 2.2 El contenido se mueve a la izquierda (Ocupando el sitio libre) */

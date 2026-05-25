@@ -122,7 +122,7 @@
 /* 📱 Comportamiento Responsivo Específico */
 .search-responsive {
   @media (min-width: 768px) {
-    max-width: 260px;
+    /* max-width: 260px; */
     min-width: 150px; 
   }
 }

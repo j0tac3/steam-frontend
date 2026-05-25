@@ -1,6 +1,7 @@
-import { Component, input, output, signal, computed, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { Component, input, output, signal, computed, inject, PLATFORM_ID, OnInit, effect } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { IconComponent } from '../icon/icon'; 
+import { GameService } from '../../services/game.service'; // 🚀 Importamos el servicio
 
 @Component({
   selector: 'app-game-filters',
@@ -11,6 +12,7 @@ import { IconComponent } from '../icon/icon';
 })
 export class GameFiltersComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
+  private gameService = inject(GameService); // 🚀 Inyectamos el servicio
   
   public isExpanded = signal<boolean>(true);
 
@@ -19,32 +21,26 @@ export class GameFiltersComponent implements OnInit {
   filtroPlataforma = input.required<string>();
   vistaActual = input.required<'cuadricula' | 'tablero'>();
   totalMostrados = input<number>(0);
+  refreshTrigger = input<number>(0);
 
   textoCambiado = output<string>();
   estadoCambiado = output<string>();
   plataformaCambiada = output<string>();
   vistaCambiada = output<'cuadricula' | 'tablero'>();
 
-  // ✍️ 3. Lógica Inteligente de Abreviatura
   platformSummaryText = computed(() => {
     const plat = this.filtroPlataforma();
     if (plat === 'todas' || !plat) return '';
     const arr = plat.split(',').filter(x => x);
-    // Si hay 1 devuelve el nombre exacto (ej: "PC"), si no, abrevia
     return arr.length === 1 ? arr[0] : `${arr.length} plat.`;
   });
 
-  opcionesPlataforma = [
-    { id: 'todas',  nombre: 'Todas',   tipo: 'icon', valor: 'bi-grid-fill', color: '' },
-    { id: 'PC',     nombre: 'PC',      tipo: 'dot',  valor: '',             color: '#d4d4d8' },
-    { id: 'PlayStation', nombre: 'PlayStation', tipo: 'dot',  valor: '',    color: '#006FCD' },
-    { id: 'Xbox',   nombre: 'Xbox',    tipo: 'dot',  valor: '',             color: '#107C10' },
-    { id: 'Switch', nombre: 'Switch',  tipo: 'dot',  valor: '',             color: '#E60012' },
-    { id: 'Mobile', nombre: 'Móvil',   tipo: 'dot',  valor: '',             color: '#F59E0B' }
+  // 🚀 1. Empezamos solo con la opción "Todas"
+  opcionesPlataforma: any[] = [
+    { id: 'todas', nombre: 'Todas', tipo: 'icon', valor: 'bi-grid-fill', color: '' }
   ];
 
   ngOnInit() {
-    // 🚀 Leemos la preferencia previa o forzamos colapso en móvil
     if (isPlatformBrowser(this.platformId)) {
       const stored = localStorage.getItem('filtersPanelExpanded');
       if (stored !== null) {
@@ -53,6 +49,52 @@ export class GameFiltersComponent implements OnInit {
         this.isExpanded.set(false);
       }
     }
+  }
+
+  constructor() {
+    // 🚀 MAGIA DE ANGULAR 18: Se ejecuta solo cada vez que refreshTrigger cambia
+    effect(() => {
+      if (this.refreshTrigger()) {
+        this.cargarPlataformasDesdeBBDD();
+      }
+    });
+  }
+
+  // 🚀 Ahora es un método público que el padre puede invocar
+  public cargarPlataformasDesdeBBDD() {
+    this.gameService.getUserPlatforms().subscribe({
+      next: (platformsFromDB) => {
+        const mappedPlatforms = platformsFromDB.map(p => this.mapearPlataforma(p));
+        this.opcionesPlataforma = [
+          { id: 'todas', nombre: 'Todas', tipo: 'icon', valor: 'bi-grid-fill', color: '' },
+          ...mappedPlatforms
+        ];
+      },
+      error: (err) => console.error('Error cargando plataformas', err)
+    });
+  }
+
+  // 🎨 Diccionario visual: Asigna colores y nombres cortos según lo que venga de la BBDD
+  private mapearPlataforma(dbPlatform: any) {
+    const name = dbPlatform.name.toLowerCase();
+    let visualData = { nombre: dbPlatform.name, tipo: 'dot', valor: '', color: '#9ca3af' }; // Default gris
+
+    if (name.includes('pc') || name.includes('windows') || name.includes('mac')) {
+      visualData = { nombre: 'PC', tipo: 'dot', valor: '', color: '#d4d4d8' };
+    } else if (name.includes('playstation') || name.includes('ps4') || name.includes('ps5')) {
+      visualData = { nombre: 'PlayStation', tipo: 'dot', valor: '', color: '#006FCD' };
+    } else if (name.includes('xbox')) {
+      visualData = { nombre: 'Xbox', tipo: 'dot', valor: '', color: '#107C10' };
+    } else if (name.includes('switch') || name.includes('nintendo')) {
+      visualData = { nombre: 'Nintendo', tipo: 'dot', valor: '', color: '#E60012' };
+    } else if (name.includes('android') || name.includes('ios') || name.includes('mobile')) {
+      visualData = { nombre: 'Móvil', tipo: 'dot', valor: '', color: '#F59E0B' };
+    }
+
+    return {
+      id: String(dbPlatform.id), // Importante: el ID real de la BBDD
+      ...visualData
+    };
   }
 
   togglePanel() {
